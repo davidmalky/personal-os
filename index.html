@@ -121,12 +121,15 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .ib-modal-actions{display:flex;gap:6px;margin-top:8px;justify-content:flex-end;align-items:center}
 .ib-modal-status{flex:1;font-size:9px;color:var(--text3)}.ib-modal-status.ok{color:var(--green)}.ib-modal-status.err{color:var(--red)}
 .cc-drawer-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9400;backdrop-filter:blur(2px)}.cc-drawer-overlay.show{display:block}
-.cc-drawer{display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:640px;max-width:92vw;max-height:80vh;background:var(--surf);border:1px solid var(--border2);border-radius:var(--r);z-index:9500;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.65)}.cc-drawer.show{display:flex}
+.cc-drawer{display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:min(860px,94vw);max-height:88vh;min-height:520px;background:var(--surf);border:1px solid var(--border2);border-radius:var(--r);z-index:9500;flex-direction:column;box-shadow:0 24px 80px rgba(0,0,0,.75)}.cc-drawer.show{display:flex}
 .cc-drawer-header{display:flex;align-items:center;justify-content:space-between;padding:14px 16px 12px;border-bottom:1px solid var(--border);flex-shrink:0}
-.cc-drawer-title{font-family:'Syne',sans-serif;font-size:14px;font-weight:800;color:var(--text);letter-spacing:-.01em}
+.cc-drawer-title{font-family:'Syne',sans-serif;font-size:17px;font-weight:800;color:var(--text);letter-spacing:-.01em}
 .cc-drawer-close{width:24px;height:24px;background:var(--surf2);border:1px solid var(--border);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px;color:var(--text2);flex-shrink:0;transition:all .12s}.cc-drawer-close:hover{background:var(--red);color:#fff;border-color:var(--red)}
-.cc-drawer-body{overflow-y:auto;padding:14px 16px;flex:1}.cc-drawer-body::-webkit-scrollbar{width:3px}.cc-drawer-body::-webkit-scrollbar-thumb{background:var(--surf4)}
-.cc-drawer-actions{padding:10px 16px 14px;border-top:1px solid var(--border);display:flex;gap:6px;flex-wrap:wrap;flex-shrink:0}
+.cc-drawer-body{overflow-y:auto;padding:16px 20px;flex:1}.cc-drawer-body::-webkit-scrollbar{width:3px}.cc-drawer-body::-webkit-scrollbar-thumb{background:var(--surf4)}
+.cc-drawer-body .ii-wrap{padding:8px 14px;font-size:11px;line-height:1.55}
+.cc-drawer-body .ii-wrap strong{font-size:11.5px}
+.cc-drawer-body .ii-detail{font-size:10px}
+.cc-drawer-actions{padding:12px 20px 16px;border-top:1px solid var(--border);display:flex;gap:8px;flex-wrap:wrap;flex-shrink:0}
 .act-pop{position:fixed;z-index:9800;background:var(--surf2);border:1px solid var(--border2);border-radius:var(--r);box-shadow:0 8px 32px rgba(0,0,0,.7);min-width:195px;padding:5px 0}
 .act-pop-hdr{padding:5px 11px 4px;font-size:8px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text3);border-bottom:1px solid var(--border);margin-bottom:3px}
 .act-pop-item{display:flex;align-items:center;gap:7px;padding:5px 11px;font-size:10px;color:var(--text2);cursor:pointer;transition:background .1s;white-space:nowrap}.act-pop-item:hover{background:var(--surf3);color:var(--text)}
@@ -219,6 +222,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
     <button class="ntab" onclick="V('family',this)">Family</button>
     <button class="ntab" onclick="V('projects',this)">Projects</button>
     <button class="ntab" onclick="V('growth',this)">Growth</button>
+    <button class="ntab" onclick="V('focus',this)">⏱ Focus</button>
     <button class="ntab" onclick="V('email',this)">Email</button>
     <button class="ntab" onclick="V('work',this)">Work</button>
   </nav>
@@ -238,6 +242,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
     <button class="ntab" onclick="V('family',this)">Family</button>
     <button class="ntab" onclick="V('projects',this)">Projects</button>
     <button class="ntab" onclick="V('growth',this)">Growth</button>
+    <button class="ntab" onclick="V('focus',this)">⏱ Focus</button>
     <button class="ntab" onclick="V('email',this)">Email</button>
     <button class="ntab" onclick="V('work',this)">Work</button>
   </nav>
@@ -650,6 +655,66 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
   </div>
 </div>
 
+
+<!-- FOCUS & TIME -->
+<div class="view" id="view-focus">
+  <div class="world-header">
+    <div><div class="world-title"><em>Focus</em> &amp; Time</div><div class="world-subtitle">Strategic daily plan · priority blocks · carry-forward · time maximization</div></div>
+    <div class="world-actions">
+      <button class="cc-btn" onclick="ask('Structure my day today by priority. Pull my calendar, open tasks, and pending items. Tell me exactly what I should be working on and in what order, with realistic time estimates.')">Structure My Day ↗</button>
+    </div>
+  </div>
+  <div class="g2" style="margin-bottom:8px">
+    <div class="card" style="margin-bottom:0">
+      <div class="ct">Today's priority stack
+        <button class="al" onclick="ask('Rebuild my priority stack for today based on my tasks, calendar, emails, and what is most important to move forward. Give me a specific ordered list with time estimates.')">↻ Rebuild</button>
+      </div>
+      <div id="focusPriorityList"><div style="font-size:10px;color:var(--text3);font-style:italic;padding:6px 0">Click Rebuild to generate today's priority stack from your live data.</div></div>
+      <button class="adb" onclick="ask('I want to do a time block session. Build me a realistic schedule for the rest of today with specific time blocks for each priority item. Name the task, the duration, and what done looks like.')"><span class="adb-icon">⏱</span>Build time blocks for today</button>
+      <button class="adb" onclick="ask('What tasks have been sitting on my list the longest that I keep avoiding? What is the cost of continuing to delay them?')"><span class="adb-icon">↩</span>What am I avoiding?</button>
+    </div>
+    <div class="card" style="margin-bottom:0">
+      <div class="ct">Time estimates</div>
+      <div class="row"><div><div class="rn" style="font-size:10px">Set up Cube ACR → Drive</div><div class="rs">Call recording auto-backup</div></div><span class="badge bx">~30 min</span></div>
+      <div class="row"><div><div class="rn" style="font-size:10px">Set up SMS Backup → Drive</div><div class="rs">Text message backup</div></div><span class="badge bx">~20 min</span></div>
+      <div class="row"><div><div class="rn" style="font-size:10px">Set up Donor Advised Fund</div><div class="rs">Research + open account</div></div><span class="badge bx">~1 hr</span></div>
+      <div class="row"><div><div class="rn" style="font-size:10px">Auto insurance follow-up</div><div class="rs">Call insurer after completions</div></div><span class="badge bx">~20 min</span></div>
+      <div class="row"><div><div class="rn" style="font-size:10px">Review solar proposal</div><div class="rs">Call Avromi Weinberger 848-373-5885</div></div><span class="badge bx">~30 min</span></div>
+      <div class="row"><div><div class="rn" style="font-size:10px">Wave AI recovery</div><div class="rs">USB cable at home</div></div><span class="badge bx">~15 min</span></div>
+      <button class="adb" onclick="ask('I have 30 minutes right now. What is the single highest-leverage thing I can do that will have the most impact on my life or work?')"><span class="adb-icon">⚡</span>Best use of next 30 minutes</button>
+    </div>
+  </div>
+  <div class="g2" style="margin-bottom:8px">
+    <div class="card" style="margin-bottom:0">
+      <div class="ct">💡 Quick idea capture
+        <a href="https://docs.google.com/document/d/1AGcAn_THemQQvqv0Z4EJbKsTeRcVJEnXdQ4g8Inqv4I/edit" target="_blank" class="al">Open Ideas Log ↗</a>
+      </div>
+      <div style="font-size:9px;color:var(--text3);margin-bottom:8px;line-height:1.5">Half-formed thoughts you don't want to lose. DONALD saves to your Ideas Log in Drive.</div>
+      <textarea id="ideaInput" class="nta" placeholder="Type an idea — any thought, concept, or possibility..." style="min-height:80px;resize:none"></textarea>
+      <button class="addb" style="width:100%;padding:8px;margin-top:6px" onclick="captureIdea()">💡 Save to Ideas Log</button>
+      <div id="ideaCaptureStatus" style="font-size:9px;color:var(--text3);margin-top:4px;min-height:13px;text-align:center"></div>
+    </div>
+    <div class="card" style="margin-bottom:0">
+      <div class="ct">✅ Quick to-do capture
+        <a href="https://docs.google.com/document/d/19ORkFrJQUsyC_7g_y127CBgOnTbjxS-qskYERMItjzQ/edit" target="_blank" class="al">Open To-Do Log ↗</a>
+      </div>
+      <div style="font-size:9px;color:var(--text3);margin-bottom:8px;line-height:1.5">Committed actions that need to happen. DONALD saves to your To-Do Log in Drive.</div>
+      <textarea id="todoInput" class="nta" placeholder="Type a to-do — something specific you need to do..." style="min-height:80px;resize:none"></textarea>
+      <div class="irow" style="margin-top:6px">
+        <select id="todoPri" class="tinp"><option value="high">🔴 High priority</option><option value="med" selected>🟡 Medium priority</option><option value="low">🔵 Low priority</option></select>
+      </div>
+      <button class="addb" style="width:100%;padding:8px;margin-top:6px" onclick="captureTodo()">✅ Save to To-Do Log</button>
+      <div id="todoCaptureStatus" style="font-size:9px;color:var(--text3);margin-top:4px;min-height:13px;text-align:center"></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="ct">Weekly focus</div>
+    <button class="adb" onclick="ask('Build me a realistic weekly plan. What are the 3-5 most important things I should accomplish this week across personal, financial, health, and work? Structure it by day.')"><span class="adb-icon">📅</span>Build my weekly plan</button>
+    <button class="adb" onclick="ask('End of week review. What did I accomplish this week vs what I planned? What carries forward and what should I prioritize differently next week?')"><span class="adb-icon">📊</span>End of week review</button>
+    <button class="adb" onclick="ask('I am overwhelmed and do not know where to start. Help me triage everything and identify the one thing that will make the biggest difference today.')"><span class="adb-icon">🧭</span>I am overwhelmed — triage</button>
+  </div>
+</div>
+
 </div><!-- /main -->
 
 <div class="drag-div" id="dragDiv" onmousedown="startDrag(event)"><div class="drag-inner"></div></div>
@@ -707,12 +772,18 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
   </div>
   <div class="psect" id="psect-chats">
     <div style="display:flex;flex-direction:column;flex:1;overflow:hidden;padding:12px;gap:8px">
+      <button class="addb" style="width:100%;padding:7px" onclick="loadRecentChats()">↻ Load my recent Claude chats</button>
+      <div id="chatLoadStatus" style="font-size:8.5px;color:var(--text3);min-height:12px;text-align:center"></div>
+      <div id="chatPasteArea" style="display:none">
+        <div style="font-size:8.5px;color:var(--text3);margin-bottom:4px">Paste DONALD's JSON response here:</div>
+        <textarea id="chatJsonInput" style="width:100%;box-sizing:border-box;height:80px;font-size:9px;padding:5px;background:var(--surf2);border:1px solid var(--border);border-radius:var(--rsm);color:var(--text);font-family:inherit;resize:none" placeholder='[{"title":"...","url":"..."}]' oninput="tryParseChatJson(this.value)"></textarea>
+      </div>
       <div class="cll">DONALD chats</div>
       <div id="pinnedChats" style="flex-shrink:0"></div>
-      <div class="cll" style="margin-top:4px">Other chats <span id="chatCount" style="font-weight:400;color:var(--text3)"></span></div>
+      <div class="cll" style="margin-top:4px">Recent chats <span id="chatCount" style="font-weight:400;color:var(--text3)"></span></div>
       <div id="allChats" style="flex:1;overflow-y:auto;min-height:0"></div>
       <div style="padding-top:8px;border-top:1px solid var(--border);flex-shrink:0">
-        <input class="tinp" style="width:100%;margin-bottom:4px;box-sizing:border-box" type="text" id="scUrl" placeholder="Paste a chat URL...">
+        <input class="tinp" style="width:100%;margin-bottom:4px;box-sizing:border-box" type="text" id="scUrl" placeholder="Or paste a chat URL manually...">
         <div style="display:flex;gap:4px">
           <input class="tinp" style="flex:1" type="text" id="scLabel" placeholder="Label">
           <button class="addb" onclick="addChat()">Save</button>
@@ -855,9 +926,12 @@ var CC_PANELS=[
    actions:[{label:'Work pulse',prompt:'Work pulse — urgent Outlook emails, meetings today or tomorrow, key Prime Source items.'},{label:'Top work priorities',prompt:'Top 3 work priorities I should push on right now at Prime Source.'},{label:'Open Prime Source OS',url:'https://primesource-os.vercel.app'}],openTab:'work'},
   {id:'notes',icon:'📝',label:'Capture',pri:'gray',desc:'Quick thoughts, scratchpad, notes.',
    actions:[{label:'Quick capture',prompt:'I want to capture a thought or note. Ask me what I want to remember.'},{label:'Review notes',prompt:'What notes have I captured recently that I should review?'}],openTab:null},
+  {id:'focus',icon:'⏱',label:'Focus & Time',pri:'green',desc:'Daily priority stack, time blocks, carry-forward, triage.',
+   badgeFn:function(){var op=tasks.filter(function(t){return !t.done&&t.pri==='high'});return op.length>0?{count:op.length,cls:'red'}:null;},
+   actions:[{label:'Structure my day',prompt:'Structure my day today by priority. Pull my calendar, open tasks, and pending items. Tell me exactly what I should work on in order with time estimates.'},{label:'Best use of next 30 min',prompt:'I have 30 minutes right now. What is the single highest-leverage thing I can do?'},{label:'Weekly plan',prompt:'Build me a realistic weekly plan. What are the 3-5 most important things to accomplish this week across personal, financial, health, and work?'}],openTab:'focus'},
 ];
 
-var PANEL_INTEL_KEY={daily:'donald_personal_intel_daily',finance:'donald_personal_intel_finance',health:'donald_personal_intel_health',family:'donald_personal_intel_family',projects:'donald_personal_intel_projects',growth:'donald_personal_intel_growth',email:'donald_personal_intel_email',work:'donald_personal_intel_work',notes:'donald_personal_intel_notes'};
+var PANEL_INTEL_KEY={daily:'donald_personal_intel_daily',finance:'donald_personal_intel_finance',health:'donald_personal_intel_health',family:'donald_personal_intel_family',projects:'donald_personal_intel_projects',growth:'donald_personal_intel_growth',email:'donald_personal_intel_email',work:'donald_personal_intel_work',notes:'donald_personal_intel_notes',focus:'donald_personal_intel_focus'};
 
 function ask(prompt,urlOverride){
   var url=urlOverride||(G('donaldUrl','')||'YOUR_PERSONAL_DONALD_URL');
@@ -1197,6 +1271,56 @@ S=function(k,v){_origS(k,v);if(syncEnabled){clearTimeout(syncTimer);syncTimer=se
 
 var savedDonaldUrl=G('donaldUrl','');
 if(savedDonaldUrl){DONALD_URL=savedDonaldUrl;var link=document.getElementById('donaldChatLink');if(link)link.href=savedDonaldUrl;}
+
+
+// ── IDEAS + TO-DO CAPTURE ─────────────────────────────────────────────────
+function captureIdea(){
+  var text=document.getElementById('ideaInput').value.trim();
+  var statusEl=document.getElementById('ideaCaptureStatus');
+  if(!text){if(statusEl){statusEl.textContent='Type an idea first.';statusEl.style.color='var(--red)';}return;}
+  var today=new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
+  var prompt='DONALD, add this idea to my Ideas Log in Google Drive (document ID: 1AGcAn_THemQQvqv0Z4EJbKsTeRcVJEnXdQ4g8Inqv4I, account: googledocs_argas-topaz).\n\nDate: '+today+'\nIdea: '+text+'\n\nAdd it under the most relevant section. Confirm when done.';
+  var url=G('donaldUrl','')||'YOUR_PERSONAL_DONALD_URL';
+  var _open=function(){window.open(url,'_blank');if(statusEl){statusEl.textContent='✓ Opening DONALD — Ctrl+V and Send to save to Drive';statusEl.style.color='var(--green)';}setTimeout(function(){if(statusEl){statusEl.textContent='';statusEl.style.color='';}document.getElementById('ideaInput').value='';},5000);};
+  if(navigator.clipboard){navigator.clipboard.writeText(prompt).then(_open).catch(function(){_open();});}else{_open();}
+}
+function captureTodo(){
+  var text=document.getElementById('todoInput').value.trim();
+  var priEl=document.getElementById('todoPri');
+  var statusEl=document.getElementById('todoCaptureStatus');
+  if(!text){if(statusEl){statusEl.textContent='Type a to-do first.';statusEl.style.color='var(--red)';}return;}
+  var pri=priEl?priEl.options[priEl.selectedIndex].text:'Medium priority';
+  var today=new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
+  var prompt='DONALD, add this to-do to my To-Do Log in Google Drive (document ID: 19ORkFrJQUsyC_7g_y127CBgOnTbjxS-qskYERMItjzQ, account: googledocs_argas-topaz).\n\nDate added: '+today+'\nPriority: '+pri+'\nTo-do: '+text+'\n\nAdd it under the correct priority section. Confirm when done.';
+  var url=G('donaldUrl','')||'YOUR_PERSONAL_DONALD_URL';
+  var _open=function(){window.open(url,'_blank');if(statusEl){statusEl.textContent='✓ Opening DONALD — Ctrl+V and Send to save to Drive';statusEl.style.color='var(--green)';}setTimeout(function(){if(statusEl){statusEl.textContent='';statusEl.style.color='';}document.getElementById('todoInput').value='';},5000);};
+  if(navigator.clipboard){navigator.clipboard.writeText(prompt).then(_open).catch(function(){_open();});}else{_open();}
+}
+// ── LOAD RECENT CHATS ─────────────────────────────────────────────────────
+function loadRecentChats(){
+  var statusEl=document.getElementById('chatLoadStatus');
+  var pasteArea=document.getElementById('chatPasteArea');
+  var prompt='Please use your recent_chats tool to fetch my 50 most recent conversations. Return ONLY a JSON array with no explanation, no markdown, no code fences. Format exactly:\n[{"title":"Chat title here","url":"https://claude.ai/chat/CHAT-ID","updated":"2026-05-12"}]\n\nReturn the raw JSON array only.';
+  var url=G('donaldUrl','')||'YOUR_PERSONAL_DONALD_URL';
+  var _open=function(){if(pasteArea)pasteArea.style.display='block';if(statusEl){statusEl.textContent="✓ Paste DONALD's JSON response in the box above";statusEl.style.color='var(--green)';}window.open(url,'_blank');};
+  if(navigator.clipboard){navigator.clipboard.writeText(prompt).then(_open).catch(function(){_open();});}else{_open();}
+}
+function tryParseChatJson(val){
+  var statusEl=document.getElementById('chatLoadStatus');
+  if(!val||!val.trim())return;
+  try{
+    var raw=val.trim().replace(/^```[a-z]*\n?/i,'').replace(/```+$/,'').trim();
+    var arr=null;
+    try{arr=JSON.parse(raw);}catch(e){var s=raw.indexOf('['),en=raw.lastIndexOf(']');if(s>-1&&en>s){try{arr=JSON.parse(raw.slice(s,en+1));}catch(e2){}}}
+    if(!arr||!Array.isArray(arr)||!arr.length){if(statusEl){statusEl.textContent='No chats found — paste the full JSON response.';statusEl.style.color='var(--red)';}return;}
+    var existing=chats.map(function(c){return c.url;});var added=0;
+    arr.forEach(function(item){if(!item.url)return;if(existing.indexOf(item.url)===-1){chats.push({label:item.title||'Untitled',url:item.url,mod:'recent',updated:item.updated||''});added++;}});
+    S('chats',chats);renderChats();
+    var pasteArea=document.getElementById('chatPasteArea');if(pasteArea)pasteArea.style.display='none';
+    if(statusEl){statusEl.textContent='✓ Loaded '+added+' new chats';statusEl.style.color='var(--green)';}
+    setTimeout(function(){if(statusEl)statusEl.textContent='';},4000);
+  }catch(e){if(statusEl){statusEl.textContent="Could not parse — paste DONALD's full response.";statusEl.style.color='var(--red)';}}
+}
 
 applyTheme();applyPanel();setDate();
 renderDashTasks();renderChats();renderCC();
