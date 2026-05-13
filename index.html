@@ -1148,7 +1148,7 @@ async function pushIntelUpdate(){
   }
   S('intelCache',intelCache);updateIBStatus();
   st.textContent='✓ '+entries.length+' panel'+(entries.length>1?'s':'')+' updated';st.className='ib-modal-status ok';
-  setTimeout(closeIBModal,1800);if(syncEnabled)setTimeout(pushToCloud,1000);
+  setTimeout(closeIBModal,1800);if(syncEnabled){setTimeout(pushToCloud,800);showToast('Intel updated — syncing to all devices...');}
 }
 function renderLiveIntel(panelId,data){
   var el=document.getElementById('cp-intel-'+panelId);if(!el)return;
@@ -1321,6 +1321,27 @@ function tryParseChatJson(val){
     setTimeout(function(){if(statusEl)statusEl.textContent='';},4000);
   }catch(e){if(statusEl){statusEl.textContent="Could not parse — paste DONALD's full response.";statusEl.style.color='var(--red)';}}
 }
+
+// AUTO-POLL: pull latest intel from cloud every 5 minutes
+setInterval(function(){
+  if(!syncEnabled)return;
+  var binId=G('jbBinId','');var apiKey=G('jbKey','');if(!binId||!apiKey)return;
+  fetch('https://api.jsonbin.io/v3/b/'+binId+'/latest',{headers:{'X-Master-Key':apiKey,'X-Bin-Meta':'false'}})
+    .then(function(r){return r.json();})
+    .then(function(data){
+      if(data&&data.record&&data.record.intelCache){
+        var remote=data.record.intelCache;var changed=false;
+        Object.keys(remote).forEach(function(key){
+          var rUp=remote[key]&&remote[key].updated?new Date(remote[key].updated):null;
+          var lUp=intelCache[key]&&intelCache[key].updated?new Date(intelCache[key].updated):null;
+          if(rUp&&(!lUp||rUp>lUp)){intelCache[key]=remote[key];changed=true;
+            var pid=Object.keys(PANEL_INTEL_KEY).find(function(k){return PANEL_INTEL_KEY[k]===key;});
+            if(pid)renderLiveIntel(pid,intelCache[key]);}
+        });
+        if(changed){S('intelCache',intelCache);updateIBStatus();showToast('\u2746 Intel synced from another device');}
+      }
+    }).catch(function(){});
+},5*60*1000);
 
 applyTheme();applyPanel();setDate();
 renderDashTasks();renderChats();renderCC();
