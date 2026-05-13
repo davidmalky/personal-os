@@ -91,7 +91,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .cp-label{font-size:11px;font-weight:600;color:var(--text);flex:1;letter-spacing:.01em}
 .cp-meta{display:flex;align-items:center;gap:5px}
 .cp-badge{min-width:18px;height:18px;padding:0 5px;background:var(--hibg);color:var(--hi);border-radius:9px;font-size:9px;font-weight:700;display:inline-flex;align-items:center;justify-content:center}
-.cp-badge.amber{background:var(--abg);color:var(--amber)}.cp-badge.green{background:var(--gbg);color:var(--green)}.cp-badge.gray{background:var(--surf3);color:var(--text2)}.cp-badge.red{background:var(--rbg);color:var(--red)}
+.cp-badge.amber{background:var(--abg);color:var(--amber)}.cp-badge.green{background:var(--gbg);color:var(--green)}.cp-badge.gray{background:var(--surf3);color:var(--text2)}.cp-badge.red{background:var(--rbg);color:var(--red)}.cp-badge.blue{background:rgba(74,158,255,.12);color:#4a9eff}.cp-badge.gray{background:var(--surf3);color:var(--text3)}
 .cp-compact-btn{margin-left:auto;padding:3px 7px;font-size:13px;background:var(--surf2);border:1px solid var(--border);border-radius:var(--rsm);color:var(--text3);cursor:pointer;transition:all .12s;flex-shrink:0;font-family:inherit;line-height:1}.cp-compact-btn:hover{background:var(--hi);color:#fff;border-color:var(--hi)}
 .cp-body{display:block;padding:0 10px 10px;overflow-y:auto;flex:1}.cp-body::-webkit-scrollbar{width:3px}.cp-body::-webkit-scrollbar-thumb{background:var(--surf4)}
 .cp-footer{display:flex;align-items:center;justify-content:space-between;padding:5px 11px 7px;flex-shrink:0;border-top:1px solid var(--border);background:var(--surf)}
@@ -201,6 +201,14 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
   .cc-grid{grid-template-columns:1fr}.g2{grid-template-columns:1fr}.g3{grid-template-columns:1fr 1fr}
   .mobile-donna-fab{display:flex!important}
   .panel-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:199}.panel-overlay.show{display:block}
+  .cc-grid{display:flex!important;flex-direction:column;gap:5px}
+  .cp{overflow:hidden}
+  .cp-body{display:none}
+  .cp.mob-open .cp-body{display:block}
+  .cp-head{padding:12px 14px!important}
+  .cp-meta{gap:4px!important}
+  .cp-badge{font-size:9px!important;min-width:20px!important;height:20px!important;padding:0 6px!important}
+  .cp-compact-btn{display:none!important}
 }
 @media(min-width:769px){.mobile-donna-fab{display:none!important}.panel-overlay{display:none!important}}
 .mobile-donna-fab{display:none;position:fixed;bottom:20px;right:16px;width:52px;height:52px;border-radius:50%;background:var(--hi);border:none;color:#fff;font-size:20px;cursor:pointer;z-index:198;box-shadow:0 4px 20px rgba(30,126,200,.4);align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;transition:transform .15s}.mobile-donna-fab:active{transform:scale(.94)}
@@ -829,7 +837,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
       </div>
       <button class="addb" onclick="toggleTheme()" style="width:100%;margin-bottom:6px">Toggle dark / light mode</button>
       <button class="addb" onclick="if(confirm('Clear all data?'))clearAll()" style="width:100%;color:var(--red)">Clear all saved data</button>
-      <div style="font-size:9px;color:var(--text3);line-height:1.8;margin-top:14px;padding-top:12px;border-top:1px solid var(--border)">Personal OS v2.0<br>personal-os.vercel.app<br>David Genuth — COO Prime Source</div>
+      <div style="font-size:9px;color:var(--text3);line-height:1.8;margin-top:14px;padding-top:12px;border-top:1px solid var(--border)">Personal OS v2.3<br>personal-os.vercel.app<br>David Genuth — COO Prime Source</div>
     </div>
   </div>
 </div>
@@ -1050,7 +1058,9 @@ function addChat(){var u=document.getElementById('scUrl').value.trim();if(!u)ret
 function delChat(i){chats.splice(i,1);S('chats',chats);renderChats();}
 
 var _dockedCards=G('dockedCards',[]);
-function ccBadgeHtml(panel){var ov=null;var auto=panel.badgeFn?panel.badgeFn():null;var count=ov!=null?ov:(auto?auto.count:null);var cls=auto?auto.cls:'gray';if(count==null||count===0)return '';return '<span class="cp-badge '+(cls||'')+'">'+count+'</span>';}
+function ccBadgeHtml(panel){var key=PANEL_INTEL_KEY[panel.id];var liveData=key?intelCache[key]:null;if(liveData&&liveData.items&&liveData.items.length){var r=0,a=0,g=0,b=0;liveData.items.forEach(function(item){if(item.type==='red')r++;else if(item.type==='amber')a++;else if(item.type==='green')g++;else if(item.type==='blue')b++;});var out='';if(r>0)out+='<span class="cp-badge red">'+r+'</span>';if(a>0)out+='<span class="cp-badge amber">'+a+'</span>';if(g>0)out+='<span class="cp-badge green">'+g+'</span>';if(b>0)out+='<span class="cp-badge blue">'+b+'</span>';return out;}var auto=panel.badgeFn?panel.badgeFn():null;if(!auto||!auto.count)return '';return '<span class="cp-badge '+(auto.cls||'gray')+'">'+auto.count+'</span>';}
+
+function toggleMobileCard(pid){if(window.innerWidth>768)return;var el=document.getElementById('cp-'+pid);if(!el)return;var isOpen=el.classList.contains('mob-open');document.querySelectorAll('.cp.mob-open').forEach(function(c){c.classList.remove('mob-open');});if(!isOpen)el.classList.add('mob-open');}
 
 function renderCC(){
   var grid=document.getElementById('ccGrid');if(!grid)return;
@@ -1060,7 +1070,7 @@ function renderCC(){
     var tsStr='No live intel yet';if(liveData&&liveData.updated){var d=new Date(liveData.updated);var ageMin=Math.round((new Date()-d)/60000);tsStr=ageMin<60?'Updated '+ageMin+'m ago':'Updated '+Math.round(ageMin/60)+'h ago';}
     var pid=panel.id;
     html+='<div class="cp pri-'+panel.pri+'" id="cp-'+pid+'">';
-    html+='<div class="cp-head" onclick="openCCDrawer(\''+pid+'\')">';
+    html+='<div class="cp-head" onclick="window.innerWidth<=768?toggleMobileCard(\''+pid+'\'):openCCDrawer(\''+pid+'\')">' ;
     html+='<div class="cp-icon">'+panel.icon+'</div><div class="cp-label">'+panel.label+'</div>';
     html+='<div class="cp-meta">'+badge+'</div>';
     html+='<button class="cp-compact-btn" onclick="event.stopPropagation();dockCard(\''+pid+'\')" title="Collapse">↑</button>';
@@ -1148,7 +1158,7 @@ async function pushIntelUpdate(){
   }
   S('intelCache',intelCache);updateIBStatus();
   st.textContent='✓ '+entries.length+' panel'+(entries.length>1?'s':'')+' updated';st.className='ib-modal-status ok';
-  setTimeout(closeIBModal,1800);if(syncEnabled){setTimeout(pushToCloud,800);showToast('Intel updated — syncing to all devices...');}
+  setTimeout(closeIBModal,1800);if(syncEnabled){setTimeout(pushToCloud,800);showToast('Intel updated — syncing to all devices...');}setTimeout(renderCC,100);
 }
 function renderLiveIntel(panelId,data){
   var el=document.getElementById('cp-intel-'+panelId);if(!el)return;
