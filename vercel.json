@@ -1,0 +1,13 @@
+{
+  "functions": {
+    "api/claude.js": {
+      "runtime": "edge"
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/api/claude",
+      "destination": "/api/claude.js"
+    }
+  ]
+}
