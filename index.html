@@ -454,8 +454,6 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
   </div>
 </div>
 
-
-  <div id="world-intel-finance" style="padding:0 0 4px"></div>
 <!-- HEALTH -->
 <div class="view" id="view-health">
   <div class="world-header">
@@ -504,8 +502,6 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
   </div>
 </div>
 
-
-  <div id="world-intel-health" style="padding:0 0 4px"></div>
 <!-- FAMILY -->
 <div class="view" id="view-family">
   <div class="world-header">
@@ -551,8 +547,6 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
   </div>
 </div>
 
-
-  <div id="world-intel-family" style="padding:0 0 4px"></div>
 <!-- PROJECTS -->
 <div class="view" id="view-projects">
   <div class="world-header">
@@ -583,8 +577,6 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
   </div>
 </div>
 
-
-  <div id="world-intel-projects" style="padding:0 0 4px"></div>
 <!-- GROWTH -->
 <div class="view" id="view-growth">
   <div class="world-header">
@@ -618,8 +610,6 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
   </div>
 </div>
 
-
-  <div id="world-intel-growth" style="padding:0 0 4px"></div>
 <!-- EMAIL -->
 <div class="view" id="view-email">
   <div class="world-header">
@@ -658,8 +648,6 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
   </div>
 </div>
 
-
-  <div id="world-intel-email" style="padding:0 0 4px"></div>
 <!-- WORK -->
 <div class="view" id="view-work">
   <div class="world-header">
@@ -694,8 +682,6 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
     <a href="https://primesource-os.vercel.app" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:9px;background:var(--hi);color:#fff;border:none;border-radius:var(--rs);font-size:11px;font-weight:700;cursor:pointer;text-decoration:none;transition:opacity .12s;letter-spacing:.04em;text-transform:uppercase">Open Prime Source OS — Full Work Dashboard ↗</a>
   </div>
 </div>
-
-  <div id="world-intel-work" style="padding:0 0 4px"></div>
 
 
 <!-- FOCUS & TIME -->
@@ -757,8 +743,6 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
   </div>
 </div>
 
-
-  <div id="world-intel-focus" style="padding:0 0 4px"></div>
 </div><!-- /main -->
 
 <div class="drag-div" id="dragDiv" onmousedown="startDrag(event)"><div class="drag-inner"></div></div>
@@ -1496,25 +1480,7 @@ setInterval(function(){
 
 applyTheme();applyPanel();setDate();
 
-// ── INIT WORLD INTEL BLOCKS ──────────────────────────────────
-(function(){
-  var worlds=[
-    {id:'finance',label:'Finance'},
-    {id:'health',label:'Health'},
-    {id:'family',label:'Family & Home'},
-    {id:'projects',label:'Personal Projects'},
-    {id:'growth',label:'Growth'},
-    {id:'email',label:'Email'},
-    {id:'work',label:'Work'},
-    {id:'focus',label:'Focus & Time'},
-  ];
-  worlds.forEach(function(w){
-    var slot=document.getElementById('world-intel-'+w.id);
-    if(!slot)return;
-    slot.innerHTML=buildWorldIntelBlock(w.id,w.label);
-    renderWorldIntel(w.id);
-  });
-})();
+
 renderDashTasks();renderChats();renderCC();
 setTimeout(injectAllIntel,100);
 setTimeout(updateIBStatus,200);
