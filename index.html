@@ -180,6 +180,26 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .dash-col{display:flex;flex-direction:column;gap:8px;height:100%;overflow-y:auto;padding-bottom:8px}.dash-col::-webkit-scrollbar{width:2px}.dash-col::-webkit-scrollbar-thumb{background:var(--surf4)}
 .dash-metrics{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;margin-bottom:0}
 .world-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px}
+.world-intel{background:var(--surf);border:1px solid var(--border);border-radius:var(--r);margin-top:10px;overflow:hidden}
+.world-intel-header{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;cursor:pointer;user-select:none;border-bottom:1px solid var(--border)}
+.world-intel-header:hover{background:var(--surf2)}
+.world-intel-title{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;display:flex;align-items:center;gap:8px}
+.world-intel-toggle{font-size:11px;color:var(--text3);transition:transform .2s}
+.world-intel-body{display:none;padding:12px 14px}
+.world-intel-body.open{display:block}
+.intel-section{margin-bottom:12px}
+.intel-section-label{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--text3);margin-bottom:6px;padding-bottom:4px;border-bottom:1px solid var(--border)}
+.intel-item{display:flex;align-items:flex-start;gap:8px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.03)}
+.intel-item:last-child{border-bottom:none}
+.intel-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:5px}
+.intel-dot.red{background:var(--red)}.intel-dot.amber{background:var(--amber)}.intel-dot.green{background:var(--green)}.intel-dot.blue{background:#4a9eff}.intel-dot.gray{background:var(--surf4)}
+.intel-content{flex:1;min-width:0}
+.intel-title{font-size:11px;font-weight:600;color:var(--text);line-height:1.35}
+.intel-detail{font-size:10px;color:var(--text3);margin-top:2px;line-height:1.4}
+.intel-chat-link{display:inline-flex;align-items:center;gap:3px;margin-top:4px;font-size:9px;color:var(--hi);text-decoration:none;background:rgba(30,126,200,.08);border:1px solid rgba(30,126,200,.2);border-radius:3px;padding:1px 6px}
+.intel-chat-link:hover{background:rgba(30,126,200,.15)}
+.intel-empty{font-size:10px;color:var(--text3);font-style:italic;padding:6px 0}
+.world-intel-badge{display:inline-flex;align-items:center;gap:4px}
 .world-title{font-family:'Inter',sans-serif;font-size:18px;font-weight:700;color:var(--text);letter-spacing:-.02em}.world-title em{color:var(--hi);font-style:normal}
 .world-subtitle{font-size:10px;color:var(--text3);margin-top:2px}
 .world-actions{display:flex;gap:6px;align-items:center}
@@ -434,6 +454,8 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
   </div>
 </div>
 
+
+  <div id="world-intel-finance" style="padding:0 0 4px"></div>
 <!-- HEALTH -->
 <div class="view" id="view-health">
   <div class="world-header">
@@ -482,6 +504,8 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
   </div>
 </div>
 
+
+  <div id="world-intel-health" style="padding:0 0 4px"></div>
 <!-- FAMILY -->
 <div class="view" id="view-family">
   <div class="world-header">
@@ -527,6 +551,8 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
   </div>
 </div>
 
+
+  <div id="world-intel-family" style="padding:0 0 4px"></div>
 <!-- PROJECTS -->
 <div class="view" id="view-projects">
   <div class="world-header">
@@ -557,6 +583,8 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
   </div>
 </div>
 
+
+  <div id="world-intel-projects" style="padding:0 0 4px"></div>
 <!-- GROWTH -->
 <div class="view" id="view-growth">
   <div class="world-header">
@@ -590,6 +618,8 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
   </div>
 </div>
 
+
+  <div id="world-intel-growth" style="padding:0 0 4px"></div>
 <!-- EMAIL -->
 <div class="view" id="view-email">
   <div class="world-header">
@@ -628,6 +658,8 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
   </div>
 </div>
 
+
+  <div id="world-intel-email" style="padding:0 0 4px"></div>
 <!-- WORK -->
 <div class="view" id="view-work">
   <div class="world-header">
@@ -662,6 +694,8 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
     <a href="https://primesource-os.vercel.app" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:9px;background:var(--hi);color:#fff;border:none;border-radius:var(--rs);font-size:11px;font-weight:700;cursor:pointer;text-decoration:none;transition:opacity .12s;letter-spacing:.04em;text-transform:uppercase">Open Prime Source OS — Full Work Dashboard ↗</a>
   </div>
 </div>
+
+  <div id="world-intel-work" style="padding:0 0 4px"></div>
 
 
 <!-- FOCUS & TIME -->
@@ -723,6 +757,8 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
   </div>
 </div>
 
+
+  <div id="world-intel-focus" style="padding:0 0 4px"></div>
 </div><!-- /main -->
 
 <div class="drag-div" id="dragDiv" onmousedown="startDrag(event)"><div class="drag-inner"></div></div>
@@ -837,7 +873,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
       </div>
       <button class="addb" onclick="toggleTheme()" style="width:100%;margin-bottom:6px">Toggle dark / light mode</button>
       <button class="addb" onclick="if(confirm('Clear all data?'))clearAll()" style="width:100%;color:var(--red)">Clear all saved data</button>
-      <div style="font-size:9px;color:var(--text3);line-height:1.8;margin-top:14px;padding-top:12px;border-top:1px solid var(--border)">Personal OS v2.4<br>personal-os.vercel.app<br>David Genuth — COO Prime Source</div>
+      <div style="font-size:9px;color:var(--text3);line-height:1.8;margin-top:14px;padding-top:12px;border-top:1px solid var(--border)">Personal OS v2.5<br>personal-os.vercel.app<br>David Genuth — COO Prime Source</div>
     </div>
   </div>
 </div>
@@ -1158,8 +1194,113 @@ async function pushIntelUpdate(){
   }
   S('intelCache',intelCache);updateIBStatus();
   st.textContent='✓ '+entries.length+' panel'+(entries.length>1?'s':'')+' updated';st.className='ib-modal-status ok';
-  setTimeout(closeIBModal,1800);if(syncEnabled){setTimeout(pushToCloud,800);showToast('Intel updated — syncing to all devices...');}setTimeout(renderCC,100);
+  setTimeout(closeIBModal,1800);if(syncEnabled){setTimeout(pushToCloud,800);showToast('Intel updated — syncing to all devices...');}setTimeout(renderCC,100);setTimeout(renderAllWorldIntel,150);
 }
+// ── WORLD DEEP DIVE INTEL ────────────────────────────────────
+function toggleWorldIntel(worldId){
+  var body=document.getElementById('wi-body-'+worldId);
+  var arrow=document.getElementById('wi-arrow-'+worldId);
+  if(!body)return;
+  var isOpen=body.classList.contains('open');
+  body.classList.toggle('open',!isOpen);
+  if(arrow)arrow.style.transform=isOpen?'':'rotate(180deg)';
+}
+
+function renderWorldIntel(worldId){
+  var container=document.getElementById('wi-body-'+worldId);
+  if(!container)return;
+  var key=PANEL_INTEL_KEY[worldId];
+  var data=key?intelCache[key]:null;
+
+  if(!data||!data.items||!data.items.length){
+    container.innerHTML='<div class="intel-empty">No live intel yet — run a refresh from the Command Center.</div>';
+    return;
+  }
+
+  // Categorize items
+  var actionNow=data.items.filter(function(i){return i.type==='red'||i.type==='amber';});
+  var infoItems=data.items.filter(function(i){return i.type==='blue'||i.type==='green';});
+  var passiveItems=data.items.filter(function(i){return i.type==='gray';});
+
+  function renderItem(item){
+    var chatBtn='';
+    if(item.chatLink){
+      chatBtn='<a href="'+item.chatLink+'" target="_blank" class="intel-chat-link">Continue in chat ↗</a>';
+    }
+    return '<div class="intel-item">'
+      +'<div class="intel-dot '+item.type+'"></div>'
+      +'<div class="intel-content">'
+      +'<div class="intel-title">'+item.title+'</div>'
+      +(item.detail?'<div class="intel-detail">'+item.detail+'</div>':'')
+      +chatBtn
+      +'</div></div>';
+  }
+
+  var html='';
+
+  if(actionNow.length){
+    html+='<div class="intel-section"><div class="intel-section-label">⚡ Action needed</div>';
+    html+=actionNow.map(renderItem).join('');
+    html+='</div>';
+  }
+  if(infoItems.length){
+    html+='<div class="intel-section"><div class="intel-section-label">ℹ On your radar</div>';
+    html+=infoItems.map(renderItem).join('');
+    html+='</div>';
+  }
+  if(passiveItems.length){
+    html+='<div class="intel-section"><div class="intel-section-label">✓ Background</div>';
+    html+=passiveItems.map(renderItem).join('');
+    html+='</div>';
+  }
+
+  // Updated time
+  if(data.updated){
+    var d=new Date(data.updated);
+    var age=Math.round((new Date()-d)/60000);
+    var ageStr=age<60?age+'m ago':Math.round(age/60)+'h ago';
+    html+='<div style="font-size:8px;color:var(--text3);margin-top:8px;padding-top:8px;border-top:1px solid var(--border)">Updated '+ageStr+' · '+data.items.length+' items</div>';
+  }
+
+  container.innerHTML=html;
+}
+
+function buildWorldIntelBlock(worldId,label){
+  var key=PANEL_INTEL_KEY[worldId];
+  var data=key?intelCache[key]:null;
+  var count=data&&data.items?data.items.length:0;
+  var redCount=data&&data.items?data.items.filter(function(i){return i.type==='red';}).length:0;
+  var amberCount=data&&data.items?data.items.filter(function(i){return i.type==='amber';}).length:0;
+
+  var badges='';
+  if(redCount>0)badges+='<span class="cp-badge red" style="font-size:8px;padding:0 4px;height:14px">'+redCount+'</span>';
+  if(amberCount>0)badges+='<span class="cp-badge amber" style="font-size:8px;padding:0 4px;height:14px">'+amberCount+'</span>';
+  if(!redCount&&!amberCount&&count>0)badges+='<span class="cp-badge" style="font-size:8px;padding:0 4px;height:14px;background:var(--surf3);color:var(--text3)">'+count+'</span>';
+
+  return '<div class="world-intel">'
+    +'<div class="world-intel-header" onclick="toggleWorldIntel(\''+worldId+'\')">'
+    +'<div class="world-intel-title">📋 Live intel — '+label+' <div class="world-intel-badge">'+badges+'</div></div>'
+    +'<span id="wi-arrow-'+worldId+'" class="world-intel-toggle">▾</span>'
+    +'</div>'
+    +'<div class="world-intel-body" id="wi-body-'+worldId+'"></div>'
+    +'</div>';
+}
+
+function renderAllWorldIntel(){
+  var worlds=[
+    {id:'finance',label:'Finance'},
+    {id:'health',label:'Health'},
+    {id:'family',label:'Family'},
+    {id:'projects',label:'Projects'},
+    {id:'growth',label:'Growth'},
+    {id:'email',label:'Email'},
+    {id:'work',label:'Work'},
+    {id:'focus',label:'Focus'},
+    {id:'daily',label:'Daily'},
+  ];
+  worlds.forEach(function(w){renderWorldIntel(w.id);});
+}
+
 function renderLiveIntel(panelId,data){
   var el=document.getElementById('cp-intel-'+panelId);if(!el)return;
   if(!data||!data.items||!data.items.length){el.innerHTML='';return;}
@@ -1348,12 +1489,32 @@ setInterval(function(){
             var pid=Object.keys(PANEL_INTEL_KEY).find(function(k){return PANEL_INTEL_KEY[k]===key;});
             if(pid)renderLiveIntel(pid,intelCache[key]);}
         });
-        if(changed){S('intelCache',intelCache);updateIBStatus();showToast('\u2746 Intel synced from another device');}
+        if(changed){S('intelCache',intelCache);updateIBStatus();renderAllWorldIntel();showToast('\u2746 Intel synced from another device');}
       }
     }).catch(function(){});
 },5*60*1000);
 
 applyTheme();applyPanel();setDate();
+
+// ── INIT WORLD INTEL BLOCKS ──────────────────────────────────
+(function(){
+  var worlds=[
+    {id:'finance',label:'Finance'},
+    {id:'health',label:'Health'},
+    {id:'family',label:'Family & Home'},
+    {id:'projects',label:'Personal Projects'},
+    {id:'growth',label:'Growth'},
+    {id:'email',label:'Email'},
+    {id:'work',label:'Work'},
+    {id:'focus',label:'Focus & Time'},
+  ];
+  worlds.forEach(function(w){
+    var slot=document.getElementById('world-intel-'+w.id);
+    if(!slot)return;
+    slot.innerHTML=buildWorldIntelBlock(w.id,w.label);
+    renderWorldIntel(w.id);
+  });
+})();
 renderDashTasks();renderChats();renderCC();
 setTimeout(injectAllIntel,100);
 setTimeout(updateIBStatus,200);
