@@ -300,6 +300,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
     </div>
     <div class="cc-controls">
       <button class="ib-btn" onclick="sendRefreshPrompt()">↻ Refresh Intel</button>
+      <button class="ib-btn" onclick="oneClickRefresh()" id="oneClickBtn" style="background:rgba(30,126,200,.12);border-color:rgba(30,126,200,.3);color:var(--hi)" title="Calls Claude API directly — no copy/paste needed">⚡ One-Click Refresh <span style="font-size:8px;opacity:.7">(~10¢)</span></button>
       <button class="ib-btn primary" onclick="openIBModal()">⇡ Push Intel Update</button>
     </div>
   </div>
@@ -1305,6 +1306,117 @@ function sendRefreshPrompt(){
   if(navigator.clipboard){navigator.clipboard.writeText(msg).then(copy).catch(function(){var ta=document.createElement('textarea');ta.value=msg;ta.style.cssText='position:fixed;opacity:0';document.body.appendChild(ta);ta.focus();ta.select();try{document.execCommand('copy');}catch(e){}document.body.removeChild(ta);copy();});}
   else{var ta=document.createElement('textarea');ta.value=msg;ta.style.cssText='position:fixed;opacity:0';document.body.appendChild(ta);ta.focus();ta.select();try{document.execCommand('copy');}catch(e){}document.body.removeChild(ta);copy();}
 }
+
+// ── ONE-CLICK REFRESH (Claude API direct) ────────────────────
+function oneClickRefresh(){
+  var btn=document.getElementById('oneClickBtn');
+  var apiKey=G('claudeApiKey','');
+
+  if(!apiKey){
+    // First time — ask for API key
+    var key=prompt('Enter your Claude API key (from console.anthropic.com):\n\nThis is stored locally on your device only.');
+    if(!key||!key.trim())return;
+    S('claudeApiKey',key.trim());
+    apiKey=key.trim();
+  }
+
+  if(btn){btn.textContent='⚡ Refreshing...';btn.disabled=true;}
+  showToast('One-Click Refresh started — ~30 seconds...');
+
+  var today=new Date();
+  var days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  var months=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  var dateStr=days[today.getDay()]+', '+months[today.getMonth()]+' '+today.getDate()+', '+today.getFullYear();
+  var timeStr=today.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',hour12:true});
+
+  var prompt='You are DONALD, David Genuth's personal AI Chief of Staff. Today is '+dateStr+' at '+timeStr+' Eastern.\n\n'+
+    'Generate updated intel for all 10 Personal Command Center panels.\n'+
+    'Check: Gmail (davidlgenuth@gmail.com), family inbox (davidmalky@gmail.com), work Outlook (DGenuth@PrimeSourceX.com), Google Calendar.\n'+
+    'Search past conversations for: Prime Procurement, LLC, Milestone Metrics, Vanguard, DAF, tuition, insurance, CPAP, SightMD, family members, agents, Personal OS, Salesforce.\n'+
+    'For items with active conversations include chatLink with the conversation URL.\n\n'+
+    'Return ONLY valid JSON, no explanation, no markdown:\n'+
+    '{"panels":['+
+    '{"key":"donald_personal_intel_daily","value":{"updated":"'+today.toISOString()+'","items":[{"type":"red|amber|green|blue|gray","title":"Title","detail":"Detail"}]}},'+
+    '{"key":"donald_personal_intel_finance","value":{"updated":"'+today.toISOString()+'","items":[]}},'+
+    '{"key":"donald_personal_intel_health","value":{"updated":"'+today.toISOString()+'","items":[]}},'+
+    '{"key":"donald_personal_intel_family","value":{"updated":"'+today.toISOString()+'","items":[]}},'+
+    '{"key":"donald_personal_intel_projects","value":{"updated":"'+today.toISOString()+'","items":[]}},'+
+    '{"key":"donald_personal_intel_growth","value":{"updated":"'+today.toISOString()+'","items":[]}},'+
+    '{"key":"donald_personal_intel_email","value":{"updated":"'+today.toISOString()+'","items":[]}},'+
+    '{"key":"donald_personal_intel_work","value":{"updated":"'+today.toISOString()+'","items":[]}},'+
+    '{"key":"donald_personal_intel_notes","value":{"updated":"'+today.toISOString()+'","items":[]}},'+
+    '{"key":"donald_personal_intel_focus","value":{"updated":"'+today.toISOString()+'","items":[]}}'+
+    ']}\n\nRules: minimum 3 items per panel, maximum 8, prioritize urgency, be specific with names/amounts/dates.';
+
+  fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',
+    headers:{
+      'Content-Type':'application/json',
+      'x-api-key':apiKey,
+      'anthropic-version':'2023-06-01'
+    },
+    body:JSON.stringify({
+      model:'claude-sonnet-4-20250514',
+      max_tokens:8000,
+      messages:[{role:'user',content:prompt}]
+    })
+  })
+  .then(function(r){return r.json();})
+  .then(function(data){
+    if(data.error){
+      if(data.error.type==='authentication_error'){
+        // Bad API key — clear it so they can re-enter
+        localStorage.removeItem('po2_claudeApiKey');
+        showToast('Invalid API key — cleared. Try again.');
+      } else {
+        showToast('API error: '+data.error.message);
+      }
+      if(btn){btn.textContent='⚡ One-Click Refresh (~10¢)';btn.disabled=false;}
+      return;
+    }
+
+    var text='';
+    if(data.content&&data.content[0]&&data.content[0].text){
+      text=data.content[0].text;
+    }
+
+    // Parse JSON from response
+    try{
+      var clean=text.replace(/```json\n?/gi,'').replace(/```/g,'').trim();
+      var parsed=JSON.parse(clean);
+
+      if(parsed.panels){
+        // Apply intel to all panels
+        parsed.panels.forEach(function(panel){
+          if(panel.key&&panel.value){
+            intelCache[panel.key]=panel.value;
+            var pid=Object.keys(PANEL_INTEL_KEY).find(function(k){return PANEL_INTEL_KEY[k]===panel.key;});
+            if(pid)renderLiveIntel(pid,panel.value);
+          }
+        });
+        S('intelCache',intelCache);
+        updateIBStatus();
+        renderCC();
+
+        // Push to cloud so all devices update
+        if(syncEnabled)setTimeout(pushToCloud,500);
+
+        showToast('✦ One-Click Refresh complete — all panels updated');
+        if(btn){btn.textContent='⚡ One-Click Refresh (~10¢)';btn.disabled=false;}
+      }
+    }catch(e){
+      showToast('Could not parse response — try manual refresh');
+      console.error('Parse error:',e,text);
+      if(btn){btn.textContent='⚡ One-Click Refresh (~10¢)';btn.disabled=false;}
+    }
+  })
+  .catch(function(err){
+    showToast('Network error — check connection');
+    console.error('Fetch error:',err);
+    if(btn){btn.textContent='⚡ One-Click Refresh (~10¢)';btn.disabled=false;}
+  });
+}
+
 
 function dockCard(pid){if(_dockedCards.indexOf(pid)<0)_dockedCards.push(pid);S('dockedCards',_dockedCards);var card=document.getElementById('cp-'+pid);if(card)card.classList.add('docked');renderDock();}
 function undockCard(pid){_dockedCards=_dockedCards.filter(function(id){return id!==pid;});S('dockedCards',_dockedCards);var card=document.getElementById('cp-'+pid);if(card)card.classList.remove('docked');renderDock();}
