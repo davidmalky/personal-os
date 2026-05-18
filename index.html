@@ -14,7 +14,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .app{display:flex;flex-direction:column;height:100vh}
 .topbar{display:flex;align-items:center;padding:0 16px;height:44px;border-bottom:1px solid var(--border);background:var(--bg2);flex-shrink:0;gap:10px}
 .topbar-nav{background:var(--bg2);border-bottom:1px solid var(--border);flex-shrink:0;display:none}
-.logo{font-family:'Inter',sans-serif;font-size:14px;font-weight:700;letter-spacing:-.02em;white-space:nowrap;color:var(--text)}
+.logo{font-family:'Syne',sans-serif;font-size:14px;font-weight:800;letter-spacing:-.01em;white-space:nowrap;color:var(--text)}
 .logo em{color:var(--hi);font-style:normal}
 .nav{display:flex;gap:1px;flex:1;justify-content:center}
 .ntab{padding:5px 11px;border-radius:var(--rsm);font-size:11px;font-weight:500;color:var(--text3);cursor:pointer;border:none;background:none;font-family:inherit;transition:all .12s;white-space:nowrap;letter-spacing:.02em}
@@ -77,7 +77,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .adb-icon{font-size:12px;flex-shrink:0;color:var(--text3)}
 /* COMMAND CENTER */
 .cc-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-shrink:0}
-.cc-title{font-family:'Inter',sans-serif;font-size:15px;font-weight:700;color:var(--text);letter-spacing:-.02em}.cc-title em{color:var(--hi);font-style:normal}
+.cc-title{font-family:'Syne',sans-serif;font-size:15px;font-weight:800;color:var(--text);letter-spacing:-.01em}.cc-title em{color:var(--hi);font-style:normal}
 .cc-legend{display:flex;gap:10px;margin-top:4px;flex-wrap:wrap}.cc-leg-item{font-size:9px;color:var(--text3);display:flex;align-items:center;gap:4px}
 .cc-controls{display:flex;gap:6px;align-items:center}
 .cc-btn{padding:4px 10px;background:var(--surf2);border:1px solid var(--border);border-radius:var(--rsm);color:var(--text2);font-size:9px;font-weight:600;cursor:pointer;font-family:inherit;letter-spacing:.05em;text-transform:uppercase;transition:all .12s}.cc-btn:hover{border-color:var(--border2);color:var(--text)}
@@ -91,7 +91,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .cp-label{font-size:11px;font-weight:600;color:var(--text);flex:1;letter-spacing:.01em}
 .cp-meta{display:flex;align-items:center;gap:5px}
 .cp-badge{min-width:18px;height:18px;padding:0 5px;background:var(--hibg);color:var(--hi);border-radius:9px;font-size:9px;font-weight:700;display:inline-flex;align-items:center;justify-content:center}
-.cp-badge.amber{background:var(--abg);color:var(--amber)}.cp-badge.green{background:var(--gbg);color:var(--green)}.cp-badge.gray{background:var(--surf3);color:var(--text2)}.cp-badge.red{background:var(--rbg);color:var(--red)}.cp-badge.blue{background:rgba(74,158,255,.12);color:#4a9eff}.cp-badge.gray{background:var(--surf3);color:var(--text3)}
+.cp-badge.amber{background:var(--abg);color:var(--amber)}.cp-badge.green{background:var(--gbg);color:var(--green)}.cp-badge.gray{background:var(--surf3);color:var(--text2)}.cp-badge.red{background:var(--rbg);color:var(--red)}
 .cp-compact-btn{margin-left:auto;padding:3px 7px;font-size:13px;background:var(--surf2);border:1px solid var(--border);border-radius:var(--rsm);color:var(--text3);cursor:pointer;transition:all .12s;flex-shrink:0;font-family:inherit;line-height:1}.cp-compact-btn:hover{background:var(--hi);color:#fff;border-color:var(--hi)}
 .cp-body{display:block;padding:0 10px 10px;overflow-y:auto;flex:1}.cp-body::-webkit-scrollbar{width:3px}.cp-body::-webkit-scrollbar-thumb{background:var(--surf4)}
 .cp-footer{display:flex;align-items:center;justify-content:space-between;padding:5px 11px 7px;flex-shrink:0;border-top:1px solid var(--border);background:var(--surf)}
@@ -123,7 +123,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .cc-drawer-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9400;backdrop-filter:blur(2px)}.cc-drawer-overlay.show{display:block}
 .cc-drawer{display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:min(860px,94vw);max-height:88vh;min-height:520px;background:var(--surf);border:1px solid var(--border2);border-radius:var(--r);z-index:9500;flex-direction:column;box-shadow:0 24px 80px rgba(0,0,0,.75)}.cc-drawer.show{display:flex}
 .cc-drawer-header{display:flex;align-items:center;justify-content:space-between;padding:14px 16px 12px;border-bottom:1px solid var(--border);flex-shrink:0}
-.cc-drawer-title{font-family:'Inter',sans-serif;font-size:17px;font-weight:700;color:var(--text);letter-spacing:-.02em}
+.cc-drawer-title{font-family:'Syne',sans-serif;font-size:17px;font-weight:800;color:var(--text);letter-spacing:-.01em}
 .cc-drawer-close{width:24px;height:24px;background:var(--surf2);border:1px solid var(--border);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px;color:var(--text2);flex-shrink:0;transition:all .12s}.cc-drawer-close:hover{background:var(--red);color:#fff;border-color:var(--red)}
 .cc-drawer-body{overflow-y:auto;padding:16px 20px;flex:1}.cc-drawer-body::-webkit-scrollbar{width:3px}.cc-drawer-body::-webkit-scrollbar-thumb{background:var(--surf4)}
 .cc-drawer-body .ii-wrap{padding:8px 14px;font-size:11px;line-height:1.55}
@@ -180,27 +180,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .dash-col{display:flex;flex-direction:column;gap:8px;height:100%;overflow-y:auto;padding-bottom:8px}.dash-col::-webkit-scrollbar{width:2px}.dash-col::-webkit-scrollbar-thumb{background:var(--surf4)}
 .dash-metrics{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;margin-bottom:0}
 .world-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px}
-.world-intel{background:var(--surf);border:1px solid var(--border);border-radius:var(--r);margin-top:10px;overflow:hidden}
-.world-intel-header{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;cursor:pointer;user-select:none;border-bottom:1px solid var(--border)}
-.world-intel-header:hover{background:var(--surf2)}
-.world-intel-title{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;display:flex;align-items:center;gap:8px}
-.world-intel-toggle{font-size:11px;color:var(--text3);transition:transform .2s}
-.world-intel-body{display:none;padding:12px 14px}
-.world-intel-body.open{display:block}
-.intel-section{margin-bottom:12px}
-.intel-section-label{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--text3);margin-bottom:6px;padding-bottom:4px;border-bottom:1px solid var(--border)}
-.intel-item{display:flex;align-items:flex-start;gap:8px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.03)}
-.intel-item:last-child{border-bottom:none}
-.intel-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:5px}
-.intel-dot.red{background:var(--red)}.intel-dot.amber{background:var(--amber)}.intel-dot.green{background:var(--green)}.intel-dot.blue{background:#4a9eff}.intel-dot.gray{background:var(--surf4)}
-.intel-content{flex:1;min-width:0}
-.intel-title{font-size:11px;font-weight:600;color:var(--text);line-height:1.35}
-.intel-detail{font-size:10px;color:var(--text3);margin-top:2px;line-height:1.4}
-.intel-chat-link{display:inline-flex;align-items:center;gap:3px;margin-top:4px;font-size:9px;color:var(--hi);text-decoration:none;background:rgba(30,126,200,.08);border:1px solid rgba(30,126,200,.2);border-radius:3px;padding:1px 6px}
-.intel-chat-link:hover{background:rgba(30,126,200,.15)}
-.intel-empty{font-size:10px;color:var(--text3);font-style:italic;padding:6px 0}
-.world-intel-badge{display:inline-flex;align-items:center;gap:4px}
-.world-title{font-family:'Inter',sans-serif;font-size:18px;font-weight:700;color:var(--text);letter-spacing:-.02em}.world-title em{color:var(--hi);font-style:normal}
+.world-title{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:var(--text);letter-spacing:-.01em}.world-title em{color:var(--hi);font-style:normal}
 .world-subtitle{font-size:10px;color:var(--text3);margin-top:2px}
 .world-actions{display:flex;gap:6px;align-items:center}
 .eq-item{display:flex;align-items:flex-start;gap:7px;padding:6px 9px;border-radius:var(--rsm);border:1px solid var(--border);background:var(--surf2);margin-bottom:4px;cursor:pointer;transition:all .12s}.eq-item:hover{border-color:var(--border2);background:var(--surf3)}.eq-item.on{border-color:var(--hi);background:rgba(30,126,200,.08)}
@@ -221,14 +201,6 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
   .cc-grid{grid-template-columns:1fr}.g2{grid-template-columns:1fr}.g3{grid-template-columns:1fr 1fr}
   .mobile-donna-fab{display:flex!important}
   .panel-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:199}.panel-overlay.show{display:block}
-  .cc-grid{display:flex!important;flex-direction:column;gap:5px}
-  .cp{overflow:hidden}
-  .cp-body{display:none}
-  .cp.mob-open .cp-body{display:block}
-  .cp-head{padding:12px 14px!important}
-  .cp-meta{gap:4px!important}
-  .cp-badge{font-size:9px!important;min-width:20px!important;height:20px!important;padding:0 6px!important}
-  .cp-compact-btn{display:none!important}
 }
 @media(min-width:769px){.mobile-donna-fab{display:none!important}.panel-overlay{display:none!important}}
 .mobile-donna-fab{display:none;position:fixed;bottom:20px;right:16px;width:52px;height:52px;border-radius:50%;background:var(--hi);border:none;color:#fff;font-size:20px;cursor:pointer;z-index:198;box-shadow:0 4px 20px rgba(30,126,200,.4);align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;transition:transform .15s}.mobile-donna-fab:active{transform:scale(.94)}
@@ -240,7 +212,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 
 <div class="topbar">
   <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
-    <div class="logo"><em>Command</em> Center</div>
+    <div class="logo"><em>D</em>ONALD <span style="color:var(--text3);font-size:10px;font-weight:400;letter-spacing:.04em">personal</span></div>
   </div>
   <nav class="nav" id="mainNav">
     <button class="ntab" onclick="V('command',this)">⬡ Command</button>
@@ -300,7 +272,6 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
     </div>
     <div class="cc-controls">
       <button class="ib-btn" onclick="sendRefreshPrompt()">↻ Refresh Intel</button>
-      <button class="ib-btn" onclick="oneClickRefresh()" id="oneClickBtn" style="background:rgba(30,126,200,.12);border-color:rgba(30,126,200,.3);color:var(--hi)" title="Calls Claude API directly — no copy/paste needed">⚡ One-Click Refresh <span style="font-size:8px;opacity:.7">(~10¢)</span></button>
       <button class="ib-btn primary" onclick="openIBModal()">⇡ Push Intel Update</button>
     </div>
   </div>
@@ -858,7 +829,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
       </div>
       <button class="addb" onclick="toggleTheme()" style="width:100%;margin-bottom:6px">Toggle dark / light mode</button>
       <button class="addb" onclick="if(confirm('Clear all data?'))clearAll()" style="width:100%;color:var(--red)">Clear all saved data</button>
-      <div style="font-size:9px;color:var(--text3);line-height:1.8;margin-top:14px;padding-top:12px;border-top:1px solid var(--border)">Personal OS v2.5<br>personal-os.vercel.app<br>David Genuth — COO Prime Source</div>
+      <div style="font-size:9px;color:var(--text3);line-height:1.8;margin-top:14px;padding-top:12px;border-top:1px solid var(--border)">Personal OS v2.0<br>personal-os.vercel.app<br>David Genuth — COO Prime Source</div>
     </div>
   </div>
 </div>
@@ -1079,9 +1050,7 @@ function addChat(){var u=document.getElementById('scUrl').value.trim();if(!u)ret
 function delChat(i){chats.splice(i,1);S('chats',chats);renderChats();}
 
 var _dockedCards=G('dockedCards',[]);
-function ccBadgeHtml(panel){var key=PANEL_INTEL_KEY[panel.id];var liveData=key?intelCache[key]:null;if(liveData&&liveData.items&&liveData.items.length){var r=0,a=0,g=0,b=0;liveData.items.forEach(function(item){if(item.type==='red')r++;else if(item.type==='amber')a++;else if(item.type==='green')g++;else if(item.type==='blue')b++;});var out='';if(r>0)out+='<span class="cp-badge red">'+r+'</span>';if(a>0)out+='<span class="cp-badge amber">'+a+'</span>';if(g>0)out+='<span class="cp-badge green">'+g+'</span>';if(b>0)out+='<span class="cp-badge blue">'+b+'</span>';return out;}var auto=panel.badgeFn?panel.badgeFn():null;if(!auto||!auto.count)return '';return '<span class="cp-badge '+(auto.cls||'gray')+'">'+auto.count+'</span>';}
-
-function toggleMobileCard(pid){if(window.innerWidth>768)return;var el=document.getElementById('cp-'+pid);if(!el)return;var isOpen=el.classList.contains('mob-open');document.querySelectorAll('.cp.mob-open').forEach(function(c){c.classList.remove('mob-open');});if(!isOpen)el.classList.add('mob-open');}
+function ccBadgeHtml(panel){var ov=null;var auto=panel.badgeFn?panel.badgeFn():null;var count=ov!=null?ov:(auto?auto.count:null);var cls=auto?auto.cls:'gray';if(count==null||count===0)return '';return '<span class="cp-badge '+(cls||'')+'">'+count+'</span>';}
 
 function renderCC(){
   var grid=document.getElementById('ccGrid');if(!grid)return;
@@ -1091,7 +1060,7 @@ function renderCC(){
     var tsStr='No live intel yet';if(liveData&&liveData.updated){var d=new Date(liveData.updated);var ageMin=Math.round((new Date()-d)/60000);tsStr=ageMin<60?'Updated '+ageMin+'m ago':'Updated '+Math.round(ageMin/60)+'h ago';}
     var pid=panel.id;
     html+='<div class="cp pri-'+panel.pri+'" id="cp-'+pid+'">';
-    html+='<div class="cp-head" onclick="window.innerWidth<=768?toggleMobileCard(\''+pid+'\'):openCCDrawer(\''+pid+'\')">' ;
+    html+='<div class="cp-head" onclick="openCCDrawer(\''+pid+'\')">';
     html+='<div class="cp-icon">'+panel.icon+'</div><div class="cp-label">'+panel.label+'</div>';
     html+='<div class="cp-meta">'+badge+'</div>';
     html+='<button class="cp-compact-btn" onclick="event.stopPropagation();dockCard(\''+pid+'\')" title="Collapse">↑</button>';
@@ -1179,113 +1148,8 @@ async function pushIntelUpdate(){
   }
   S('intelCache',intelCache);updateIBStatus();
   st.textContent='✓ '+entries.length+' panel'+(entries.length>1?'s':'')+' updated';st.className='ib-modal-status ok';
-  setTimeout(closeIBModal,1800);if(syncEnabled){setTimeout(pushToCloud,800);showToast('Intel updated — syncing to all devices...');}setTimeout(renderCC,100);setTimeout(renderAllWorldIntel,150);
+  setTimeout(closeIBModal,1800);if(syncEnabled)setTimeout(pushToCloud,1000);
 }
-// ── WORLD DEEP DIVE INTEL ────────────────────────────────────
-function toggleWorldIntel(worldId){
-  var body=document.getElementById('wi-body-'+worldId);
-  var arrow=document.getElementById('wi-arrow-'+worldId);
-  if(!body)return;
-  var isOpen=body.classList.contains('open');
-  body.classList.toggle('open',!isOpen);
-  if(arrow)arrow.style.transform=isOpen?'':'rotate(180deg)';
-}
-
-function renderWorldIntel(worldId){
-  var container=document.getElementById('wi-body-'+worldId);
-  if(!container)return;
-  var key=PANEL_INTEL_KEY[worldId];
-  var data=key?intelCache[key]:null;
-
-  if(!data||!data.items||!data.items.length){
-    container.innerHTML='<div class="intel-empty">No live intel yet — run a refresh from the Command Center.</div>';
-    return;
-  }
-
-  // Categorize items
-  var actionNow=data.items.filter(function(i){return i.type==='red'||i.type==='amber';});
-  var infoItems=data.items.filter(function(i){return i.type==='blue'||i.type==='green';});
-  var passiveItems=data.items.filter(function(i){return i.type==='gray';});
-
-  function renderItem(item){
-    var chatBtn='';
-    if(item.chatLink){
-      chatBtn='<a href="'+item.chatLink+'" target="_blank" class="intel-chat-link">Continue in chat ↗</a>';
-    }
-    return '<div class="intel-item">'
-      +'<div class="intel-dot '+item.type+'"></div>'
-      +'<div class="intel-content">'
-      +'<div class="intel-title">'+item.title+'</div>'
-      +(item.detail?'<div class="intel-detail">'+item.detail+'</div>':'')
-      +chatBtn
-      +'</div></div>';
-  }
-
-  var html='';
-
-  if(actionNow.length){
-    html+='<div class="intel-section"><div class="intel-section-label">⚡ Action needed</div>';
-    html+=actionNow.map(renderItem).join('');
-    html+='</div>';
-  }
-  if(infoItems.length){
-    html+='<div class="intel-section"><div class="intel-section-label">ℹ On your radar</div>';
-    html+=infoItems.map(renderItem).join('');
-    html+='</div>';
-  }
-  if(passiveItems.length){
-    html+='<div class="intel-section"><div class="intel-section-label">✓ Background</div>';
-    html+=passiveItems.map(renderItem).join('');
-    html+='</div>';
-  }
-
-  // Updated time
-  if(data.updated){
-    var d=new Date(data.updated);
-    var age=Math.round((new Date()-d)/60000);
-    var ageStr=age<60?age+'m ago':Math.round(age/60)+'h ago';
-    html+='<div style="font-size:8px;color:var(--text3);margin-top:8px;padding-top:8px;border-top:1px solid var(--border)">Updated '+ageStr+' · '+data.items.length+' items</div>';
-  }
-
-  container.innerHTML=html;
-}
-
-function buildWorldIntelBlock(worldId,label){
-  var key=PANEL_INTEL_KEY[worldId];
-  var data=key?intelCache[key]:null;
-  var count=data&&data.items?data.items.length:0;
-  var redCount=data&&data.items?data.items.filter(function(i){return i.type==='red';}).length:0;
-  var amberCount=data&&data.items?data.items.filter(function(i){return i.type==='amber';}).length:0;
-
-  var badges='';
-  if(redCount>0)badges+='<span class="cp-badge red" style="font-size:8px;padding:0 4px;height:14px">'+redCount+'</span>';
-  if(amberCount>0)badges+='<span class="cp-badge amber" style="font-size:8px;padding:0 4px;height:14px">'+amberCount+'</span>';
-  if(!redCount&&!amberCount&&count>0)badges+='<span class="cp-badge" style="font-size:8px;padding:0 4px;height:14px;background:var(--surf3);color:var(--text3)">'+count+'</span>';
-
-  return '<div class="world-intel">'
-    +'<div class="world-intel-header" onclick="toggleWorldIntel(\''+worldId+'\')">'
-    +'<div class="world-intel-title">📋 Live intel — '+label+' <div class="world-intel-badge">'+badges+'</div></div>'
-    +'<span id="wi-arrow-'+worldId+'" class="world-intel-toggle">▾</span>'
-    +'</div>'
-    +'<div class="world-intel-body" id="wi-body-'+worldId+'"></div>'
-    +'</div>';
-}
-
-function renderAllWorldIntel(){
-  var worlds=[
-    {id:'finance',label:'Finance'},
-    {id:'health',label:'Health'},
-    {id:'family',label:'Family'},
-    {id:'projects',label:'Projects'},
-    {id:'growth',label:'Growth'},
-    {id:'email',label:'Email'},
-    {id:'work',label:'Work'},
-    {id:'focus',label:'Focus'},
-    {id:'daily',label:'Daily'},
-  ];
-  worlds.forEach(function(w){renderWorldIntel(w.id);});
-}
-
 function renderLiveIntel(panelId,data){
   var el=document.getElementById('cp-intel-'+panelId);if(!el)return;
   if(!data||!data.items||!data.items.length){el.innerHTML='';return;}
@@ -1300,123 +1164,12 @@ function renderLiveIntel(panelId,data){
 function sendRefreshPrompt(){
   var today=new Date();var days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];var months=['January','February','March','April','May','June','July','August','September','October','November','December'];
   var dateStr=days[today.getDay()]+', '+months[today.getMonth()]+' '+today.getDate()+', '+today.getFullYear();var timeStr=today.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit',hour12:true});
-  var msg='DONALD, refresh all 10 Personal Command Center intel panels. Pull actual current date and time Eastern before doing anything else. Today is '+dateStr+' at '+timeStr+' Eastern.\n\nProcess:\n1. Get actual current time Eastern via tool and use it in the updated timestamp\n2. Check Google Calendar (davidlgenuth@gmail.com) for today and next 7 days including Hebrew calendar events\n3. Scan personal Gmail (davidlgenuth@gmail.com) and family inbox (davidmalky@gmail.com) for urgent unread items\n4. Scan work Outlook (DGenuth@PrimeSourceX.com) for urgent work items and action items from Mark or the team\n5. Check MyAir or any CPAP-related emails for compliance status\n6. Search past conversations across ALL these topics — pull specific action items, amounts, deadlines, names, and blocked items:\n   Finance: Prime Procurement, LLC, Vanguard, DAF, tuition, insurance, GenMed, BuyersEdge, $93K\n   Health: CPAP, SightMD, Tapezza, Option Care\n   Family: Malky, Avrumy, Esty, Leah, Nathan, shidduch, defensive driving\n   Projects: Personal OS, command center, agent, transcription, Whisper, FashionScan\n   Work: William, Salesforce, BEP, VT Netswelt, OHCA, Buyers Edge, weekly ops\n   Growth: Wispr Flow, LinkedIn, social media, revenue stream\n7. For each item that has an active conversation, find the URL of that chat and include it as chatLink\n8. Read DONALD Master Context in Google Drive (document ID: 11yJghORj9P4xnszfNeWCe3sl74Dq1bSLC1TVWcbmQ2w) for additional pending items\n\nFormat as a single JSON block — return ONLY the JSON, no explanation, no markdown:\n{\"panels\":[\n{\"key\":\"donald_personal_intel_daily\",\"value\":{\"updated\":\"ISO_TIMESTAMP\",\"items\":[{\"type\":\"red|amber|green|blue|gray\",\"title\":\"Topic\",\"detail\":\"Specific actionable detail\"},...]}},\n{\"key\":\"donald_personal_intel_finance\",\"value\":{\"updated\":\"ISO_TIMESTAMP\",\"items\":[{\"type\":\"...\",\"title\":\"...\",\"detail\":\"Include dollar amounts, deadlines, who is blocking\",\"chatLink\":\"https://claude.ai/chat/ID_if_applicable\"},...]}},\n{\"key\":\"donald_personal_intel_health\",\"value\":{\"updated\":\"ISO_TIMESTAMP\",\"items\":[...]}},\n{\"key\":\"donald_personal_intel_family\",\"value\":{\"updated\":\"ISO_TIMESTAMP\",\"items\":[...]}},\n{\"key\":\"donald_personal_intel_projects\",\"value\":{\"updated\":\"ISO_TIMESTAMP\",\"items\":[{\"type\":\"...\",\"title\":\"...\",\"detail\":\"...\",\"chatLink\":\"https://claude.ai/chat/ID_if_applicable\"},...]}},\n{\"key\":\"donald_personal_intel_growth\",\"value\":{\"updated\":\"ISO_TIMESTAMP\",\"items\":[...]}},\n{\"key\":\"donald_personal_intel_email\",\"value\":{\"updated\":\"ISO_TIMESTAMP\",\"items\":[...]}},\n{\"key\":\"donald_personal_intel_work\",\"value\":{\"updated\":\"ISO_TIMESTAMP\",\"items\":[{\"type\":\"...\",\"title\":\"...\",\"detail\":\"...\",\"chatLink\":\"https://claude.ai/chat/ID_if_applicable\"},...]}},\n{\"key\":\"donald_personal_intel_notes\",\"value\":{\"updated\":\"ISO_TIMESTAMP\",\"items\":[...]}},\n{\"key\":\"donald_personal_intel_focus\",\"value\":{\"updated\":\"ISO_TIMESTAMP\",\"items\":[...]}}\n]}\n\nRules: type is red/amber/green/blue/gray. Include chatLink on any item with an active conversation. Be specific — names, amounts, dates. Minimum 3 items per panel. Maximum 8 per panel. Prioritize by urgency.';
+  var msg='DONALD, refresh all 9 Personal Command Center intel panels. Today is '+dateStr+' at '+timeStr+' Eastern.\n\nProcess:\n1. Check Google Calendar for today and this week\n2. Scan personal Gmail (davidlgenuth@gmail.com) and family inbox (davidmalky@gmail.com) for urgent items\n3. Check CPAP status and compliance (3 nights done, 27 needed, window closes Jul 20)\n4. Review Jewish calendar for upcoming observances\n5. Surface any pending action items from memory and past conversations\n\nFormat as a single JSON block:\n{"panels":[\n{"key":"donald_personal_intel_daily","value":{"updated":"ISO_TIMESTAMP","items":[{"type":"red|amber|green|blue|gray","title":"Topic","detail":"Short detail"},...]}},\n{"key":"donald_personal_intel_finance","value":{...}},\n{"key":"donald_personal_intel_health","value":{...}},\n{"key":"donald_personal_intel_family","value":{...}},\n{"key":"donald_personal_intel_projects","value":{...}},\n{"key":"donald_personal_intel_growth","value":{...}},\n{"key":"donald_personal_intel_email","value":{...}},\n{"key":"donald_personal_intel_work","value":{...}},\n{"key":"donald_personal_intel_notes","value":{...}}\n]}\n\nEach item needs: type, title, detail. Current, complete, actionable.';
   var url=G('donaldUrl','')||'YOUR_PERSONAL_DONALD_URL';
   var copy=function(){window.open(url,'_blank');showToast('Prompt copied — Ctrl+V into DONALD');};
   if(navigator.clipboard){navigator.clipboard.writeText(msg).then(copy).catch(function(){var ta=document.createElement('textarea');ta.value=msg;ta.style.cssText='position:fixed;opacity:0';document.body.appendChild(ta);ta.focus();ta.select();try{document.execCommand('copy');}catch(e){}document.body.removeChild(ta);copy();});}
   else{var ta=document.createElement('textarea');ta.value=msg;ta.style.cssText='position:fixed;opacity:0';document.body.appendChild(ta);ta.focus();ta.select();try{document.execCommand('copy');}catch(e){}document.body.removeChild(ta);copy();}
 }
-
-// ── ONE-CLICK REFRESH (Claude API direct) ────────────────────
-function oneClickRefresh(){
-  var btn=document.getElementById('oneClickBtn');
-  var apiKey=G('claudeApiKey','');
-
-  if(!apiKey){
-    // First time — ask for API key
-    var key=prompt('Enter your Claude API key (from console.anthropic.com):\n\nThis is stored locally on your device only.');
-    if(!key||!key.trim())return;
-    S('claudeApiKey',key.trim());
-    apiKey=key.trim();
-  }
-
-  if(btn){btn.textContent='⚡ Refreshing...';btn.disabled=true;}
-  showToast('One-Click Refresh started — ~30 seconds...');
-
-  var today=new Date();
-  var days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-  var months=['January','February','March','April','May','June','July','August','September','October','November','December'];
-  var dateStr=days[today.getDay()]+', '+months[today.getMonth()]+' '+today.getDate()+', '+today.getFullYear();
-  var timeStr=today.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',hour12:true});
-
-  var prompt='You are DONALD, David Genuth's personal AI Chief of Staff. Today is '+dateStr+' at '+timeStr+' Eastern.\n\n'+
-    'Generate updated intel for all 10 Personal Command Center panels.\n'+
-    'Check: Gmail (davidlgenuth@gmail.com), family inbox (davidmalky@gmail.com), work Outlook (DGenuth@PrimeSourceX.com), Google Calendar.\n'+
-    'Search past conversations for: Prime Procurement, LLC, Milestone Metrics, Vanguard, DAF, tuition, insurance, CPAP, SightMD, family members, agents, Personal OS, Salesforce.\n'+
-    'For items with active conversations include chatLink with the conversation URL.\n\n'+
-    'Return ONLY valid JSON, no explanation, no markdown:\n'+
-    '{"panels":['+
-    '{"key":"donald_personal_intel_daily","value":{"updated":"'+today.toISOString()+'","items":[{"type":"red|amber|green|blue|gray","title":"Title","detail":"Detail"}]}},'+
-    '{"key":"donald_personal_intel_finance","value":{"updated":"'+today.toISOString()+'","items":[]}},'+
-    '{"key":"donald_personal_intel_health","value":{"updated":"'+today.toISOString()+'","items":[]}},'+
-    '{"key":"donald_personal_intel_family","value":{"updated":"'+today.toISOString()+'","items":[]}},'+
-    '{"key":"donald_personal_intel_projects","value":{"updated":"'+today.toISOString()+'","items":[]}},'+
-    '{"key":"donald_personal_intel_growth","value":{"updated":"'+today.toISOString()+'","items":[]}},'+
-    '{"key":"donald_personal_intel_email","value":{"updated":"'+today.toISOString()+'","items":[]}},'+
-    '{"key":"donald_personal_intel_work","value":{"updated":"'+today.toISOString()+'","items":[]}},'+
-    '{"key":"donald_personal_intel_notes","value":{"updated":"'+today.toISOString()+'","items":[]}},'+
-    '{"key":"donald_personal_intel_focus","value":{"updated":"'+today.toISOString()+'","items":[]}}'+
-    ']}\n\nRules: minimum 3 items per panel, maximum 8, prioritize urgency, be specific with names/amounts/dates.';
-
-  fetch('https://api.anthropic.com/v1/messages',{
-    method:'POST',
-    headers:{
-      'Content-Type':'application/json',
-      'x-api-key':apiKey,
-      'anthropic-version':'2023-06-01'
-    },
-    body:JSON.stringify({
-      model:'claude-sonnet-4-20250514',
-      max_tokens:8000,
-      messages:[{role:'user',content:prompt}]
-    })
-  })
-  .then(function(r){return r.json();})
-  .then(function(data){
-    if(data.error){
-      if(data.error.type==='authentication_error'){
-        // Bad API key — clear it so they can re-enter
-        localStorage.removeItem('po2_claudeApiKey');
-        showToast('Invalid API key — cleared. Try again.');
-      } else {
-        showToast('API error: '+data.error.message);
-      }
-      if(btn){btn.textContent='⚡ One-Click Refresh (~10¢)';btn.disabled=false;}
-      return;
-    }
-
-    var text='';
-    if(data.content&&data.content[0]&&data.content[0].text){
-      text=data.content[0].text;
-    }
-
-    // Parse JSON from response
-    try{
-      var clean=text.replace(/```json\n?/gi,'').replace(/```/g,'').trim();
-      var parsed=JSON.parse(clean);
-
-      if(parsed.panels){
-        // Apply intel to all panels
-        parsed.panels.forEach(function(panel){
-          if(panel.key&&panel.value){
-            intelCache[panel.key]=panel.value;
-            var pid=Object.keys(PANEL_INTEL_KEY).find(function(k){return PANEL_INTEL_KEY[k]===panel.key;});
-            if(pid)renderLiveIntel(pid,panel.value);
-          }
-        });
-        S('intelCache',intelCache);
-        updateIBStatus();
-        renderCC();
-
-        // Push to cloud so all devices update
-        if(syncEnabled)setTimeout(pushToCloud,500);
-
-        showToast('✦ One-Click Refresh complete — all panels updated');
-        if(btn){btn.textContent='⚡ One-Click Refresh (~10¢)';btn.disabled=false;}
-      }
-    }catch(e){
-      showToast('Could not parse response — try manual refresh');
-      console.error('Parse error:',e,text);
-      if(btn){btn.textContent='⚡ One-Click Refresh (~10¢)';btn.disabled=false;}
-    }
-  })
-  .catch(function(err){
-    showToast('Network error — check connection');
-    console.error('Fetch error:',err);
-    if(btn){btn.textContent='⚡ One-Click Refresh (~10¢)';btn.disabled=false;}
-  });
-}
-
 
 function dockCard(pid){if(_dockedCards.indexOf(pid)<0)_dockedCards.push(pid);S('dockedCards',_dockedCards);var card=document.getElementById('cp-'+pid);if(card)card.classList.add('docked');renderDock();}
 function undockCard(pid){_dockedCards=_dockedCards.filter(function(id){return id!==pid;});S('dockedCards',_dockedCards);var card=document.getElementById('cp-'+pid);if(card)card.classList.remove('docked');renderDock();}
@@ -1569,30 +1322,7 @@ function tryParseChatJson(val){
   }catch(e){if(statusEl){statusEl.textContent="Could not parse — paste DONALD's full response.";statusEl.style.color='var(--red)';}}
 }
 
-// AUTO-POLL: pull latest intel from cloud every 5 minutes
-setInterval(function(){
-  if(!syncEnabled)return;
-  var binId=G('jbBinId','');var apiKey=G('jbKey','');if(!binId||!apiKey)return;
-  fetch('https://api.jsonbin.io/v3/b/'+binId+'/latest',{headers:{'X-Master-Key':apiKey,'X-Bin-Meta':'false'}})
-    .then(function(r){return r.json();})
-    .then(function(data){
-      if(data&&data.record&&data.record.intelCache){
-        var remote=data.record.intelCache;var changed=false;
-        Object.keys(remote).forEach(function(key){
-          var rUp=remote[key]&&remote[key].updated?new Date(remote[key].updated):null;
-          var lUp=intelCache[key]&&intelCache[key].updated?new Date(intelCache[key].updated):null;
-          if(rUp&&(!lUp||rUp>lUp)){intelCache[key]=remote[key];changed=true;
-            var pid=Object.keys(PANEL_INTEL_KEY).find(function(k){return PANEL_INTEL_KEY[k]===key;});
-            if(pid)renderLiveIntel(pid,intelCache[key]);}
-        });
-        if(changed){S('intelCache',intelCache);updateIBStatus();renderAllWorldIntel();showToast('\u2746 Intel synced from another device');}
-      }
-    }).catch(function(){});
-},5*60*1000);
-
 applyTheme();applyPanel();setDate();
-
-
 renderDashTasks();renderChats();renderCC();
 setTimeout(injectAllIntel,100);
 setTimeout(updateIBStatus,200);
@@ -1616,7 +1346,5 @@ document.addEventListener('click',function(e){var modal=document.getElementById(
   document.addEventListener('touchend',function(){if(!isDragging||window.innerWidth>768)return;var p=getPanel();if(!p)return;isDragging=false;p.style.transition='';var delta=currentY-startY;if(delta>80){p.style.transform='';p.classList.remove('mobile-open');var ov=document.getElementById('panelOverlay');if(ov)ov.classList.remove('show');}else{p.style.transform='';}});
 })();
 </script>
-
-<div style="position:fixed;bottom:12px;right:14px;z-index:50;pointer-events:none;user-select:none"><div style="display:flex;align-items:center;gap:5px;opacity:0.35"><div style="width:18px;height:18px;border-radius:4px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.11);display:flex;align-items:center;justify-content:center;flex-shrink:0"><span style="font-family:'Inter',sans-serif;font-size:7px;font-weight:800;color:#8a8a96;letter-spacing:-.02em">DG</span></div><span style="font-family:'Inter',sans-serif;font-size:8px;font-weight:500;color:#55555f;letter-spacing:.06em;text-transform:uppercase">Powered by DeeGee Dev</span></div></div>
 </body>
 </html>
