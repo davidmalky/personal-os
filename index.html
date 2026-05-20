@@ -1224,7 +1224,7 @@ function oneClickRefresh(){
     }catch(err){showToast('Parse error — try manual refresh');console.error(err);}
     if(btn){btn.textContent='One-Click Refresh (~10c)';btn.disabled=false;}
   })
-  .catch(function(err){showToast('Network error');if(btn){btn.textContent='One-Click Refresh (~10c)';btn.disabled=false;});
+  .catch(function(err){showToast('Network error');if(btn){btn.textContent='One-Click Refresh (~10c)';btn.disabled=false;}});
 }
 
 function dockCard(pid){if(_dockedCards.indexOf(pid)<0)_dockedCards.push(pid);S('dockedCards',_dockedCards);var card=document.getElementById('cp-'+pid);if(card)card.classList.add('docked');renderDock();}
