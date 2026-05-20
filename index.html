@@ -1337,11 +1337,11 @@ function oneClickRefresh(){
   var isoNow=today.toISOString();
   var ks=['donald_personal_intel_daily','donald_personal_intel_finance','donald_personal_intel_health','donald_personal_intel_family','donald_personal_intel_projects','donald_personal_intel_growth','donald_personal_intel_email','donald_personal_intel_work','donald_personal_intel_notes','donald_personal_intel_focus'];
   var pt=ks.map(function(k){return '{"key":"'+k+'","value":{"updated":"'+isoNow+'","items":[]}}';}).join(',');
-  var msg='You are DONALD. Generate intel for 10 Command Center panels for David Genuth. Check Gmail davidlgenuth@gmail.com and Outlook DGenuth@PrimeSourceX.com and Google Calendar. Return ONLY JSON: {"panels":['+pt+']} Min 3 items per panel type red amber green blue gray.';
+  var msg='Generate intel JSON for David Genuth Personal OS. Return ONLY this exact JSON structure with no other text: {"panels":['+pt+']}. For each panel add 3-5 items with type(red/amber/green/blue/gray), title(short), detail(one sentence). Focus on: finance=$93K owed, CPAP compliance 7/30 nights, family updates, work tasks, pending projects.';
   fetch('https://donald-proxy.davidlgenuth.workers.dev',{
     method:'POST',
     headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({model:'claude-sonnet-4-5',max_tokens:8000,messages:[{role:'user',content:msg}]})
+    body:JSON.stringify({model:'claude-sonnet-4-5',max_tokens:4000,messages:[{role:'user',content:msg}]})
   }).then(function(r){return r.json();}).then(function(d){
     if(d.error){alert('API error: '+d.error.message);if(btn){btn.textContent='One-Click Refresh (~10c)';btn.disabled=false;}return;}
     var txt=(d.content&&d.content[0]&&d.content[0].text)||'';
