@@ -282,12 +282,13 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
   <div class="ib-modal" id="ibModal">
     <div class="ib-modal-box">
       <div class="ib-modal-title">Push Intel Update</div>
-      <div class="ib-modal-sub">Paste the JSON from DONALD here. All panels update automatically.</div>
+      <div class="ib-modal-sub">Paste DONALD's response below — or use Paste &amp; Push to do it in one click.</div>
       <textarea class="ib-modal-ta" id="ibPasteArea" placeholder='{"panels":[{"key":"donald_personal_intel_daily","value":{"items":[...]}}]}'></textarea>
       <div class="ib-modal-actions">
         <span class="ib-modal-status" id="ibModalStatus"></span>
         <button class="ib-btn" onclick="closeIBModal()">Cancel</button>
-        <button class="ib-btn primary" onclick="pushIntelUpdate()">Push to Command Center</button>
+        <button class="ib-btn" onclick="pasteAndPush()" style="background:rgba(0,196,113,.12);border-color:rgba(0,196,113,.3);color:var(--green)">&#9889; Paste &amp; Push</button>
+        <button class="ib-btn primary" onclick="pushIntelUpdate()">Push</button>
       </div>
     </div>
   </div>
@@ -1131,7 +1132,25 @@ function updateIBStatus(){
 
 function openIBModal(){document.getElementById('ibModal').classList.add('show');document.getElementById('ibPasteArea').value='';document.getElementById('ibModalStatus').textContent='';document.getElementById('ibModalStatus').className='ib-modal-status';setTimeout(function(){document.getElementById('ibPasteArea').focus();},100);}
 function closeIBModal(){document.getElementById('ibModal').classList.remove('show');}
-async function pushIntelUpdate(){
+async function pasteAndPush(){
+  if(navigator.clipboard&&navigator.clipboard.readText){
+    navigator.clipboard.readText().then(function(text){
+      var ta=document.getElementById('ibPasteArea');
+      if(ta)ta.value=text;
+      pushIntelUpdate();
+    }).catch(function(){
+      var ta=document.getElementById('ibPasteArea');
+      if(ta)ta.focus();
+      document.execCommand('paste');
+      setTimeout(pushIntelUpdate,100);
+    });
+  }else{
+    var ta=document.getElementById('ibPasteArea');
+    if(ta){ta.focus();document.execCommand('paste');}
+    setTimeout(pushIntelUpdate,100);
+  }
+}
+function pushIntelUpdate(){
   var raw=document.getElementById('ibPasteArea').value.trim();var st=document.getElementById('ibModalStatus');
   if(!raw){st.textContent='Paste JSON from DONALD first.';st.className='ib-modal-status err';return;}
   var cleaned=raw.trim();var s=cleaned.indexOf('{'),e=cleaned.lastIndexOf('}');if(s>-1&&e>s)cleaned=cleaned.slice(s,e+1);var parsed;try{parsed=JSON.parse(cleaned);}catch(e){st.textContent='Invalid JSON — make sure Claude returned the full JSON block.';st.className='ib-modal-status err';return;}
