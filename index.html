@@ -1134,7 +1134,7 @@ function closeIBModal(){document.getElementById('ibModal').classList.remove('sho
 async function pushIntelUpdate(){
   var raw=document.getElementById('ibPasteArea').value.trim();var st=document.getElementById('ibModalStatus');
   if(!raw){st.textContent='Paste JSON from DONALD first.';st.className='ib-modal-status err';return;}
-  var parsed;try{parsed=JSON.parse(raw);}catch(e){st.textContent='Invalid JSON.';st.className='ib-modal-status err';return;}
+  var cleaned=raw.trim();var s=cleaned.indexOf('{'),e=cleaned.lastIndexOf('}');if(s>-1&&e>s)cleaned=cleaned.slice(s,e+1);var parsed;try{parsed=JSON.parse(cleaned);}catch(e){st.textContent='Invalid JSON — make sure Claude returned the full JSON block.';st.className='ib-modal-status err';return;}
   var entries=[];
   if(parsed.panels&&Array.isArray(parsed.panels)){parsed.panels.forEach(function(p){if(p.key&&p.value)entries.push({key:p.key,value:p.value});});}
   else if(parsed.key&&parsed.value){entries.push({key:parsed.key,value:parsed.value});}
