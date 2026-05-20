@@ -1341,7 +1341,7 @@ function oneClickRefresh(){
   fetch('https://donald-proxy.davidlgenuth.workers.dev',{
     method:'POST',
     headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:8000,messages:[{role:'user',content:msg}]})
+    body:JSON.stringify({model:'claude-sonnet-4-5',max_tokens:8000,messages:[{role:'user',content:msg}]})
   }).then(function(r){return r.json();}).then(function(d){
     if(d.error){alert('API error: '+d.error.message);if(btn){btn.textContent='One-Click Refresh (~10c)';btn.disabled=false;}return;}
     var txt=(d.content&&d.content[0]&&d.content[0].text)||'';
