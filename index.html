@@ -1355,8 +1355,10 @@ function oneClickRefresh(){
           var pid=Object.keys(PANEL_INTEL_KEY).find(function(k){return PANEL_INTEL_KEY[k]===p.key;});
           if(pid)renderLiveIntel(pid,p.value);
         });
-        localStorage.setItem('po2_intelCache',JSON.stringify(intelCache));
+        S('intelCache',intelCache);
+        updateIBStatus();
         renderCC();
+        if(syncEnabled)setTimeout(pushToCloud,500);
         alert('Done! All panels updated.');
       }
     }catch(e2){alert('Parse error: '+e2.message);}
