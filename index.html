@@ -532,7 +532,7 @@ function v26init() {
     <button class="ntab" onclick="V('work',this)">Work</button>
   </nav>
   <div class="tbr">
-    <div style="text-align:right"><span class="tdate" id="tdate"></span><div style="font-size:9px;color:var(--red);letter-spacing:.02em;margin-top:1px;direction:ltr" id="hebrewDate"></div></div>
+    <div style="text-align:right"><span class="tdate" id="tdate"></span><div style="font-size:9px;color:var(--red);letter-spacing:.02em;margin-top:1px;direction:rtl;text-align:right;font-family:'Arial',sans-serif" id="hebrewDate"></div></div>
     <button class="ibb" onclick="toggleTheme()" title="Toggle theme">◑</button>
     <button class="ibb" onclick="togglePanel()" title="Toggle DONALD panel" style="opacity:.4;font-size:10px">◧</button>
   </div>
@@ -1301,7 +1301,7 @@ function stopDrag(){drag=false;S('panelW',panelW);document.getElementById('dragD
 function setDate(){
   var d=new Date();var days=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];var mo=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   var hr=d.getHours(),mn=d.getMinutes(),ampm=hr>=12?'PM':'AM';hr=hr%12||12;
-  var el=document.getElementById('tdate');if(el)el.textContent=days[d.getDay()]+' '+mo[d.getMonth()]+' '+d.getDate()+' · '+hr+':'+(mn<10?'0':'')+mn+' '+ampm;
+  var el=document.getElementById('tdate');if(el)el.textContent=days[d.getDay()]+' '+mo[d.getMonth()]+' '+d.getDate()+' · '+hr+':'+(mn<10?'0':'')+mn+' '+ampm;var hdEl=document.getElementById('hebrewDate');if(hdEl&&!hdEl.textContent&&window.getHebrewDate){hdEl.textContent=window.getHebrewDate(d);}
   var greet=document.getElementById('dayGreeting');if(greet){var h=d.getHours();greet.textContent=h<12?'morning':h<17?'afternoon':'evening';}
   var sub=document.getElementById('dashSubtitle');if(sub){var ds=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];var mos=['January','February','March','April','May','June','July','August','September','October','November','December'];sub.textContent=ds[d.getDay()]+', '+mos[d.getMonth()]+' '+d.getDate()+', '+d.getFullYear();}
 }
