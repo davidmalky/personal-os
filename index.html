@@ -214,7 +214,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .donald-chat{position:fixed;bottom:76px;right:16px;width:340px;max-width:calc(100vw - 32px);height:460px;max-height:calc(100vh - 120px);background:var(--surf);border:1px solid var(--border2);border-radius:var(--r);z-index:8001;display:none;flex-direction:column;box-shadow:0 16px 60px rgba(0,0,0,.7);overflow:hidden}
 .donald-chat.show{display:flex}
 .dc-head{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid var(--border);background:var(--bg2);flex-shrink:0}
-.dc-title{font-family:'Syne',sans-serif;font-size:12px;font-weight:800;color:var(--text)}
+.dc-title{font-family:'Inter',sans-serif;font-size:12px;font-weight:700;color:var(--text)}
 .dc-title span{color:var(--hi)}
 .dc-head-right{display:flex;align-items:center;gap:6px}
 .dc-clear{font-size:9px;color:var(--text3);background:none;border:none;cursor:pointer;font-family:inherit;padding:2px 5px;border-radius:3px;transition:all .12s}.dc-clear:hover{color:var(--amber);background:var(--surf3)}
@@ -250,16 +250,16 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 (function(){
   window.getHebrewDate = function(date) {
     try {
+      var hM = ["ניסן","אייר","סיון","תמוז","אב","אלול","תשרי","חשון","כסלו","טבת","שבט","אדר"];
+      var hN = ["","א","ב","ג","ד","ה","ו","ז","ח","ט","י","יא","יב","יג","יד","טו","טז","יז","יח","יט","כ","כא","כב","כג","כד","כה","כו","כז","כח","כט","ל"];
+      var yM = {5786:'תשפ״ו',5787:'תשפ״ז'};
       var anchor = new Date(2026, 4, 18);
       var diff = Math.round((date - anchor) / 86400000);
-      var hDay = 1 + diff;
-      var hMonth = 3; // Sivan = 3rd from Nisan
-      var hYear = 5786;
-      var monthDays = [30,29,30,29,30,29,30,30,29,30,29,30];
-      var monthNames = ['Nisan','Iyar','Sivan','Tammuz','Av','Elul','Tishrei','Cheshvan','Kislev','Tevet','Shevat','Adar'];
-      while(hDay > monthDays[hMonth-1]) { hDay -= monthDays[hMonth-1]; hMonth++; if(hMonth>12){hMonth=1;hYear++;} }
-      while(hDay < 1) { hMonth--; if(hMonth<1){hMonth=12;hYear--;} hDay += monthDays[hMonth-1]; }
-      return hDay + ' ' + monthNames[hMonth-1] + ' ' + hYear;
+      var hDay = 1 + diff, hMonth = 3, hYear = 5786;
+      var mDays = [30,29,30,29,30,29,30,30,29,30,29,30];
+      while(hDay > mDays[hMonth-1]) { hDay -= mDays[hMonth-1]; hMonth++; if(hMonth>12){hMonth=1;hYear++;} }
+      while(hDay < 1) { hMonth--; if(hMonth<1){hMonth=12;hYear--;} hDay += mDays[hMonth-1]; }
+      return hN[hDay] + ' ' + hM[hMonth-1] + ' ' + (yM[hYear]||hYear);
     } catch(e) { return ''; }
   };
 })();
@@ -331,7 +331,7 @@ async function sendDcMsg() {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-sonnet-4-5',
         max_tokens: 800,
         system: 'You are DONALD, David Genuth\'s personal AI Chief of Staff. COO at Prime Source, Toms River NJ. Be concise and direct. Max 3-4 sentences unless detail is needed.',
         messages: _chatHistory
@@ -1004,7 +1004,7 @@ function renderHebrewDate() {
   </div>
   <div class="psect" id="psect-deploy">
     <div class="deploy-area">
-      <div style="font-family:'Syne',sans-serif;font-size:13px;font-weight:800;color:var(--text);margin-bottom:4px">Deploy Update</div>
+      <div style="font-family:'Inter',sans-serif;font-size:13px;font-weight:800;color:var(--text);margin-bottom:4px">Deploy Update</div>
       <div style="font-size:10px;color:var(--text2);margin-bottom:12px;line-height:1.6">Paste updated index.html → Deploy. Live in ~30 seconds.</div>
       <textarea class="deploy-ta" id="deployCode" placeholder="Paste new index.html code here..."></textarea>
       <button class="deploy-btn" id="deployBtn" onclick="deployUpdate()">Deploy to personal-os.vercel.app</button>
