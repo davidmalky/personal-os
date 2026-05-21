@@ -204,8 +204,207 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 }
 @media(min-width:769px){.mobile-donna-fab{display:none!important}.panel-overlay{display:none!important}}
 .mobile-donna-fab{display:none;position:fixed;bottom:20px;right:16px;width:52px;height:52px;border-radius:50%;background:var(--hi);border:none;color:#fff;font-size:20px;cursor:pointer;z-index:198;box-shadow:0 4px 20px rgba(30,126,200,.4);align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;transition:transform .15s}.mobile-donna-fab:active{transform:scale(.94)}
+
+/* === CHAT WIDGET === */
+.donald-fab{position:fixed;bottom:20px;right:16px;z-index:8000;display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+.donald-fab-btn{display:flex;align-items:center;gap:7px;padding:10px 16px;background:var(--hi);color:#fff;border:none;border-radius:24px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;box-shadow:0 4px 20px rgba(30,126,200,.45);transition:all .15s;letter-spacing:.03em;white-space:nowrap}
+.donald-fab-btn:hover{opacity:.88;transform:translateY(-1px)}
+.donald-fab-btn .fab-dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:sdp 2s infinite;flex-shrink:0}
+.donald-chat{position:fixed;bottom:76px;right:16px;width:340px;max-width:calc(100vw - 32px);height:460px;max-height:calc(100vh - 120px);background:var(--surf);border:1px solid var(--border2);border-radius:var(--r);z-index:8001;display:none;flex-direction:column;box-shadow:0 16px 60px rgba(0,0,0,.7);overflow:hidden}
+.donald-chat.show{display:flex}
+.dc-head{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid var(--border);background:var(--bg2);flex-shrink:0}
+.dc-title{font-family:'Syne',sans-serif;font-size:12px;font-weight:800;color:var(--text)}
+.dc-title span{color:var(--hi)}
+.dc-head-right{display:flex;align-items:center;gap:6px}
+.dc-clear{font-size:9px;color:var(--text3);background:none;border:none;cursor:pointer;font-family:inherit;padding:2px 5px;border-radius:3px;transition:all .12s}.dc-clear:hover{color:var(--amber);background:var(--surf3)}
+.dc-close{width:20px;height:20px;background:var(--surf3);border:1px solid var(--border);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:11px;color:var(--text2);transition:all .12s}.dc-close:hover{background:var(--red);color:#fff;border-color:var(--red)}
+.dc-msgs{flex:1;overflow-y:auto;padding:10px;display:flex;flex-direction:column;gap:7px}.dc-msgs::-webkit-scrollbar{width:2px}.dc-msgs::-webkit-scrollbar-thumb{background:var(--surf4)}
+.dc-msg{max-width:88%;padding:7px 10px;border-radius:var(--r);font-size:11px;line-height:1.5}
+.dc-msg.user{background:var(--hi);color:#fff;align-self:flex-end;border-bottom-right-radius:3px}
+.dc-msg.assistant{background:var(--surf2);color:var(--text);align-self:flex-start;border:1px solid var(--border);border-bottom-left-radius:3px}
+.dc-msg.loading{color:var(--text3);font-style:italic}
+.dc-inp-row{display:flex;gap:6px;padding:10px;border-top:1px solid var(--border);flex-shrink:0}
+.dc-inp{flex:1;padding:7px 10px;background:var(--surf2);border:1px solid var(--border);border-radius:var(--rsm);color:var(--text);font-size:11px;font-family:inherit;outline:none;transition:border .12s}.dc-inp:focus{border-color:var(--border2)}
+.dc-send{padding:7px 12px;background:var(--hi);color:#fff;border:none;border-radius:var(--rsm);font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;transition:opacity .12s;flex-shrink:0}.dc-send:hover{opacity:.85}.dc-send:disabled{opacity:.4;cursor:not-allowed}
+.dc-hint{padding:4px 10px 8px;font-size:9px;color:var(--text3);flex-shrink:0;text-align:center}
+/* === DASHBOARD METRICS STRIP === */
+.dash-metrics-5{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:8px}
+/* === AGENTS PANEL === */
+.agent-row{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--border)}
+.agent-row:last-child{border-bottom:none}
+.agent-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.agent-dot.active{background:var(--green);animation:sdp 3s infinite}
+.agent-dot.idle{background:var(--surf4)}
+.agent-name{font-size:10px;font-weight:600;color:var(--text);flex:1}
+.agent-next{font-size:9px;color:var(--text3);white-space:nowrap}
+@media(max-width:768px){
+  .donald-chat{width:calc(100vw - 24px);right:12px;bottom:72px;height:380px}
+  .donald-fab{bottom:16px;right:12px}
+  .dash-metrics-5{grid-template-columns:repeat(3,1fr)}
+}
+
 </style>
 
+<script>
+(function(){
+  window.getHebrewDate = function(date) {
+    try {
+      var anchor = new Date(2026, 4, 18);
+      var diff = Math.round((date - anchor) / 86400000);
+      var hDay = 1 + diff;
+      var hMonth = 3; // Sivan = 3rd from Nisan
+      var hYear = 5786;
+      var monthDays = [30,29,30,29,30,29,30,30,29,30,29,30];
+      var monthNames = ['Nisan','Iyar','Sivan','Tammuz','Av','Elul','Tishrei','Cheshvan','Kislev','Tevet','Shevat','Adar'];
+      while(hDay > monthDays[hMonth-1]) { hDay -= monthDays[hMonth-1]; hMonth++; if(hMonth>12){hMonth=1;hYear++;} }
+      while(hDay < 1) { hMonth--; if(hMonth<1){hMonth=12;hYear--;} hDay += monthDays[hMonth-1]; }
+      return hDay + ' ' + monthNames[hMonth-1] + ' ' + hYear;
+    } catch(e) { return ''; }
+  };
+})();
+
+// ============================================================
+// v2.6 ADDITIONS
+// ============================================================
+
+// --- CHAT WIDGET ---
+var _chatOpen = false;
+var _chatHistory = [];
+var _chatLoading = false;
+
+function toggleDonaldChat() {
+  _chatOpen = !_chatOpen;
+  var el = document.getElementById('donaldChatBox');
+  if (el) el.classList.toggle('show', _chatOpen);
+  if (_chatOpen) {
+    setTimeout(function() { var i = document.getElementById('dcInp'); if(i) i.focus(); }, 120);
+    if (document.getElementById('dcMsgs').children.length === 0) {
+      appendDcMsg('assistant', 'Hey David — what do you need?');
+    }
+  }
+}
+
+function closeDonaldChat() {
+  _chatOpen = false;
+  var el = document.getElementById('donaldChatBox');
+  if (el) el.classList.remove('show');
+}
+
+function clearDonaldChat() {
+  _chatHistory = [];
+  var msgs = document.getElementById('dcMsgs');
+  if (msgs) msgs.innerHTML = '';
+  appendDcMsg('assistant', 'Chat cleared. What do you need?');
+}
+
+function appendDcMsg(role, text, isLoading) {
+  var msgs = document.getElementById('dcMsgs');
+  if (!msgs) return null;
+  var div = document.createElement('div');
+  div.className = 'dc-msg ' + role + (isLoading ? ' loading' : '');
+  div.textContent = text;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+  return div;
+}
+
+function dcKeyDown(e) {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendDcMsg(); }
+}
+
+async function sendDcMsg() {
+  if (_chatLoading) return;
+  var inp = document.getElementById('dcInp');
+  var btn = document.getElementById('dcSendBtn');
+  if (!inp) return;
+  var msg = inp.value.trim();
+  if (!msg) return;
+  inp.value = '';
+  _chatHistory.push({ role: 'user', content: msg });
+  appendDcMsg('user', msg);
+  _chatLoading = true;
+  if (btn) btn.disabled = true;
+  var loadEl = appendDcMsg('assistant', 'Thinking...', true);
+  try {
+    var res = await fetch('https://donald-proxy.davidlgenuth.workers.dev', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 800,
+        system: 'You are DONALD, David Genuth\'s personal AI Chief of Staff. COO at Prime Source, Toms River NJ. Be concise and direct. Max 3-4 sentences unless detail is needed.',
+        messages: _chatHistory
+      })
+    });
+    var data = await res.json();
+    var reply = (data.content && data.content[0] && data.content[0].text) ? data.content[0].text : 'No response.';
+    _chatHistory.push({ role: 'assistant', content: reply });
+    if (loadEl) { loadEl.textContent = reply; loadEl.classList.remove('loading'); }
+  } catch(err) {
+    if (loadEl) { loadEl.textContent = 'Connection error — check Cloudflare Worker.'; loadEl.classList.remove('loading'); }
+  }
+  _chatLoading = false;
+  if (btn) btn.disabled = false;
+  var msgs = document.getElementById('dcMsgs');
+  if (msgs) msgs.scrollTop = msgs.scrollHeight;
+}
+
+// --- DASHBOARD METRICS ---
+function renderDashMetrics() {
+  var tasks = [];
+  try { tasks = JSON.parse(localStorage.getItem('po2_tasks') || '[]'); } catch(e) {}
+  var open = tasks.filter(function(t){ return !t.done; }).length;
+  var urgent = tasks.filter(function(t){ return !t.done && t.priority === 'high'; }).length;
+  var now = new Date();
+  var taxDeadline = new Date('2026-06-11T23:59:00-04:00');
+  var taxDays = Math.max(0, Math.ceil((taxDeadline - now) / 86400000));
+  var taxColor = taxDays <= 7 ? 'var(--red)' : taxDays <= 14 ? 'var(--amber)' : 'var(--teal)';
+  var taxBg = taxDays <= 14 ? 'background:var(--rbg);border-color:rgba(224,48,48,.25)' : '';
+  var el = document.getElementById('dashMetrics5');
+  if (!el) return;
+  el.innerHTML =
+    '<div class="mc clickable" onclick="V(\'finance\',null)"><div class="ml">Open Tasks</div><div class="mv">' + open + '</div><div class="ms">across all areas</div></div>' +
+    '<div class="mc" style="' + (urgent > 0 ? 'background:var(--rbg);border-color:rgba(224,48,48,.25)' : '') + '"><div class="ml">Urgent</div><div class="mv" style="color:' + (urgent > 0 ? 'var(--red)' : 'var(--green)') + '">' + urgent + '</div><div class="ms">' + (urgent > 0 ? 'needs attention' : 'all clear') + '</div></div>' +
+    '<div class="mc clickable" onclick="V(\'finance\',null)"><div class="ml">PP Balance</div><div class="mv" style="color:var(--red)">$93K</div><div class="ms">GenMed remaining</div></div>' +
+    '<div class="mc" style="' + taxBg + '"><div class="ml">Tax Amendment</div><div class="mv" style="color:' + taxColor + '">' + taxDays + 'd</div><div class="ms">deadline Jun 11</div></div>' +
+    '<div class="mc"><div class="ml">Milestone LLC</div><div class="mv" style="font-size:13px;color:var(--amber)">Bank ↗</div><div class="ms">open account</div></div>';
+}
+
+// --- AGENTS PANEL ---
+var AGENT_LIST = [
+  { name: 'Morning Brief', icon: '☀️', status: 'active', next: 'Tomorrow 7:00 AM' },
+  { name: 'Task Extractor', icon: '??', status: 'active', next: 'Every 2 hrs' },
+  { name: 'Email Triage', icon: '??', status: 'active', next: 'Continuous' },
+  { name: 'Financial Tracker', icon: '??', status: 'active', next: 'Daily 6pm' },
+  { name: 'Health Monitor', icon: '❤️', status: 'idle', next: 'Every 6 hrs' },
+  { name: 'Call Transcriber', icon: '??', status: 'active', next: 'On new file' },
+  { name: 'Work Intel', icon: '??', status: 'idle', next: 'Every hr' }
+];
+
+function renderAgentsPanel() {
+  var el = document.getElementById('agentsPanel');
+  if (!el) return;
+  var activeCount = AGENT_LIST.filter(function(a){ return a.status === 'active'; }).length;
+  var html = '<div class="ct">Autonomous Agents <span style="font-size:9px;color:var(--green);font-weight:400;text-transform:none;letter-spacing:0">' + activeCount + ' active</span></div>';
+  AGENT_LIST.forEach(function(a) {
+    html += '<div class="agent-row"><div class="agent-dot ' + a.status + '"></div><span style="font-size:11px;width:18px;flex-shrink:0">' + a.icon + '</span><span class="agent-name">' + a.name + '</span><span class="agent-next">' + a.next + '</span></div>';
+  });
+  el.innerHTML = html;
+}
+
+// --- HEBREW DATE ---
+function renderHebrewDate() {
+  var hd = window.getHebrewDate ? window.getHebrewDate(new Date()) : '';
+  var el = document.getElementById('hebrewDate');
+  if (el && hd) el.textContent = hd;
+}
+
+// v2.6 init
+renderDashMetrics();
+renderAgentsPanel();
+renderHebrewDate();
+
+</script>
 </head>
 <body>
 <div class="app">
@@ -227,7 +426,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
     <button class="ntab" onclick="V('work',this)">Work</button>
   </nav>
   <div class="tbr">
-    <span class="tdate" id="tdate"></span>
+    <div style="text-align:right"><span class="tdate" id="tdate"></span><div style="font-size:9px;color:var(--red);letter-spacing:.02em;margin-top:1px;direction:ltr" id="hebrewDate"></div></div>
     <button class="ibb" onclick="toggleTheme()" title="Toggle theme">◑</button>
     <button class="ibb" onclick="togglePanel()" title="Toggle DONALD panel" style="opacity:.4;font-size:10px">◧</button>
   </div>
@@ -306,6 +505,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
       <button class="cc-btn" onclick="ask('Give me my full morning briefing — calendar today, email highlights, CPAP status, pending items, and my single top priority.')">Morning Briefing ↗</button>
     </div>
   </div>
+  <div class="dash-metrics-5" id="dashMetrics5" style="margin-bottom:8px"></div>
   <div class="dash-grid">
     <div class="dash-col">
       <div class="card" style="margin-bottom:0">
@@ -331,12 +531,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
       </div>
     </div>
     <div class="dash-col">
-      <div class="dash-metrics">
-        <div class="mc clickable" onclick="V('finance',null)"><div class="ml">Owed to you</div><div class="mv" style="color:var(--red)">$93K</div><div class="ms">Prime Procurement</div></div>
-        <div class="mc clickable" onclick="V('health',null)"><div class="ml">CPAP nights left</div><div class="mv" style="color:var(--amber)">27</div><div class="ms">window ~Jul 20</div></div>
-        <div class="mc clickable" onclick="V('email',null)"><div class="ml">Unread email</div><div class="mv">8</div><div class="ms">personal inbox</div></div>
-        <div class="mc clickable" onclick="V('work',null)"><div class="ml">Work pulse</div><div class="mv" style="font-size:16px;color:var(--text2)">→</div><div class="ms">Open Prime Source OS</div></div>
-      </div>
+
       <div class="card" style="margin-bottom:0">
         <div class="ct">Priority tasks <span id="dashTaskStats" style="font-size:9px;color:var(--text3);font-weight:400;text-transform:none;letter-spacing:0"></span></div>
         <div id="dashTaskList"></div>
@@ -366,6 +561,9 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
         <div class="row"><span class="rn" style="font-size:10px">Donor Advised Fund</span><span class="badge ba">Not set up</span></div>
         <div class="row"><span class="rn" style="font-size:10px">Auto insurance discount</span><span class="badge ba">Follow up needed</span></div>
         <button class="adb" onclick="V('finance',null)"><span class="adb-icon">💰</span>Go to Finance world</button>
+      </div>
+      <div class="card" style="margin-bottom:0" id="agentsPanel">
+        <!-- populated by renderAgentsPanel() -->
       </div>
     </div>
   </div>
@@ -1408,5 +1606,28 @@ document.addEventListener('click',function(e){var modal=document.getElementById(
   document.addEventListener('touchend',function(){if(!isDragging||window.innerWidth>768)return;var p=getPanel();if(!p)return;isDragging=false;p.style.transition='';var delta=currentY-startY;if(delta>80){p.style.transform='';p.classList.remove('mobile-open');var ov=document.getElementById('panelOverlay');if(ov)ov.classList.remove('show');}else{p.style.transform='';}});
 })();
 </script>
+
+<!-- DONALD CHAT WIDGET -->
+<div class="donald-fab">
+  <div class="donald-chat" id="donaldChatBox">
+    <div class="dc-head">
+      <div class="dc-title"><span>D</span>ONALD Chat</div>
+      <div class="dc-head-right">
+        <button class="dc-clear" onclick="clearDonaldChat()">Clear</button>
+        <div class="dc-close" onclick="closeDonaldChat()">✕</div>
+      </div>
+    </div>
+    <div class="dc-msgs" id="dcMsgs"></div>
+    <div class="dc-hint">Powered by Anthropic API</div>
+    <div class="dc-inp-row">
+      <input class="dc-inp" id="dcInp" placeholder="Ask DONALD anything..." onkeydown="dcKeyDown(event)">
+      <button class="dc-send" id="dcSendBtn" onclick="sendDcMsg()">Send</button>
+    </div>
+  </div>
+  <button class="donald-fab-btn" onclick="toggleDonaldChat()">
+    <div class="fab-dot"></div>Ask DONALD
+  </button>
+</div>
+
 </body>
 </html>
