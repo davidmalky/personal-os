@@ -313,6 +313,56 @@ function dcKeyDown(e) {
   if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendDcMsg(); }
 }
 
+
+function buildDonaldContext() {
+  var now = new Date();
+  var dateStr = now.toLocaleDateString('en-US', {weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  var timeStr = now.toLocaleTimeString('en-US', {hour:'2-digit',minute:'2-digit',timeZone:'America/New_York'});
+  var hd = window.getHebrewDate ? window.getHebrewDate(now) : '';
+
+  // Pull open tasks
+  var taskLines = '';
+  try {
+    var t = tasks || JSON.parse(localStorage.getItem('po2_tasks') || '[]');
+    var open = t.filter(function(x){return !x.done;});
+    taskLines = open.slice(0,10).map(function(x){
+      return '- [' + (x.priority||'med').toUpperCase() + '] ' + x.text + (x.category?' ('+x.category+')':'');
+    }).join('\n');
+  } catch(e){}
+
+  // Pull intel summaries from Command Center panels
+  var intelLines = '';
+  try {
+    if(intelCache) {
+      var keys = Object.keys(intelCache);
+      keys.forEach(function(k) {
+        var panel = intelCache[k];
+        if(panel && panel.html) {
+          // Strip HTML tags to get plain text
+          var plain = panel.html.replace(/<[^>]+>/g,'').replace(/\s+/g,' ').trim().slice(0,300);
+          intelLines += '\n[' + k.toUpperCase() + ']: ' + plain;
+        }
+      });
+    }
+  } catch(e){}
+
+  return 'You are DONALD, David Genuth\'s personal AI Chief of Staff. You have full context of his life and operate with strategic intelligence and relentless execution.\n\n' +
+    'CURRENT DATE/TIME: ' + dateStr + ', ' + timeStr + ' Eastern. Hebrew date: ' + hd + '\n\n' +
+    'WHO YOU ARE SERVING:\n' +
+    'David Genuth, 43, COO at Prime Source Expense Experts (national consulting for post-acute care facilities), Toms River NJ.\n' +
+    'Observant/Hasidic. Shabbos starts tonight ' + (now.getDay()===5 ? 'at candle lighting' : 'Friday at candle lighting') + '.\n' +
+    'Key priorities: $93K owed from GenMed (Prime Procurement), 2022 tax amendment deadline June 11, Milestone Metrics LLC bank account needs to be opened, CPAP compliance (7/30 nights), MileagePlus merge.\n\n' +
+    'OPEN TASKS RIGHT NOW:\n' + (taskLines || 'No open tasks loaded') + '\n\n' +
+    'LIVE INTEL FROM COMMAND CENTER:\n' + (intelLines || 'No intel loaded — user needs to run Refresh Intel') + '\n\n' +
+    'YOUR OPERATING RULES:\n' +
+    '- Be direct and concise. No fluff.\n' +
+    '- When asked about priorities, reference the actual tasks and intel above.\n' +
+    '- When asked about calendar, acknowledge you\'re reading from the intel panels.\n' +
+    '- If intel is stale or missing, tell David to run Refresh Intel.\n' +
+    '- David approves all actions. You prepare, he decides.\n' +
+    '- Answer in 2-4 sentences unless the question requires more detail.';
+}
+
 async function sendDcMsg() {
   if (_chatLoading) return;
   var inp = document.getElementById('dcInp');
@@ -333,7 +383,7 @@ async function sendDcMsg() {
       body: JSON.stringify({
         model: 'claude-sonnet-4-5',
         max_tokens: 800,
-        system: 'You are DONALD, David Genuth\'s personal AI Chief of Staff. COO at Prime Source, Toms River NJ. Be concise and direct. Max 3-4 sentences unless detail is needed.',
+        system: buildDonaldContext(),
         messages: _chatHistory
       })
     });
