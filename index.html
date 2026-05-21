@@ -509,24 +509,22 @@ renderHebrewDate();
   <div class="dash-grid">
     <div class="dash-col">
       <div class="card" style="margin-bottom:0">
-        <div class="ct">Today</div>
-        <div class="row"><div><div class="rn">Dan Flax Wedding</div><div class="rs">Tonight · 7:00 PM · Kesser Moshe Yehudah, Lakewood</div></div><span class="badge bg">Tonight</span></div>
+        <div class="ct">Today <span style="font-size:9px;color:var(--text3);font-weight:400;text-transform:none;letter-spacing:0" id="calDateLabel"></span></div>
+        <div id="calTodayItems"><div style="font-size:10px;color:var(--text3);padding:8px 0;font-style:italic">Run Refresh Intel to load today's calendar</div></div>
         <div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--border)">
           <div style="font-size:9px;color:var(--text3);margin-bottom:4px;font-weight:600;text-transform:uppercase;letter-spacing:.04em">This week</div>
-          <div class="row"><div class="rn" style="font-size:10px">SightMD appointment</div><span class="badge bx">Thu May 15</span></div>
-          <div class="row"><div class="rn" style="font-size:10px">Shabbos / Lag B'Omer</div><span class="badge bp">Fri–Sun</span></div>
-          <div class="row"><div class="rn" style="font-size:10px">Haircut after Lag B'Omer</div><span class="badge ba">Sun May 17</span></div>
+          <div id="calWeekItems"><div style="font-size:10px;color:var(--text3);font-style:italic">Loading from intel...</div></div>
         </div>
       </div>
       <div class="card" style="margin-bottom:0">
-        <div class="ct">CPAP compliance</div>
+        <div class="ct">Health snapshot</div>
         <div class="prog">
-          <div class="pt2"><span class="pn">30-night window</span><span class="pp" style="color:var(--amber)">3 / 30 nights</span></div>
-          <div class="ptrack"><div class="pfill" style="width:10%;background:var(--amber)"></div></div>
+          <div class="pt2"><span class="pn">CPAP compliance</span><span class="pp" style="color:var(--amber)">7 / 30 nights</span></div>
+          <div class="ptrack"><div class="pfill" style="width:23%;background:var(--amber)"></div></div>
         </div>
-        <div class="row"><span class="rn" style="font-size:10px">Nights still needed</span><span class="badge br">27 remaining</span></div>
+        <div class="row"><span class="rn" style="font-size:10px">Nights remaining</span><span class="badge ba">23 to go</span></div>
         <div class="row"><span class="rn" style="font-size:10px">Window closes</span><span class="badge bx">~Jul 20, 2026</span></div>
-        <div class="row"><span class="rn" style="font-size:10px">Bluetooth overnight</span><span class="badge br">Required</span></div>
+        <div class="row"><span class="rn" style="font-size:10px">Next Tapezza</span><span class="badge bx">Call Option Care</span></div>
         <button class="adb" onclick="V('health',null)"><span class="adb-icon">💪</span>Go to Health world</button>
       </div>
     </div>
@@ -656,7 +654,7 @@ renderHebrewDate();
     <div class="card">
       <div class="ct">Appointments</div>
       <div class="row"><div><div class="rn">Tapezza infusion</div><div class="rs">May 8, 2026</div></div><span class="badge bx">Completed</span></div>
-      <div class="row"><div><div class="rn">SightMD</div><div class="rs">May 15, 2026</div></div><span class="badge bp">Upcoming</span></div>
+      <div class="row"><div><div class="rn">SightMD</div><div class="rs">May 15 — completed</div></div><span class="badge bg">Done</span></div>
       <div class="row"><div><div class="rn">Handicap placard renewal</div><div class="rs">Current expires Oct 2026 — reapply Aug/Sep with new prescription</div></div><span class="badge bx">Aug/Sep</span></div>
       <button class="adb" onclick="ask('What do I need to prepare for my SightMD appointment on May 15?')"><span class="adb-icon">📅</span>SightMD prep</button>
       <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border)">
@@ -684,8 +682,7 @@ renderHebrewDate();
       <div class="ct">Jewish calendar</div>
       <div class="row"><div><div class="rn">Lag B'Omer</div><div class="rs">Sunday May 17 — haircut allowed after</div></div><span class="badge bp">Sun</span></div>
       <div class="row"><div><div class="rn">Shabbos candle lighting</div><div class="rs">Friday ~7:45 PM · Toms River</div></div><span class="badge bx">Fri</span></div>
-      <div class="row"><div><div class="rn">Sefira</div><div class="rs">Active — haircut after Lag B'Omer</div></div><span class="badge ba">Active</span></div>
-      <div class="row"><div><div class="rn">Wedding — Dan Flax</div><div class="rs">Tonight · Kesser Moshe Yehudah, Lakewood</div></div><span class="badge bg">Tonight</span></div>
+      <div class="row"><div><div class="rn">Sefira</div><div class="rs">Day 33 — Shavuos in 2 days</div></div><span class="badge bp">Active</span></div>
       <button class="adb" onclick="ask('What is on the Jewish calendar this week and coming month that I should know about?')"><span class="adb-icon">✡</span>Jewish calendar this week</button>
       <button class="adb" onclick="ask('Help me prepare for Shabbos this week. What do I need to do before zman on Friday?')"><span class="adb-icon">✨</span>Shabbos prep check</button>
     </div>
@@ -1310,7 +1307,7 @@ var INTEL_MAP={
   daily:function(){var hi=tasks.filter(function(t){return !t.done&&t.pri==='high'});var d=new Date();var days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];var lines=['<div class="ii ii-blue">📅 <strong>'+days[d.getDay()]+', '+d.toLocaleDateString('en-US',{month:'short',day:'numeric'})+'</strong></div>'];if(hi.length){lines.push('<div class="ii-section-label">High priority today</div>');hi.slice(0,3).forEach(function(t){lines.push('<div class="ii ii-red">▸ <strong>'+t.text+'</strong></div>');});}return lines.join('');},
   finance:function(){return '<div class="ii ii-red">💰 <strong>$93K owed</strong> — Prime Procurement balance</div><div class="ii ii-amber">📋 <strong>DAF not set up</strong> — needed for charity routing</div><div class="ii ii-amber">🚗 <strong>Auto insurance</strong> — follow up after household completions</div><div class="ii ii-green">✓ <strong>Capital One Spark</strong> — AutoPay enrolled</div>';},
   health:function(){return '<div class="ii ii-amber">💪 <strong>CPAP: 27 nights remaining</strong> — window closes ~Jul 20</div><div class="ii ii-blue">📅 <strong>SightMD — May 15, 2026</strong></div><div class="ii ii-amber">⚡ <strong>Bluetooth on overnight</strong> — required for MyAir tracking</div>';},
-  family:function(){return '<div class="ii ii-blue">✡ <strong>Lag B\'Omer</strong> — Sunday May 17 · haircut allowed after</div><div class="ii ii-blue">🕯 <strong>Shabbos</strong> — Friday ~7:45 PM candle lighting</div><div class="ii ii-green">🎉 <strong>Dan Flax wedding tonight</strong> — 7 PM, Kesser Moshe Yehudah</div>';},
+  family:function(){return '<div class="ii ii-blue">✡ <strong>Lag B\'Omer</strong> — Sunday May 17 · haircut allowed after</div><div class="ii ii-blue">🕯 <strong>Shabbos</strong> — Friday ~7:45 PM candle lighting</div><div class="ii ii-blue">🕍 <strong>Shavuos</strong> — Thu May 22 eve · candle lighting 7:53 PM</div>';},
   email:function(){return '<div class="ii ii-amber">📧 <strong>Dropbox storage 87%</strong> — upgrade or clean up</div><div class="ii ii-blue">✈ <strong>United MileagePlus</strong> — new account confirmation</div><div class="ii ii-amber">📋 <strong>Airtable</strong> — switched to free plan</div><div class="ii ii-gray">8 unread emails in personal inbox</div>';},
   work:function(){return '<div class="ii ii-gray">Open <strong>Prime Source OS</strong> for full work depth</div><div class="ii ii-blue">Push intel from Work DONALD for live updates</div>';}
 };
