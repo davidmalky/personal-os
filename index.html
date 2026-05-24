@@ -807,6 +807,47 @@ var DONALD_INTEL_FILE_ID = '137MUmEXKnGgkNRKjaOUsSxbTf5ir9VVx';
 
 function fetchDriveIntel() {
   var status = document.getElementById('liveIntelStatus');
+  var masterKey = localStorage.getItem('po2_jbKey') || G('jbKey') || '';
+  var binId = localStorage.getItem('po2_jbBinId') || G('jbBinId') || '6a02c186adc21f119a894914';
+  
+  if (!masterKey) {
+    if (status) { status.textContent = 'Enter JSONBin Master Key in Cloud Sync below first'; status.style.color = 'var(--amber)'; }
+    return;
+  }
+  
+  if (status) { status.textContent = 'Fetching from JSONBin...'; status.style.color = 'var(--amber)'; }
+  
+  fetch('https://api.jsonbin.io/v3/b/' + binId + '/latest', {
+    method: 'GET',
+    headers: { 'X-Master-Key': masterKey, 'X-Bin-Meta': 'false' }
+  })
+  .then(function(r) {
+    if (!r.ok) throw new Error('JSONBin HTTP ' + r.status);
+    return r.json();
+  })
+  .then(function(data) {
+    var intel = data.record || data;
+    if (!intel || !intel.updated) throw new Error('No intel data in bin');
+    _liveIntel = intel;
+    applyLiveIntel(intel);
+    try {
+      localStorage.setItem('po2_liveIntelCache', JSON.stringify(intel));
+      localStorage.setItem('po2_liveIntelTime', Date.now().toString());
+    } catch(e) {}
+    if (status) { status.textContent = 'Connected \u2713 ' + (intel.updated_et || intel.updated); status.style.color = 'var(--green)'; }
+    var syncEl = document.querySelector('.sync-bar');
+    if (syncEl && intel.updated_et) syncEl.textContent = '\u25CF Live \u00b7 ' + intel.updated_et;
+  })
+  .catch(function(err) {
+    if (status) { status.textContent = 'Error: ' + err.message; status.style.color = 'var(--red)'; }
+    // Fall back to cached
+    try {
+      var cached = localStorage.getItem('po2_liveIntelCache');
+      if (cached) { var c = JSON.parse(cached); if (c && c.updated) applyLiveIntel(c); }
+    } catch(e) {}
+  });
+}function fetchDriveIntel() {
+  var status = document.getElementById('liveIntelStatus');
   
   // Try cached intel first (from last successful fetch)
   try {
@@ -991,8 +1032,8 @@ function tryLoadCachedIntel() {
 
 function setDonaldWebAppUrl(url) {
   var status = document.getElementById('liveIntelStatus');
-  localStorage.setItem('po2_donaldWebAppUrl', (url||'').trim());
-  if (status) { status.textContent = 'Saved. Fetching via Worker...'; status.style.color = 'var(--amber)'; }
+  if (url && url.trim()) localStorage.setItem('po2_donaldWebAppUrl', url.trim());
+  if (status) { status.textContent = 'Connecting...'; status.style.color = 'var(--amber)'; }
   fetchDriveIntel();
 }
 
