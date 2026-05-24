@@ -132,6 +132,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .cc-drawer-body .ii-detail{font-size:10px}
 .cc-drawer-actions{padding:12px 20px 16px;border-top:1px solid var(--border);display:flex;gap:8px;flex-wrap:wrap;flex-shrink:0}
 .act-pop{position:fixed;z-index:9800;background:var(--surf2);border:1px solid var(--border2);border-radius:var(--r);box-shadow:0 8px 32px rgba(0,0,0,.7);min-width:195px;padding:5px 0}
+.act-pop-dim{color:var(--text3)!important}
 .act-pop-hdr{padding:5px 11px 4px;font-size:8px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text3);border-bottom:1px solid var(--border);margin-bottom:3px}
 .act-pop-item{display:flex;align-items:center;gap:7px;padding:5px 11px;font-size:10px;color:var(--text2);cursor:pointer;transition:background .1s;white-space:nowrap}.act-pop-item:hover{background:var(--surf3);color:var(--text)}
 .act-pop-icon{font-size:11px;width:13px;text-align:center}.act-pop-div{height:1px;background:var(--border);margin:3px 0}
@@ -561,6 +562,7 @@ function dismissStoreItem(name, id) {
   items = items.filter(function(i){ return i.id !== id; });
   saveStore(name, items);
   renderStore(name);
+  try { renderDeletedSection(name, name + 'DeletedEl'); } catch(_) {}
   try { pushToCloud(); } catch(_) {}
 }
 
@@ -575,6 +577,7 @@ function restoreStoreItem(name, id) {
   deleted = deleted.filter(function(i){ return i.id !== id; });
   saveStore(name + '_deleted', deleted);
   renderStore(name);
+  try { renderDeletedSection(name, name + 'DeletedEl'); } catch(_) {}
   try { pushToCloud(); } catch(_) {}
 }
 
@@ -653,6 +656,22 @@ function renderStore(name, containerId) {
       '</div>' +
     '</div>';
   }).join('');
+}
+
+
+function renderDeletedSection(name, containerId) {
+  var el = document.getElementById(containerId);
+  if (!el) return;
+  var deleted = loadStore(name + '_deleted');
+  if (!deleted.length) { el.innerHTML = ''; return; }
+  el.innerHTML = '<div style="margin-top:8px;padding-top:6px;border-top:1px solid var(--border)">' +
+    '<div style="font-size:9px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.04em;cursor:pointer;margin-bottom:4px" onclick="this.nextSibling.style.display=this.nextSibling.style.display===\'none\'?\'block\':\'none\'">🗑 Deleted (' + deleted.length + ') — tap to expand</div>' +
+    '<div style="display:none">' + deleted.map(function(item) {
+      return '<div class="iitem" style="opacity:.55">' +
+        '<div class="iitem-body"><div class="iitem-text" style="text-decoration:line-through;font-size:9px">' + item.text + '</div></div>' +
+        '<div class="iitem-actions"><button class="ibadge info" onclick="restoreStoreItem(\'' + name + '\',\'' + item.id + '\')" style="font-size:7px;padding:1px 4px">Restore</button></div>' +
+        '</div>';
+    }).join('') + '</div></div>';
 }
 
 function renderAddRow(name, placeholder) {
@@ -749,6 +768,7 @@ function v26init() {
     try { renderStore('pending','pendingStoreEl'); var pa=document.getElementById('pendingAddRow'); if(pa) pa.innerHTML=renderAddRow('pending','Add item...'); } catch(e) {}
     try { renderStore('finance','financeStoreEl'); var fa=document.getElementById('financeAddRow'); if(fa) fa.innerHTML=renderAddRow('finance','Add item...'); } catch(e) {}
     try { renderStore('health','healthStoreEl'); var ha=document.getElementById('healthAddRow'); if(ha) ha.innerHTML=renderAddRow('health','Add item...'); } catch(e) {}
+    try { renderDeletedSection('pending','pendingDeletedEl'); renderDeletedSection('finance','financeDeletedEl'); renderDeletedSection('health','healthDeletedEl'); } catch(e) {}
     // Finance World tab
     try { renderFinWorldMetrics(); } catch(e) {}
     try { var fwEl=document.getElementById('financeWorldStoreEl'); if(fwEl) renderStore('finance','financeWorldStoreEl'); var fwA=document.getElementById('financeWorldAddRow'); if(fwA) fwA.innerHTML=renderAddRow('finance','Add finance item...'); } catch(e) {}
@@ -881,6 +901,7 @@ function v26init() {
         <div class="ct">Health Snapshot</div>
         <div id="healthStoreEl"></div>
         <div id="healthAddRow"></div>
+        <div id="healthDeletedEl"></div>
         <button class="adb" onclick="V('health',null)" style="margin-top:6px"><span class="adb-icon">💪</span>Go to Health world</button>
       </div>
     </div>
@@ -908,6 +929,7 @@ function v26init() {
         <div class="ct">Finance Snapshot</div>
         <div id="financeStoreEl"></div>
         <div id="financeAddRow"></div>
+        <div id="financeDeletedEl"></div>
         <button class="adb" onclick="V('finance',null)" style="margin-top:6px"><span class="adb-icon">💰</span>Go to Finance world</button>
       </div>
       <div class="card" style="margin-bottom:0" id="agentsPanel">
@@ -1533,6 +1555,21 @@ function setDate(){
   var sub=document.getElementById('dashSubtitle');if(sub){var ds=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];var mos=['January','February','March','April','May','June','July','August','September','October','November','December'];sub.textContent=ds[d.getDay()]+', '+mos[d.getMonth()]+' '+d.getDate()+', '+d.getFullYear();}
 }
 setDate();setInterval(setDate,1000);
+// Auto-refresh intel every 30 minutes if user has cloud sync set up
+setInterval(function(){
+  try {
+    if(typeof pushIntel === 'function' && document.getElementById('jbBinId') && G('jbBinId')) {
+      // Only auto-refresh if user has been active in last 30 min
+      if(typeof _lastActivity !== 'undefined' && (Date.now() - _lastActivity) < 30*60*1000) {
+        if(typeof sendRefreshPrompt === 'function') sendRefreshPrompt();
+      }
+    }
+  } catch(_) {}
+}, 30 * 60 * 1000);
+// Track user activity
+var _lastActivity = Date.now();
+document.addEventListener('click', function(){ _lastActivity = Date.now(); });
+document.addEventListener('keydown', function(){ _lastActivity = Date.now(); });
 
 function pBadge(p){return p==='high'?'<span class="badge br">High</span>':p==='med'?'<span class="badge ba">Med</span>':'<span class="badge bx">Low</span>';}
 function cBadge(c){return '<span class="badge bx">'+c+'</span>';}
@@ -1730,7 +1767,26 @@ function undockCard(pid){_dockedCards=_dockedCards.filter(function(id){return id
 function renderDock(){var dock=document.getElementById('ccDock');if(!dock)return;if(!_dockedCards.length){dock.innerHTML='';return;}dock.innerHTML=_dockedCards.map(function(pid){var panel=CC_PANELS.filter(function(p){return p.id===pid;})[0];if(!panel)return '';return '<div class="dock-chip" onclick="undockCard(\''+pid+'\')">'+panel.icon+' '+panel.label+' ↓</div>';}).join('');}
 function applyCompactStates(){_dockedCards.forEach(function(pid){var el=document.getElementById('cp-'+pid);if(el)el.classList.add('docked');});renderDock();}
 
-function iiClick(el,pid,ii){if(el.classList.contains('selected')){el.classList.remove('selected');_sel=_sel.filter(function(s){return !(s.pid===pid&&s.ii===ii);});}else{el.classList.add('selected');var key=PANEL_INTEL_KEY[pid];var data=key?intelCache[key]:null;if(data&&data.items&&data.items[ii])_sel.push({pid:pid,ii:ii,item:data.items[ii]});}updateSelBar();}
+function iiClick(el,pid,ii){
+  // Toggle selection
+  if(el.classList.contains('selected')){
+    el.classList.remove('selected');
+    _sel=_sel.filter(function(s){return !(s.pid===pid&&s.ii===ii);});
+    closeActPop();
+  } else {
+    // Deselect others in same panel
+    document.querySelectorAll('.ii-wrap.selected').forEach(function(e){e.classList.remove('selected');});
+    _sel=[];
+    el.classList.add('selected');
+    var key=PANEL_INTEL_KEY[pid];var data=key?intelCache[key]:null;
+    if(data&&data.items&&data.items[ii]) _sel.push({pid:pid,ii:ii,item:data.items[ii]});
+    // Show context action popup
+    var rect=el.getBoundingClientRect();
+    var fakeEvent={clientX:Math.min(rect.left,window.innerWidth-220),clientY:Math.min(rect.bottom+4,window.innerHeight-180),stopPropagation:function(){}};
+    actPop(fakeEvent,pid,ii);
+  }
+  updateSelBar();
+}
 function updateSelBar(){var bar=document.getElementById('selBar');var ct=document.getElementById('selCt');if(!bar)return;if(_sel.length>0){bar.classList.add('show');ct.textContent=_sel.length+' item'+(_sel.length===1?'':'s')+' selected';}else{bar.classList.remove('show');}}
 function clearSel(){_sel=[];document.querySelectorAll('.ii-wrap.selected').forEach(function(e){e.classList.remove('selected');});updateSelBar();}
 function batchEmail(){if(!_sel.length)return;var items=_sel.map(function(s){return s.item;});var prompt='DONALD, draft '+items.length+' email'+(items.length>1?'s':'')+' in my voice — warm, direct, no dashes.\n\n'+items.map(function(it,n){return (n+1)+'. '+it.title+(it.detail?' — '+it.detail:'');}).join('\n')+'\n\nFor each: subject line + full email body. Show all drafts before doing anything.';ask(prompt);clearSel();}
@@ -1744,11 +1800,41 @@ function actPop(e,pid,ii){
   document.body.appendChild(pop);setTimeout(function(){document.addEventListener('click',closeActPop,{once:true});},10);
 }
 function closeActPop(){var p=document.getElementById('actPop');if(p)p.remove();}
-function popAct(type){
-  closeActPop();if(!_popTarget)return;var item=_popTarget.item;var pid=_popTarget.pid;var ii=_popTarget.ii;
-  if(type==='email'){ask('DONALD, draft an email for this item in my voice — warm, direct, no dashes. Show the draft before doing anything.\n\nItem: '+item.title+(item.detail?' — '+item.detail:''));}
-  else if(type==='task'){tasks.push({id:nid++,text:item.title,pri:item.type==='red'?'high':item.type==='amber'?'med':'low',cat:'other',done:false});S('tasks',tasks);S('nid',nid);renderDashTasks();showToast('Added to Priority Tasks');}
-  else if(type==='dismiss'){dismissItem(pid,ii);}
+function popAct(act){
+  closeActPop();
+  if(!_popTarget||!_popTarget.item) return;
+  var item=_popTarget.item;
+  var title=item.title||'';
+  var detail=item.detail||'';
+  var context='Item: '+title+(detail?' — '+detail:'');
+  if(act==='ask'){
+    ask('Regarding this item: "'+title+'" — '+detail+'. Give me the most important thing I should know or do about this right now.');
+  } else if(act==='email'){
+    ask('Draft a concise email response or follow-up related to: "'+title+'". Context: '+detail+'. Write in David\'s voice — direct, confident, no fluff.');
+  } else if(act==='task'){
+    var t=tasks||[];t.push({id:Date.now(),text:title,priority:'high',category:'urgent',done:false,created:new Date().toISOString()});
+    saveStore('tasks',t);if(typeof renderDashTasks==='function')renderDashTasks();
+    showToast('Added to Priority Tasks');
+  } else if(act==='calendar'){
+    ask('Help me schedule or prep for: "'+title+'". What do I need to do and when should I block time?');
+  } else if(act==='prepbrief'){
+    ask('Give me a prep brief for: "'+title+'". What should I know, what questions should I ask, what is my goal going in?');
+  } else if(act==='dealstrategy'){
+    ask('Deal strategy for: "'+title+'". What is my leverage, what should I push for, what should I accept, what are the risks?');
+  } else if(act==='summarize'){
+    ask('Summarize the key points and required action from: "'+title+'" — '+detail);
+  } else if(act==='finance'){
+    ask('What is the right financial action for: "'+title+'" — '+detail+'? Give me specific next steps.');
+  } else if(act==='dismiss'){
+    var pid=_popTarget.pid;var ii=_popTarget.ii;
+    var key=pid?PANEL_INTEL_KEY[pid]:null;
+    if(key&&intelCache[key]&&intelCache[key].items){
+      intelCache[key].items.splice(ii,1);
+      S('intelCache',intelCache);
+      if(typeof renderLiveIntel==='function') renderLiveIntel(pid,intelCache[key]);
+      if(typeof renderCC==='function') renderCC();
+    }
+  }
   _popTarget=null;
 }
 function dismissItem(pid,ii){var key=PANEL_INTEL_KEY[pid];if(!key||!intelCache[key]||!intelCache[key].items)return;var removed=intelCache[key].items.splice(ii,1)[0];_dismissed.push({key:key,pid:pid,ii:ii,item:removed,ts:Date.now()});S('intelCache',intelCache);S('dismissed',_dismissed);renderLiveIntel(pid,intelCache[key]);renderCC();setTimeout(injectAllIntel,50);showToast('Item dismissed');}
