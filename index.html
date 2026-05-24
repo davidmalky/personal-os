@@ -425,13 +425,14 @@ async function sendDcMsg() {
 }
 
 // --- DASHBOARD METRICS ---
-function renderDashMetrics() {
+function renderDashMetrics(liveMetrics) {
   var tasks = [];
   try { tasks = JSON.parse(localStorage.getItem('po2_tasks') || '[]'); } catch(e) {}
   var open = tasks.filter(function(t){ return !t.done; }).length;
   var urgent = tasks.filter(function(t){ return !t.done && t.priority === 'high'; }).length;
   var now = new Date();
-  var taxDeadline = new Date('2026-06-11T23:59:00-04:00'); var eventDeadline = new Date('2026-06-08T00:00:00-04:00'); var eventDays = Math.max(0, Math.ceil((eventDeadline - now) / 86400000));
+  var taxDeadline = new Date('2026-06-11T23:59:00-04:00');
+  if (liveMetrics && liveMetrics.tax_days) taxDays = liveMetrics.tax_days; var eventDeadline = new Date('2026-06-08T00:00:00-04:00'); var eventDays = Math.max(0, Math.ceil((eventDeadline - now) / 86400000));
   var taxDays = Math.max(0, Math.ceil((taxDeadline - now) / 86400000));
   var taxColor = taxDays <= 7 ? 'var(--red)' : taxDays <= 14 ? 'var(--amber)' : 'var(--teal)';
   var taxBg = taxDays <= 14 ? 'background:var(--rbg);border-color:rgba(224,48,48,.25)' : '';
@@ -794,6 +795,134 @@ function renderFocusToday() {
       '</div>';
   }).join('');
 }
+
+// ============================================================
+// DRIVE LIVE INTEL READER
+// Fetches donald-live-intel.json from Google Drive on page load
+// ============================================================
+var _liveIntel = null;
+var DONALD_INTEL_FILE_ID = '137MUmEXKnGgkNRKjaOUsSxbTf5ir9VVx';
+
+function fetchDriveIntel() {
+  // Use Google Drive API via fetch with the user's OAuth token
+  // The Cloudflare Worker will proxy this to the Drive API
+  fetch('https://donald-proxy.davidlgenuth.workers.dev', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-5',
+      max_tokens: 100,
+      system: 'Return ONLY the exact string "DRIVE_FETCH_REQUEST" and nothing else.',
+      messages: [{role:'user', content: 'DRIVE_FILE_ID:' + DONALD_INTEL_FILE_ID}]
+    })
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(data) {
+    // Worker returns drive file content
+    try {
+      var text = data.driveContent || (data.content && data.content[0] ? data.content[0].text : '');
+      if (text && text.includes('"updated"')) {
+        _liveIntel = JSON.parse(text);
+        applyLiveIntel(_liveIntel);
+      }
+    } catch(e) { /* fall through to cached data */ }
+  })
+  .catch(function() { /* use local data */ });
+}
+
+function applyLiveIntel(intel) {
+  if (!intel) return;
+  
+  // Update Hebrew date
+  if (intel.hebrew_date) {
+    var hdEl = document.getElementById('hebrewDate');
+    if (hdEl) hdEl.textContent = intel.hebrew_date;
+    var hdCard = document.getElementById('hebrewDateCard');
+    if (hdCard) hdCard.textContent = intel.hebrew_date;
+    var calLbl = document.getElementById('calDateLabel');
+    if (calLbl) calLbl.textContent = intel.hebrew_date;
+  }
+  
+  // Update calendar
+  if (intel.today) {
+    var todayEl = document.getElementById('calTodayItems');
+    if (todayEl && intel.today.events) {
+      if (!intel.today.events.length) {
+        todayEl.innerHTML = '<div style="font-size:10px;color:var(--text3);padding:6px 0">No scheduled events today</div>';
+      } else {
+        todayEl.innerHTML = intel.today.events.map(function(ev) {
+          var color = ev.type==='jewish'?'var(--red)':ev.type==='medical'?'var(--amber)':'var(--text)';
+          return '<div class="row"><div><div class="rn" style="font-size:10px;color:'+color+'">'+ev.title+'</div>'+
+            '<div class="rs">'+ev.time+(ev.note?' · '+ev.note.substring(0,60):'')+'</div></div></div>';
+        }).join('');
+      }
+    }
+  }
+  
+  if (intel.week && intel.week.length) {
+    var weekEl = document.getElementById('calWeekItems');
+    if (weekEl) {
+      weekEl.innerHTML = intel.week.slice(0,6).map(function(ev) {
+        var color = ev.type==='jewish'?'var(--hi)':ev.type==='medical'?'var(--amber)':'var(--text)';
+        return '<div class="row"><div><div class="rn" style="font-size:10px;color:'+color+'">'+ev.title+'</div>'+
+          '<div class="rs">'+ev.date+(ev.time?' · '+ev.time:'')+'</div></div></div>';
+      }).join('');
+    }
+  }
+  
+  // Update intel panels from Drive data
+  if (intel.panels) {
+    Object.keys(intel.panels).forEach(function(panelId) {
+      var html = intel.panels[panelId];
+      if (!html) return;
+      // Update the intel cache so CC panels show this data
+      if (!intelCache[panelId]) intelCache[panelId] = {};
+      intelCache[panelId].html = html;
+      intelCache[panelId].updated = intel.updated;
+      // Convert HTML items to structured items for renderLiveIntel
+      var items = [];
+      var matches = html.match(/<div class="ii ii-(\w+)"><strong>([^<]+)<\/strong>\s*(?:—\s*)?([^<]*)<\/div>/g) || [];
+      matches.forEach(function(m) {
+        var parts = m.match(/<div class="ii ii-(\w+)"><strong>([^<]+)<\/strong>\s*(?:—\s*)?([^<]*)<\/div>/);
+        if (parts) items.push({type:parts[1], title:parts[2], detail:parts[3].trim()});
+      });
+      intelCache[panelId].items = items;
+      // Render to DOM
+      var el = document.getElementById('cp-intel-'+panelId);
+      if (el) el.innerHTML = html;
+    });
+    try { S('intelCache', intelCache); } catch(e) {}
+    try { renderCC(); } catch(e) {}
+    try { updateAllBadges(); } catch(e) {}
+  }
+  
+  // Update metrics
+  if (intel.metrics) {
+    try { renderDashMetrics(intel.metrics); } catch(e) {}
+  }
+  
+  // Email panel store
+  if (intel.email_highlights && intel.email_highlights.length) {
+    var emailItems = intel.email_highlights.map(function(h, i) {
+      return {
+        id: 'live_email_'+i,
+        text: h.subject,
+        sub: 'From: ' + h.from + ' · ' + h.date,
+        status: h.unread ? 'pending' : 'info',
+        source: 'live'
+      };
+    });
+    // Merge with existing email store
+    var existing = loadStore('email').filter(function(i){ return i.source !== 'live'; });
+    window.saveStore('email', emailItems.concat(existing));
+    window.renderStore('email', 'emailStoreEl');
+  }
+  
+  // Show last updated time
+  var syncEl = document.querySelector('.sync-bar');
+  if (syncEl && intel.updated_et) syncEl.textContent = '● Synced · ' + intel.updated_et;
+}
+
 function v26init() {
     try { renderDashMetrics(); } catch(e) {}
     try { renderAgentsPanel(); } catch(e) {}
@@ -801,6 +930,7 @@ function v26init() {
     try { renderCalendarFromWorker(); } catch(e) {}
     try { loadJewishCal(); } catch(e) {}
     setTimeout(updateAllBadges,600);
+    setTimeout(fetchDriveIntel, 800);
     try { renderFocusToday(); } catch(e) {}
     try { updateWorkCountdowns(); } catch(e) {}
     // Interactive stores — Dashboard
