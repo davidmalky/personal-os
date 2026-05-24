@@ -431,7 +431,7 @@ function renderDashMetrics() {
   var open = tasks.filter(function(t){ return !t.done; }).length;
   var urgent = tasks.filter(function(t){ return !t.done && t.priority === 'high'; }).length;
   var now = new Date();
-  var taxDeadline = new Date('2026-06-11T23:59:00-04:00');
+  var taxDeadline = new Date('2026-06-11T23:59:00-04:00'); var eventDeadline = new Date('2026-06-08T00:00:00-04:00'); var eventDays = Math.max(0, Math.ceil((eventDeadline - now) / 86400000));
   var taxDays = Math.max(0, Math.ceil((taxDeadline - now) / 86400000));
   var taxColor = taxDays <= 7 ? 'var(--red)' : taxDays <= 14 ? 'var(--amber)' : 'var(--teal)';
   var taxBg = taxDays <= 14 ? 'background:var(--rbg);border-color:rgba(224,48,48,.25)' : '';
@@ -693,58 +693,52 @@ function renderAddRow(name, placeholder) {
 
 
 function renderCalendarFromWorker() {
-  // Fetch live calendar from Google Calendar via DONALD proxy
   var now = new Date();
-  var today = now.toISOString().split('T')[0];
-  var nextWeek = new Date(now.getTime() + 7 * 86400000).toISOString().split('T')[0];
-  
-  // Update Hebrew date label
-  var calLbl = document.getElementById('calDateLabel');
-  if (calLbl && window.getHebrewDate) { try { calLbl.textContent = window.getHebrewDate(now); } catch(_) {} }
-  
+  var lbl = document.getElementById('calDateLabel');
+  if (lbl && window.getHebrewDate) { try { lbl.textContent = window.getHebrewDate(now); } catch(e){} }
   var todayEl = document.getElementById('calTodayItems');
   var weekEl = document.getElementById('calWeekItems');
-  
-  fetch('https://donald-proxy.davidlgenuth.workers.dev', {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({
-      model: 'claude-sonnet-4-5',
-      max_tokens: 600,
-      system: 'You are a calendar assistant. Return ONLY valid JSON, no markdown. Format exactly: {"today":[{"title":"...","time":"...","note":"..."}],"week":[{"title":"...","date":"...","note":"..."}]}',
-      messages: [{role:'user', content: 'Today is ' + now.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'}) + '. David Genuth\'s confirmed calendar events: TODAY: Chase bank appointment with Adam King 11am (Milestone Metrics LLC banking), Dr Landsman ENT if scheduled. THIS WEEK through ' + nextWeek + ': any recurring commitments, Shabbos candle lighting Friday, any known appointments. Return JSON only with today array and week array, max 4 items each, most important first.'}]
-    })
-  })
-  .then(function(r){return r.json();})
-  .then(function(data){
-    try {
-      var text = data.content && data.content[0] ? data.content[0].text : '';
-      var clean = text.replace(/```json|```/g,'').trim();
-      var cal = JSON.parse(clean);
-      if (todayEl && cal.today) {
-        if (!cal.today.length) {
-          todayEl.innerHTML = '<div style="font-size:10px;color:var(--text3)">No events today — clear schedule</div>';
-        } else {
-          todayEl.innerHTML = cal.today.map(function(e){
-            var isJewish = /נרות|שבועות|הבדלה|שבת|Shabbos|candle|Havdalah|Yom Tov/.test(e.title);
-            return '<div class="row"><div><div class="rn" style="font-size:10px' + (isJewish?';color:var(--red)':'') + '">' + (isJewish?'🕯 ':'') + e.title + '</div>' + (e.time||e.note?'<div class="rs">' + (e.time?e.time+' · ':'') + (e.note||'') + '</div>':'') + '</div></div>';
-          }).join('');
-        }
-      }
-      if (weekEl && cal.week) {
-        weekEl.innerHTML = cal.week.map(function(e){
-          var isJewish = /Shabbos|candle|Havdalah|Yom Tov|שבת|נרות/.test(e.title);
-          return '<div class="row"><div><div class="rn" style="font-size:10px' + (isJewish?';color:var(--hi)':'') + '">' + e.title + '</div><div class="rs">' + (e.date||'') + (e.note?' · '+e.note:'') + '</div></div></div>';
-        }).join('');
-      }
-    } catch(ex) {
-      if (todayEl) todayEl.innerHTML = '<div style="font-size:10px;color:var(--text3)">Run Refresh Intel for live calendar</div>';
-    }
-  })
-  .catch(function(){
-    if (todayEl) todayEl.innerHTML = '<div style="font-size:10px;color:var(--text3)">Run Refresh Intel for live calendar</div>';
+  if (!todayEl) return;
+  // Build today's events from known calendar data
+  var today = now.toDateString();
+  var todayEvents = [];
+  var weekEvents = [];
+  // Static known events (updated to current week)
+  var knownEvents = [
+    {date:'Mon May 25 2026', title:'Dr. Landsman ENT', time:'11:00 AM', type:'appt'},
+    {date:'Tue May 26 2026', title:'Chase — Milestone Metrics LLC', time:'11:00 AM', note:'Adam King · 201-391-8350 · bring EIN + formation doc', type:'bank'},
+    {date:'Fri May 29 2026', title:'Shabbos candle lighting', time:'7:57 PM', type:'jewish'},
+    {date:'Sat May 30 2026', title:'Havdalah', time:'9:03 PM', type:'jewish'},
+    {date:'Sun Jun 8 2026', title:'Prime Source company event — COO speech', time:'All day', type:'work'}
+  ];
+  knownEvents.forEach(function(ev) {
+    var evDate = new Date(ev.date);
+    var todayDate = new Date(now.toDateString());
+    if (evDate.toDateString() === todayDate.toDateString()) todayEvents.push(ev);
+    else if (evDate > todayDate) weekEvents.push(ev);
   });
+  // Render today
+  if (!todayEvents.length) {
+    todayEl.innerHTML = '<div style="font-size:10px;color:var(--text3);padding:6px 0">No scheduled events today</div>';
+  } else {
+    todayEl.innerHTML = todayEvents.map(function(ev) {
+      var color = ev.type==='jewish'?'var(--red)':ev.type==='work'?'var(--amber)':'var(--text)';
+      return '<div class="row"><div><div class="rn" style="font-size:10px;color:'+color+'">'+ev.title+'</div>'+
+        '<div class="rs">'+ev.time+(ev.note?' · '+ev.note:'')+'</div></div></div>';
+    }).join('');
+  }
+  // Render week
+  if (weekEl) {
+    weekEl.innerHTML = weekEvents.slice(0,6).map(function(ev) {
+      var d = new Date(ev.date);
+      var ds = d.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
+      var color = ev.type==='jewish'?'var(--hi)':ev.type==='work'?'var(--amber)':'var(--text)';
+      return '<div class="row"><div><div class="rn" style="font-size:10px;color:'+color+'">'+ev.title+'</div>'+
+        '<div class="rs">'+ds+(ev.time?' · '+ev.time:'')+'</div></div></div>';
+    }).join('');
+  }
 }
+
 
 function loadJewishCal() {
   var el = document.getElementById('jewishCalItems');
@@ -768,6 +762,38 @@ function loadJewishCal() {
     el.innerHTML='<div style="font-size:10px;color:var(--text3)">Tap refresh to load</div>';
   });
 }
+
+function updateWorkCountdowns() {
+  var now = new Date();
+  var eventEl = document.getElementById('workEventDays');
+  if (eventEl) {
+    var days = Math.ceil((new Date('2026-06-08') - now) / 86400000);
+    eventEl.textContent = days + 'd';
+    eventEl.style.color = days <= 7 ? 'var(--red)' : days <= 14 ? 'var(--amber)' : 'var(--green)';
+  }
+}
+
+function renderFocusToday() {
+  var el = document.getElementById('focusTodayEl');
+  if (!el) return;
+  var now = new Date();
+  var taxDays = Math.ceil((new Date('2026-06-11') - now) / 86400000);
+  var eventDays = Math.ceil((new Date('2026-06-08') - now) / 86400000);
+  var items = [
+    {color:'var(--red)', label:'June 8 speech', detail: eventDays+'d — COO procurement presentation, NOT prepped'},
+    {color:'var(--red)', label:'Tax amendment', detail: taxDays+'d — June 11 deadline, charity receipts needed'},
+    {color:'var(--amber)', label:'Chase bank appt', detail:'Tue May 26 11am — bring EIN + formation doc for Milestone Metrics'},
+    {color:'var(--amber)', label:'CPAP tonight', detail:'7/30 nights — put mask on before sleep, Bluetooth on'},
+    {color:'var(--text)', label:'MileagePlus merge', detail:'Call 1-800-421-4655 when ready — 3 accounts to consolidate'},
+  ];
+  el.innerHTML = items.map(function(item) {
+    return '<div style="display:flex;align-items:flex-start;gap:8px;padding:4px 0;border-bottom:1px solid var(--border)">' +
+      '<div style="width:3px;min-height:32px;background:'+item.color+';border-radius:2px;flex-shrink:0;margin-top:2px"></div>' +
+      '<div><div style="font-size:10px;font-weight:600;color:'+item.color+'">'+item.label+'</div>' +
+      '<div style="font-size:9px;color:var(--text3)">'+item.detail+'</div></div>' +
+      '</div>';
+  }).join('');
+}
 function v26init() {
     try { renderDashMetrics(); } catch(e) {}
     try { renderAgentsPanel(); } catch(e) {}
@@ -775,6 +801,8 @@ function v26init() {
     try { renderCalendarFromWorker(); } catch(e) {}
     try { loadJewishCal(); } catch(e) {}
     setTimeout(updateAllBadges,600);
+    try { renderFocusToday(); } catch(e) {}
+    try { updateWorkCountdowns(); } catch(e) {}
     // Interactive stores — Dashboard
     try { renderStore('pending','pendingStoreEl'); var pa=document.getElementById('pendingAddRow'); if(pa) pa.innerHTML=renderAddRow('pending','Add item...'); } catch(e) {}
     try { renderStore('finance','financeStoreEl'); var fa=document.getElementById('financeAddRow'); if(fa) fa.innerHTML=renderAddRow('finance','Add item...'); } catch(e) {}
@@ -1174,7 +1202,7 @@ function v26init() {
     <div class="world-actions"><button class="cc-btn" onclick="window.open('https://claude.ai/chat/fc096dae-272e-4c62-a2eb-59d4ec255a62','_blank')">Open Work DONALD</button></div>
   </div>
   <div class="metrics">
-    <div class="mc"><div class="ml">June 8 Event</div><div class="mv" style="font-size:14px;color:var(--red)">15d</div><div class="ms">COO speech prep now</div></div>
+    <div class="mc" id="workEventCard"><div class="ml">June 8 Event</div><div class="mv" style="font-size:14px;color:var(--red)" id="workEventDays">15d</div><div class="ms">COO speech prep now</div></div>
     <div class="mc"><div class="ml">Culligan deal</div><div class="mv" style="font-size:14px;color:var(--amber)">Pending</div><div class="ms">Redlined contract</div></div>
     <div class="mc"><div class="ml">Mobotics</div><div class="mv" style="font-size:14px;color:var(--amber)">DocuSign</div><div class="ms">Yehuda + Mark pending</div></div>
     <div class="mc"><div class="ml">Salesforce</div><div class="mv" style="font-size:14px;color:var(--green)">Active</div><div class="ms">4 dev items open</div></div>
@@ -1204,11 +1232,13 @@ function v26init() {
   </div>
   <div class="g2">
     <div class="card">
-      <div class="ct">Priority actions</div>
-      <button class="adb" onclick="ask('Top 3 priorities for today. Be specific — exactly what to do and in what order.')">Top 3 for today</button>
-      <button class="adb" onclick="ask('Single most important thing I should be working on right now. One sentence.')">One thing right now</button>
-      <button class="adb" onclick="ask('What have I been procrastinating on that I need to deal with this week?')">What am I avoiding?</button>
-      <button class="adb" onclick="ask('End of day: what did I accomplish, what is unfinished, what carries into tomorrow?')">End of day wrap</button>
+      <div class="ct">Today's priorities</div>
+      <div id="focusTodayEl" style="margin-bottom:8px"></div>
+      <div style="padding-top:6px;border-top:1px solid var(--border);margin-top:4px">
+        <button class="adb" onclick="ask('Top 3 priorities for today — be specific, tell me exactly what to do and in what order.')">Get today's top 3 ↗</button>
+        <button class="adb" onclick="ask('What single thing should I be doing right now? One sentence.')">One thing right now ↗</button>
+        <button class="adb" onclick="ask('End of day wrap: what did I accomplish, what carries to tomorrow?')">End of day wrap ↗</button>
+      </div>
     </div>
     <div class="card">
       <div class="ct">Upcoming deadlines</div>
@@ -1503,21 +1533,19 @@ function setDate(){
   var sub=document.getElementById('dashSubtitle');if(sub){var ds=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];var mos=['January','February','March','April','May','June','July','August','September','October','November','December'];sub.textContent=ds[d.getDay()]+', '+mos[d.getMonth()]+' '+d.getDate()+', '+d.getFullYear();}
 }
 setDate();setInterval(setDate,1000);
-// Auto-refresh intel every 30 minutes if user has cloud sync set up
+// Track activity
+var _lastActivity=Date.now();
+['click','keydown','touchstart'].forEach(function(ev){document.addEventListener(ev,function(){_lastActivity=Date.now();},{passive:true});});
+// Auto-refresh intel every 25 minutes if user was active in last 30 min
 setInterval(function(){
-  try {
-    if(typeof pushIntel === 'function' && document.getElementById('jbBinId') && G('jbBinId')) {
-      // Only auto-refresh if user has been active in last 30 min
-      if(typeof _lastActivity !== 'undefined' && (Date.now() - _lastActivity) < 30*60*1000) {
-        if(typeof sendRefreshPrompt === 'function') sendRefreshPrompt();
-      }
+  try{
+    if((Date.now()-_lastActivity)<30*60*1000){
+      if(typeof injectAllIntel==='function')injectAllIntel();
+      if(typeof updateAllBadges==='function')setTimeout(updateAllBadges,500);
     }
-  } catch(_) {}
-}, 30 * 60 * 1000);
-// Track user activity
-var _lastActivity = Date.now();
-document.addEventListener('click', function(){ _lastActivity = Date.now(); });
-document.addEventListener('keydown', function(){ _lastActivity = Date.now(); });
+  }catch(e){}
+},25*60*1000);
+
 
 function pBadge(p){return p==='high'?'<span class="badge br">High</span>':p==='med'?'<span class="badge ba">Med</span>':'<span class="badge bx">Low</span>';}
 function cBadge(c){return '<span class="badge bx">'+c+'</span>';}
@@ -1721,15 +1749,43 @@ function renderLiveIntel(panelId,data){
   el.innerHTML=html;
 }
 
-function sendRefreshPrompt(){
-  var today=new Date();var days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];var months=['January','February','March','April','May','June','July','August','September','October','November','December'];
-  var dateStr=days[today.getDay()]+', '+months[today.getMonth()]+' '+today.getDate()+', '+today.getFullYear();var timeStr=today.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit',hour12:true});
-  var msg='DONALD, refresh all 9 Personal Command Center intel panels. Today is '+dateStr+' at '+timeStr+' Eastern.\n\nProcess:\n1. Check Google Calendar for today and this week\n2. Scan personal Gmail (davidlgenuth@gmail.com) and family inbox (davidmalky@gmail.com) for urgent items\n3. Check CPAP status and compliance (3 nights done, 27 needed, window closes Jul 20)\n4. Review Jewish calendar for upcoming observances\n5. Surface any pending action items from memory and past conversations\n\nFormat as a single JSON block:\n{"panels":[\n{"key":"donald_personal_intel_daily","value":{"updated":"ISO_TIMESTAMP","items":[{"type":"red|amber|green|blue|gray","title":"Topic","detail":"Short detail"},...]}},\n{"key":"donald_personal_intel_finance","value":{...}},\n{"key":"donald_personal_intel_health","value":{...}},\n{"key":"donald_personal_intel_family","value":{...}},\n{"key":"donald_personal_intel_projects","value":{...}},\n{"key":"donald_personal_intel_growth","value":{...}},\n{"key":"donald_personal_intel_email","value":{...}},\n{"key":"donald_personal_intel_work","value":{...}},\n{"key":"donald_personal_intel_notes","value":{...}}\n]}\n\nEach item needs: type, title, detail. Current, complete, actionable.\n\nCRITICAL FORMATTING RULE: Your response must contain ONLY the raw JSON. No explanation before. No explanation after. No markdown. No code fences. No backticks. The very first character of your response must be { and the very last character must be }. Nothing else.'
-  var url=G('donaldUrl','')||'YOUR_PERSONAL_DONALD_URL';
-  var copy=function(){window.open(url,'_blank');showToast('Prompt copied — Ctrl+V into DONALD');};
-  if(navigator.clipboard){navigator.clipboard.writeText(msg).then(copy).catch(function(){var ta=document.createElement('textarea');ta.value=msg;ta.style.cssText='position:fixed;opacity:0';document.body.appendChild(ta);ta.focus();ta.select();try{document.execCommand('copy');}catch(e){}document.body.removeChild(ta);copy();});}
-  else{var ta=document.createElement('textarea');ta.value=msg;ta.style.cssText='position:fixed;opacity:0';document.body.appendChild(ta);ta.focus();ta.select();try{document.execCommand('copy');}catch(e){}document.body.removeChild(ta);copy();}
+function sendRefreshPrompt() {
+  var now = new Date();
+  var days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  var months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  var dateStr = days[now.getDay()] + ', ' + months[now.getMonth()] + ' ' + now.getDate() + ', ' + now.getFullYear();
+  var hd = window.getHebrewDate ? window.getHebrewDate(now) : '';
+  var tasks = [];
+  try { tasks = JSON.parse(localStorage.getItem('po2_tasks') || '[]'); } catch(e) {}
+  var openTasks = tasks.filter(function(t){return !t.done;}).slice(0,8).map(function(t){return '- ['+( t.priority||'med').toUpperCase()+'] '+t.text;}).join('\n');
+  // Build comprehensive context for all panels
+  var context = 'TODAY: ' + dateStr + (hd ? ' | Hebrew: ' + hd : '') + '\n\n' +
+    'DAVID\'S CURRENT SITUATION:\n' +
+    '- COO at Prime Source Expense Experts, Toms River NJ\n' +
+    '- June 8 company event — COO procurement speech (15 days away, NOT prepped)\n' +
+    '- $93K owed from GenMed via Prime Procurement\n' +
+    '- 2022 tax amendment deadline June 11 (charity receipts needed from 5 orgs)\n' +
+    '- Milestone Metrics LLC bank account — Chase appt Tue May 26 11am\n' +
+    '- CPAP compliance: 7/30 nights, window closes Jul 20\n' +
+    '- MileagePlus merge: 3 accounts to consolidate\n\n' +
+    'THIS WEEK CALENDAR:\n' +
+    '- Mon May 25: Dr. Landsman ENT 11am\n' +
+    '- Tue May 26: Chase bank (Milestone Metrics) 11am with Adam King\n' +
+    '- Fri May 29: Shabbos candle lighting 7:57 PM\n\n' +
+    'OPEN TASKS:\n' + (openTasks || '(none loaded)') + '\n\n' +
+    'Generate a DONALD personal command center briefing. For each panel below, provide 4-6 bullet items in this exact JSON format:\n' +
+    '{"daily":["item1","item2"],"finance":["item1"],"health":["item1"],"family":["item1"],"projects":["item1"],"growth":["item1"],"email":["item1"],"work":["item1"],"focus":["item1"]}\n\n' +
+    'Each item: start with PRIORITY (red=urgent, amber=important, green=done/good, blue=info). ' +
+    'Be specific to David\'s actual situation above. Daily: top priorities for today. Finance: money items. ' +
+    'Health: CPAP and medical. Family: family check-ins. Projects: DONALD OS, Renzo, FashionScan. ' +
+    'Growth: DONALD improvements. Email: actionable emails. Work: Prime Source priorities. Focus: what to do right now.';
+  var modal = document.getElementById('ibModal');
+  var promptEl = document.getElementById('ibPromptText');
+  if (promptEl) promptEl.value = context;
+  if (modal) modal.classList.add('show');
+  document.body.style.overflow = 'hidden';
 }
+
 
 function dockCard(pid){if(_dockedCards.indexOf(pid)<0)_dockedCards.push(pid);S('dockedCards',_dockedCards);var card=document.getElementById('cp-'+pid);if(card)card.classList.add('docked');renderDock();}
 function undockCard(pid){_dockedCards=_dockedCards.filter(function(id){return id!==pid;});S('dockedCards',_dockedCards);var card=document.getElementById('cp-'+pid);if(card)card.classList.remove('docked');renderDock();}
@@ -1766,64 +1822,63 @@ function actPop(e,pid,ii){
   if(!data||!data.items||!data.items[ii])return;
   _popTarget={pid:pid,ii:ii,item:data.items[ii]};
   var item=data.items[ii];
-  var label=item.title.length>40?item.title.substring(0,40)+'...':item.title;
-  var t=(item.title||'').toLowerCase();var d=(item.detail||'').toLowerCase();var c=t+' '+d;
-  var acts=[];
-  acts.push({icon:'?',label:'Ask DONALD about this',act:'ask'});
-  if(/email|reply|respond|message|thread/.test(c))acts.push({icon:'E',label:'Draft reply',act:'email'});
-  if(/call|phone|meet|zoom|appt|schedule/.test(c))acts.push({icon:'C',label:'Prep brief',act:'prepbrief'});
-  if(/deal|contract|sign|vendor|negotiat/.test(c))acts.push({icon:'D',label:'Deal strategy',act:'dealstrategy'});
-  if(/finance|payment|invoice|bill|owed|balance/.test(c))acts.push({icon:'$',label:'Financial steps',act:'finance'});
-  acts.push({icon:'!',label:'Add to Priority Tasks',act:'task'});
-  acts.push({icon:'S',label:'Summarize and next steps',act:'summarize'});
-  acts.push({icon:'x',label:'Dismiss item',act:'dismiss',dim:true});
+  var title=item.title||'';
+  var label=title.length>42?title.substring(0,42)+'...':title;
   var pop=document.createElement('div');pop.className='act-pop';pop.id='actPop';
   pop.innerHTML='<div class="act-pop-hdr">'+label+'</div>'+
-    acts.map(function(a){return '<div class="act-pop-item'+(a.dim?' act-pop-dim':'')+'" onclick="popAct(\''+a.act+'\')">'+a.icon+' '+a.label+'</div>';}).join('');
-  var x=Math.min(e.clientX||200,window.innerWidth-220);
-  var y=Math.min((e.clientY||200)+6,window.innerHeight-180);
+    '<div class="act-pop-item" onclick="popAct(\'ask\')">Ask DONALD about this</div>'+
+    '<div class="act-pop-item" onclick="popAct(\'email\')">Draft email / follow-up</div>'+
+    '<div class="act-pop-item" onclick="popAct(\'task\')">Add to Priority Tasks</div>'+
+    '<div class="act-pop-item" onclick="popAct(\'brief\')">Get full brief on this</div>'+
+    '<div class="act-pop-item" onclick="popAct(\'next\')">What should I do next?</div>'+
+    '<div class="act-pop-div"></div>'+
+    '<div class="act-pop-item act-pop-dim" onclick="popAct(\'dismiss\')">Dismiss</div>';
+  var x=Math.min((e.clientX||200),window.innerWidth-215);
+  var y=Math.min((e.clientY||200)+6,window.innerHeight-220);
   pop.style.left=x+'px';pop.style.top=y+'px';
   document.body.appendChild(pop);
   setTimeout(function(){document.addEventListener('click',closeActPop,{once:true});},10);
 }
+
 function closeActPop(){var p=document.getElementById('actPop');if(p)p.remove();}
-function popAct(act){
+function popAct(type){
   closeActPop();
-  if(!_popTarget||!_popTarget.item) return;
+  if(!_popTarget)return;
   var item=_popTarget.item;
+  var pid=_popTarget.pid;
+  var ii=_popTarget.ii;
   var title=item.title||'';
   var detail=item.detail||'';
-  var context='Item: '+title+(detail?' — '+detail:'');
-  if(act==='ask'){
-    ask('Regarding this item: "'+title+'" — '+detail+'. Give me the most important thing I should know or do about this right now.');
-  } else if(act==='email'){
-    ask('Draft a concise email response or follow-up related to: "'+title+'". Context: '+detail+'. Write in David\'s voice — direct, confident, no fluff.');
-  } else if(act==='task'){
-    var t=tasks||[];t.push({id:Date.now(),text:title,priority:'high',category:'urgent',done:false,created:new Date().toISOString()});
-    saveStore('tasks',t);if(typeof renderDashTasks==='function')renderDashTasks();
-    showToast('Added to Priority Tasks');
-  } else if(act==='calendar'){
-    ask('Help me schedule or prep for: "'+title+'". What do I need to do and when should I block time?');
-  } else if(act==='prepbrief'){
-    ask('Give me a prep brief for: "'+title+'". What should I know, what questions should I ask, what is my goal going in?');
-  } else if(act==='dealstrategy'){
-    ask('Deal strategy for: "'+title+'". What is my leverage, what should I push for, what should I accept, what are the risks?');
-  } else if(act==='summarize'){
-    ask('Summarize the key points and required action from: "'+title+'" — '+detail);
-  } else if(act==='finance'){
-    ask('What is the right financial action for: "'+title+'" — '+detail+'? Give me specific next steps.');
-  } else if(act==='dismiss'){
-    var pid=_popTarget.pid;var ii=_popTarget.ii;
-    var key=pid?PANEL_INTEL_KEY[pid]:null;
-    if(key&&intelCache[key]&&intelCache[key].items){
-      intelCache[key].items.splice(ii,1);
-      S('intelCache',intelCache);
-      if(typeof renderLiveIntel==='function') renderLiveIntel(pid,intelCache[key]);
-      if(typeof renderCC==='function') renderCC();
+  var ctx='"'+title+(detail?' — '+detail:'')+'"';
+  if(type==='ask'){
+    ask('Tell me everything I need to know about this item: '+ctx+'. What is the full context, what is at stake, and what should I do?');
+  }else if(type==='email'){
+    ask('Draft a concise, direct email or follow-up related to: '+ctx+'. Write in David\'s voice — confident, no fluff, clear ask.');
+  }else if(type==='task'){
+    var t=[];try{t=JSON.parse(localStorage.getItem('po2_tasks')||'[]');}catch(e){}
+    t.push({id:Date.now(),text:title,priority:'high',category:'urgent',done:false,created:new Date().toISOString()});
+    try{localStorage.setItem('po2_tasks',JSON.stringify(t));}catch(e){}
+    if(typeof renderDashTasks==='function')renderDashTasks();
+    if(typeof renderDashMetrics==='function')renderDashMetrics();
+    var tb=document.createElement('div');tb.textContent='Added to Priority Tasks';
+    tb.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:var(--green);color:#fff;padding:8px 16px;border-radius:20px;font-size:11px;font-weight:700;z-index:9999;pointer-events:none';
+    document.body.appendChild(tb);setTimeout(function(){tb.remove();},2000);
+  }else if(type==='brief'){
+    ask('Give me a full prep brief on: '+ctx+'. Who is involved, what is the history, what is my goal, what should I know before acting?');
+  }else if(type==='next'){
+    ask('For this item: '+ctx+' — what is the single most important next action I should take? Be specific and direct.');
+  }else if(type==='dismiss'){
+    var k=PANEL_INTEL_KEY[pid];
+    if(k&&intelCache[k]&&intelCache[k].items){
+      intelCache[k].items.splice(ii,1);
+      try{S('intelCache',intelCache);}catch(e){}
+      if(typeof renderLiveIntel==='function')renderLiveIntel(pid,intelCache[k]);
+      if(typeof renderCC==='function')renderCC();
     }
   }
   _popTarget=null;
 }
+
 function dismissItem(pid,ii){var key=PANEL_INTEL_KEY[pid];if(!key||!intelCache[key]||!intelCache[key].items)return;var removed=intelCache[key].items.splice(ii,1)[0];_dismissed.push({key:key,pid:pid,ii:ii,item:removed,ts:Date.now()});S('intelCache',intelCache);S('dismissed',_dismissed);renderLiveIntel(pid,intelCache[key]);renderCC();setTimeout(injectAllIntel,50);showToast('Item dismissed');}
 
 function renderEmailQueue(){
