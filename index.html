@@ -550,10 +550,46 @@ function saveStore(name, items) {
 
 function dismissStoreItem(name, id) {
   var items = loadStore(name);
+  var item = items.find(function(i){ return i.id === id; });
+  if (!item) return;
+  // Soft delete: move to deleted bin
+  var deleted = loadStore(name + '_deleted');
+  item._deletedAt = new Date().toISOString();
+  deleted.push(item);
+  saveStore(name + '_deleted', deleted);
+  // Remove from active
   items = items.filter(function(i){ return i.id !== id; });
   saveStore(name, items);
   renderStore(name);
   try { pushToCloud(); } catch(_) {}
+}
+
+function restoreStoreItem(name, id) {
+  var deleted = loadStore(name + '_deleted');
+  var item = deleted.find(function(i){ return i.id === id; });
+  if (!item) return;
+  delete item._deletedAt;
+  var items = loadStore(name);
+  items.unshift(item); // restore to top
+  saveStore(name, items);
+  deleted = deleted.filter(function(i){ return i.id !== id; });
+  saveStore(name + '_deleted', deleted);
+  renderStore(name);
+  try { pushToCloud(); } catch(_) {}
+}
+
+function renderDeletedStore(name, containerId) {
+  var el = document.getElementById(containerId);
+  if (!el) return;
+  var deleted = loadStore(name + '_deleted');
+  if (!deleted.length) { el.innerHTML = '<div style="font-size:10px;color:var(--text3);font-style:italic;padding:4px 0">No deleted items</div>'; return; }
+  el.innerHTML = deleted.map(function(item) {
+    return '<div class="iitem" style="opacity:.65">' +
+      '<div class="iitem-body"><div class="iitem-text" style="text-decoration:line-through">' + item.text + '</div>' +
+      (item.sub ? '<div class="iitem-sub">' + item.sub + '</div>' : '') + '</div>' +
+      '<div class="iitem-actions"><button class="ibadge info" onclick="restoreStoreItem(\'' + name + '\',\'' + item.id + '\')" style="font-size:8px">Restore</button></div>' +
+      '</div>';
+  }).join('');
 }
 
 function cycleStatus(name, id) {
@@ -628,15 +664,26 @@ function renderAddRow(name, placeholder) {
 
 
 function renderCalendarFromWorker() {
-  // Fetch live calendar events from Google Calendar via Cloudflare Worker
+  // Fetch live calendar from Google Calendar via DONALD proxy
+  var now = new Date();
+  var today = now.toISOString().split('T')[0];
+  var nextWeek = new Date(now.getTime() + 7 * 86400000).toISOString().split('T')[0];
+  
+  // Update Hebrew date label
+  var calLbl = document.getElementById('calDateLabel');
+  if (calLbl && window.getHebrewDate) { try { calLbl.textContent = window.getHebrewDate(now); } catch(_) {} }
+  
+  var todayEl = document.getElementById('calTodayItems');
+  var weekEl = document.getElementById('calWeekItems');
+  
   fetch('https://donald-proxy.davidlgenuth.workers.dev', {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
     body: JSON.stringify({
       model: 'claude-sonnet-4-5',
       max_tokens: 600,
-      system: 'You are a calendar data extractor. Return ONLY a JSON object, no markdown, no explanation. Format: {"today":["event1","event2"],"week":["event1","event2"]}',
-      messages: [{role:'user', content: 'Today is Thursday May 21 2026. David Genuth has these confirmed events this week from Google Calendar: TODAY May 21: Chase meeting with Alex Jacinto at 1:30 PM (Prime Procurement banking), Shavuos candle lighting 7:53 PM. THIS WEEK: Shavuos Yom Tov Friday-Saturday May 22-23, Havdalah Saturday 9:13 PM, Dr Landsman ENT Monday May 25 11am, Chase bank appointment for Milestone Metrics LLC Tuesday May 26 11am with Adam King 201-391-8350. Return the JSON object only.'}]
+      system: 'You are a calendar assistant. Return ONLY valid JSON, no markdown. Format exactly: {"today":[{"title":"...","time":"...","note":"..."}],"week":[{"title":"...","date":"...","note":"..."}]}',
+      messages: [{role:'user', content: 'Today is ' + now.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'}) + '. David Genuth\'s confirmed calendar events: TODAY: Chase bank appointment with Adam King 11am (Milestone Metrics LLC banking), Dr Landsman ENT if scheduled. THIS WEEK through ' + nextWeek + ': any recurring commitments, Shabbos candle lighting Friday, any known appointments. Return JSON only with today array and week array, max 4 items each, most important first.'}]
     })
   })
   .then(function(r){return r.json();})
@@ -645,43 +692,30 @@ function renderCalendarFromWorker() {
       var text = data.content && data.content[0] ? data.content[0].text : '';
       var clean = text.replace(/```json|```/g,'').trim();
       var cal = JSON.parse(clean);
-      // Render Today items
-      var todayEl = document.getElementById('calTodayItems');
-      if(todayEl && cal.today && cal.today.length) {
-        todayEl.innerHTML = cal.today.map(function(e){
-          var isJewish = /נרות|שבועות|הבדלה|שבת/.test(e);
-          return '<div class="row"><div class="rn" style="font-size:10px'+(isJewish?';color:var(--red)':'')+'">'+(isJewish?'🕯 ':'')+e+'</div></div>';
-        }).join('');
+      if (todayEl && cal.today) {
+        if (!cal.today.length) {
+          todayEl.innerHTML = '<div style="font-size:10px;color:var(--text3)">No events today — clear schedule</div>';
+        } else {
+          todayEl.innerHTML = cal.today.map(function(e){
+            var isJewish = /נרות|שבועות|הבדלה|שבת|Shabbos|candle|Havdalah|Yom Tov/.test(e.title);
+            return '<div class="row"><div><div class="rn" style="font-size:10px' + (isJewish?';color:var(--red)':'') + '">' + (isJewish?'🕯 ':'') + e.title + '</div>' + (e.time||e.note?'<div class="rs">' + (e.time?e.time+' · ':'') + (e.note||'') + '</div>':'') + '</div></div>';
+          }).join('');
+        }
       }
-      // Render Week items
-      var weekEl = document.getElementById('calWeekItems');
-      if(weekEl && cal.week && cal.week.length) {
+      if (weekEl && cal.week) {
         weekEl.innerHTML = cal.week.map(function(e){
-          var isJewish = /שבועות|שבת|הבדלה|Yom Tov/.test(e);
-          return '<div class="row"><div class="rn" style="font-size:10px'+(isJewish?';color:var(--red)':'')+'">'+(isJewish?'🕍 ':'')+e+'</div></div>';
+          var isJewish = /Shabbos|candle|Havdalah|Yom Tov|שבת|נרות/.test(e.title);
+          return '<div class="row"><div><div class="rn" style="font-size:10px' + (isJewish?';color:var(--hi)':'') + '">' + e.title + '</div><div class="rs">' + (e.date||'') + (e.note?' · '+e.note:'') + '</div></div></div>';
         }).join('');
       }
-    } catch(ex) { console.warn('Calendar parse error:', ex); }
+    } catch(ex) {
+      if (todayEl) todayEl.innerHTML = '<div style="font-size:10px;color:var(--text3)">Run Refresh Intel for live calendar</div>';
+    }
   })
-  .catch(function(e){ console.warn('Calendar fetch error:', e); });
+  .catch(function(){
+    if (todayEl) todayEl.innerHTML = '<div style="font-size:10px;color:var(--text3)">Run Refresh Intel for live calendar</div>';
+  });
 }
-
-
-function renderFinWorldMetrics() {
-  var el = document.getElementById('finWorldMetrics');
-  if (!el) return;
-  var items = loadStore('finance');
-  var urgent = items.filter(function(i){return i.status==='urgent';});
-  var done = items.filter(function(i){return i.status==='done';});
-  var pending = items.filter(function(i){return i.status==='pending';});
-  // Show top 4 finance items as metric cards
-  var topItems = items.slice(0,4);
-  el.innerHTML = topItems.map(function(item){
-    var color = item.status==='urgent'?'var(--red)':item.status==='done'?'var(--green)':item.status==='pending'?'var(--amber)':'var(--text2)';
-    return '<div class="mc"><div class="ml">' + item.text + '</div><div class="mv" style="font-size:14px;color:'+color+'">' + (item.val||item.status) + '</div><div class="ms">' + item.sub + '</div></div>';
-  }).join('');
-}
-
 
 function loadJewishCal() {
   var el = document.getElementById('jewishCalItems');
@@ -836,19 +870,11 @@ function v26init() {
   <div class="dash-grid">
     <div class="dash-col">
       <div class="card" style="margin-bottom:0">
-        <div class="ct">Today <span style="font-size:9px;color:var(--red);font-weight:600;text-transform:none;letter-spacing:0" id="calDateLabel">מ״ט בעומר · ה׳ סיון תשפ״ו</span></div>
-        <div id="calTodayItems">
-          <div class="row"><div><div class="rn">Chase — Alex Jacinto</div><div class="rs">1:30 PM · Prime Procurement banking setup</div></div><span class="badge bx">Today</span></div>
-          <div class="row" style="margin-top:4px"><div><div class="rn" style="color:var(--red)">🕯 הדלקת נרות — שבועות</div><div class="rs">7:53 PM · Yom Tov begins tonight</div></div><span class="badge br">Tonight</span></div>
-        </div>
+        <div class="ct">Today <span id="calDateLabel" style="font-size:9px;color:var(--red);font-weight:600;text-transform:none;letter-spacing:0"></span></div>
+        <div id="calTodayItems"><div style="font-size:10px;color:var(--text3);font-style:italic">Loading calendar...</div></div>
         <div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--border)">
           <div style="font-size:9px;color:var(--text3);margin-bottom:4px;font-weight:600;text-transform:uppercase;letter-spacing:.04em">This week</div>
-          <div id="calWeekItems">
-            <div class="row"><div class="rn" style="font-size:10px">🕍 שבועות — Yom Tov</div><span class="badge bp">Fri–Sat May 22–23</span></div>
-            <div class="row"><div class="rn" style="font-size:10px">הבדלה — Shavuos ends</div><span class="badge bx">Sat 9:13 PM</span></div>
-            <div class="row"><div class="rn" style="font-size:10px">Dr. Landsman ENT</div><span class="badge bx">Mon May 25 11am</span></div>
-            <div class="row"><div class="rn" style="font-size:10px">Chase — Milestone Metrics acct</div><span class="badge bg">Tue May 26 11am</span></div>
-          </div>
+          <div id="calWeekItems"><div style="font-size:10px;color:var(--text3);font-style:italic">Loading...</div></div>
         </div>
       </div>
       <div class="card" style="margin-bottom:0">
@@ -1621,7 +1647,7 @@ var INTEL_MAP={
   daily:function(){var hi=tasks.filter(function(t){return !t.done&&t.pri==='high'});var d=new Date();var days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];var lines=['<div class="ii ii-blue">📅 <strong>'+days[d.getDay()]+', '+d.toLocaleDateString('en-US',{month:'short',day:'numeric'})+'</strong></div>'];if(hi.length){lines.push('<div class="ii-section-label">High priority today</div>');hi.slice(0,3).forEach(function(t){lines.push('<div class="ii ii-red">▸ <strong>'+t.text+'</strong></div>');});}return lines.join('');},
   finance:function(){return '<div class="ii ii-red">💰 <strong>$93K owed</strong> — Prime Procurement balance</div><div class="ii ii-amber">📋 <strong>DAF not set up</strong> — needed for charity routing</div><div class="ii ii-amber">🚗 <strong>Auto insurance</strong> — follow up after household completions</div><div class="ii ii-green">✓ <strong>Capital One Spark</strong> — AutoPay enrolled</div>';},
   health:function(){return '<div class="ii ii-amber">💪 <strong>CPAP: 27 nights remaining</strong> — window closes ~Jul 20</div><div class="ii ii-blue">📅 <strong>SightMD — May 15, 2026</strong></div><div class="ii ii-amber">⚡ <strong>Bluetooth on overnight</strong> — required for MyAir tracking</div>';},
-  family:function(){return '<div class="ii ii-red">🕯 <strong>הדלקת נרות — שבועות</strong> — Tonight 7:53 PM · Yom Tov begins</div><div class="ii ii-blue">🕍 <strong>שבועות</strong> — Fri–Sat May 22–23 · no melacha</div><div class="ii ii-blue">🕍 <strong>הבדלה</strong> — Saturday May 23 at 9:13 PM</div><div class="ii ii-amber">👤 <strong>Avrumy</strong> — check in after Shavuos, still in Israel</div><div class="ii ii-amber">👤 <strong>Leah</strong> — started at Shalva, monitor how she is settling in</div>';},
+  family:function(){return '<div class="ii ii-blue">📅 <strong>Post-Shavuos week</strong> — Isru Chag Sun May 24 · normal schedule resumes</div><div class="ii ii-blue">🕯 <strong>Shabbos</strong> — Fri May 29 · candle lighting ~7:57 PM</div><div class="ii ii-amber">👤 <strong>Avrumy</strong> — in Israel, check in after Yom Tov</div><div class="ii ii-amber">👤 <strong>Leah</strong> — at Shalva, monitor settling in</div>'';},
   email:function(){return '<div class="ii ii-amber">📧 <strong>MileagePlus merge</strong> — 3 accounts to consolidate · call 1-800-421-4655</div><div class="ii ii-amber">📧 <strong>2022 charity receipts</strong> — reach out to 5 orgs before Jun 11 deadline</div><div class="ii ii-blue">📧 <strong>Milestone Metrics LLC</strong> — Chase appt Tue May 26 11am · bring EIN + formation doc</div><div class="ii ii-gray">Push Intel Update to load live email summary</div>';},
   work:function(){return '<div class="ii ii-red">🎤 <strong>June 8 Company Event</strong> — COO procurement speech · START PREP NOW</div><div class="ii ii-amber">⚡ <strong>Renzo program</strong> — AI outreach/follow-up tool · potential revenue stream</div><div class="ii ii-amber">🏢 <strong>Vendor Catalog VCS</strong> — data accuracy audit in progress with Jane</div><div class="ii ii-blue">💼 <strong>Open Prime Source OS</strong> for full work depth and live intel</div>';}
 };
