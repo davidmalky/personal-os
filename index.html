@@ -521,6 +521,18 @@ var STORE_DEFAULTS = {
     {id:'pr3', text:'FashionScan25.3', sub:'AR + AI wardrobe app \u2014 Gradle issues blocking progress', status:'hold', source:'system'},
     {id:'pr4', text:'Vendor Catalog Scheduler', sub:'Work \u2014 data accuracy audit in progress with Jane', status:'info', source:'system'}
   ],
+  email: [
+    {id:'em1', text:'MileagePlus merge — 3 accounts', sub:'Call 1-800-421-4655 · XV915448, YH388442 + 1 more', status:'urgent', source:'system'},
+    {id:'em2', text:'2022 charity receipts — 5 orgs', sub:'Reach out for receipts before June 11 deadline', status:'urgent', source:'system'},
+    {id:'em3', text:'Israel Steinberg — amendment status', sub:'Confirm whether 2022 amendment has been filed', status:'pending', source:'system'}
+  ],
+  work: [
+    {id:'w1', text:'June 8 event — COO speech prep', sub:'Procurement presentation — 15 days away', status:'urgent', source:'system'},
+    {id:'w2', text:'Culligan — redlined contract response', sub:'Thomas Caputo — no response in 3+ weeks', status:'urgent', source:'system'},
+    {id:'w3', text:'Mobotics — DocuSign pending', sub:'Yehuda + Mark need to sign · sent Apr 30', status:'pending', source:'system'},
+    {id:'w4', text:'Salesforce — 4 active dev items', sub:'Ownership change, matching rule, parent-child, dormant opps', status:'info', source:'system'},
+    {id:'w5', text:'Purchasing Director hiring', sub:'Nobu dinner Tuesday — informal decision point', status:'info', source:'system'}
+  ],
   growth: [
     {id:'g1', text:'Evening Summary', sub:'Daily wrap automation from DONALD', status:'pending', source:'system'},
     {id:'g2', text:'Weekly Report', sub:'Sunday weekly report from DONALD', status:'pending', source:'system'},
@@ -764,10 +776,16 @@ function v26init() {
     try { renderHebrewDate(); } catch(e) {}
     try { renderCalendarFromWorker(); } catch(e) {}
     try { loadJewishCal(); } catch(e) {}
+    setTimeout(updateAllBadges,600);
     // Interactive stores — Dashboard
     try { renderStore('pending','pendingStoreEl'); var pa=document.getElementById('pendingAddRow'); if(pa) pa.innerHTML=renderAddRow('pending','Add item...'); } catch(e) {}
     try { renderStore('finance','financeStoreEl'); var fa=document.getElementById('financeAddRow'); if(fa) fa.innerHTML=renderAddRow('finance','Add item...'); } catch(e) {}
     try { renderStore('health','healthStoreEl'); var ha=document.getElementById('healthAddRow'); if(ha) ha.innerHTML=renderAddRow('health','Add item...'); } catch(e) {}
+    try { renderStore('projects','projectsStoreEl'); var pja=document.getElementById('projectsAddRow'); if(pja) pja.innerHTML=renderAddRow('projects','Add project...'); renderDeletedSection('projects','projectsDeletedEl'); } catch(e) {}
+    try { renderStore('growth','growthStoreEl'); var ga=document.getElementById('growthAddRow'); if(ga) ga.innerHTML=renderAddRow('growth','Add growth item...'); renderDeletedSection('growth','growthDeletedEl'); } catch(e) {}
+    try { renderStore('email','emailStoreEl'); var ea=document.getElementById('emailAddRow'); if(ea) ea.innerHTML=renderAddRow('email','Add email item...'); renderDeletedSection('email','emailDeletedEl'); } catch(e) {}
+    try { renderStore('work','workStoreEl'); var wa=document.getElementById('workAddRow'); if(wa) wa.innerHTML=renderAddRow('work','Add work item...'); renderDeletedSection('work','workDeletedEl'); } catch(e) {}
+    try { var fn=document.getElementById('focusNotes'); if(fn) fn.value=G('focusNotes')||''; var gn=document.getElementById('growthNotes'); if(gn) gn.value=G('growthNotes')||''; var pn=document.getElementById('projectNotes'); if(pn) pn.value=G('projectNotes')||''; var wn=document.getElementById('workNotes'); if(wn) wn.value=G('workNotes')||''; } catch(e) {}
     try { renderDeletedSection('pending','pendingDeletedEl'); renderDeletedSection('finance','financeDeletedEl'); renderDeletedSection('health','healthDeletedEl'); } catch(e) {}
     // Finance World tab
     try { renderFinWorldMetrics(); } catch(e) {}
@@ -1081,981 +1099,121 @@ function v26init() {
 <!-- PROJECTS -->
 <div class="view" id="view-projects">
   <div class="world-header">
-    <div><div class="world-title"><em>Projects</em> World</div><div class="world-subtitle">Personal builds · FashionScan · DONALD OS</div></div>
-    <div class="world-actions"><button class="cc-btn" onclick="ask('Personal projects status — FashionScan25.3, DONALD OS, and any side builds. What is moving and what is blocked?')">Projects Briefing ↗</button></div>
+    <div><div class="world-title"><em>Projects</em> World</div><div class="world-subtitle">Personal builds · side ventures · tracking</div></div>
+    <div class="world-actions"><button class="cc-btn" onclick="ask('Projects status update — Personal DONALD OS, Renzo AI tool, FashionScan25.3. What is moving, what is blocked, and what needs my attention this week?')">Projects Briefing ↗</button></div>
   </div>
   <div class="g2">
     <div class="card">
-      <div class="ct">Active projects <button class="al" onclick="addPersonalProject()">+ add</button></div>
-      <div id="personalProjectList">
-        <div class="row"><div><div class="rn">FashionScan25.3</div><div class="rs">AR + AI wardrobe app · Gradle / overlay / ref issues</div></div><span class="badge ba">Blocked</span></div>
-        <div class="row"><div><div class="rn">Personal DONALD OS</div><div class="rs">This dashboard — v2.0 live</div></div><span class="badge bp">Active</span></div>
-      </div>
+      <div class="ct">Active Projects</div>
+      <div id="projectsStoreEl"></div>
+      <div id="projectsAddRow"></div>
+      <div id="projectsDeletedEl"></div>
     </div>
     <div class="card">
-      <div class="ct">FashionScan25.3</div>
-      <div class="row"><span class="rn">Gradle build issues</span><span class="badge br">Blocker</span></div>
-      <div class="row"><span class="rn">Overlay alignment</span><span class="badge br">Blocker</span></div>
-      <div class="row"><span class="rn">Unresolved references</span><span class="badge br">Blocker</span></div>
-      <div class="row"><span class="rn">Decision: continue vs pause</span><span class="badge ba">Pending</span></div>
-      <button class="adb" onclick="ask('FashionScan25.3 — I have Gradle issues, overlay alignment problems, and unresolved references. Should I continue pushing through or pause and come back? Help me decide.')"><span class="adb-icon">🚀</span>Continue or pause FashionScan?</button>
-      <button class="adb" onclick="ask('Help me debug FashionScan25.3 Gradle issues. Walk me through a systematic approach to resolve the build problems in my Android project.')"><span class="adb-icon">🔧</span>Debug FashionScan Gradle</button>
+      <div class="ct">Renzo — AI Outreach Tool</div>
+      <div class="row"><div class="rn" style="font-size:10px">Status</div><span class="badge ba">In development</span></div>
+      <div class="row"><div class="rn" style="font-size:10px">Goal</div><span class="badge bx">Sellable SaaS product</span></div>
+      <div class="row"><div class="rn" style="font-size:10px">Next step</div><span class="badge bp">Define MVP scope</span></div>
+      <button class="adb" onclick="ask('Help me define the MVP for Renzo — an AI-powered outreach and follow-up tool. What are the core features, who is the target customer, and what does version 1 look like?')"><span class="adb-icon">🚀</span>Define Renzo MVP</button>
+      <button class="adb" onclick="ask('What is the best go-to-market strategy for Renzo as an AI outreach tool? Who should I sell to first and how?')"><span class="adb-icon">💡</span>Go-to-market strategy</button>
+      <textarea class="nta" id="projectNotes" placeholder="Project notes..." oninput="S('projectNotes',this.value)" style="min-height:80px;margin-top:8px"></textarea>
     </div>
   </div>
-  <div class="card">
-    <div class="ct">Project notes</div>
-    <textarea class="nta" id="projectNotes" placeholder="Project ideas, notes, blockers, next steps..." oninput="S('projectNotes',this.value)" style="min-height:80px"></textarea>
-  </div>
-</div>
-
-<!-- GROWTH -->
-<div class="view" id="view-growth">
+  <div id="view-growth-placeholder"></div>
+id="view-growth">
   <div class="world-header">
-    <div><div class="world-title"><em>Growth</em> World</div><div class="world-subtitle">Learning · AI mastery · self-development · DONALD wishlist</div></div>
-    <div class="world-actions"><button class="cc-btn" onclick="ask('Personal growth check-in — what should I be learning and developing right now to reach maximum impact as COO and as someone building a personal AI OS?')">Growth Briefing ↗</button></div>
+    <div><div class="world-title"><em>Growth</em> World</div><div class="world-subtitle">DONALD improvements · skills · systems</div></div>
+    <div class="world-actions"><button class="cc-btn" onclick="ask('Growth review — what DONALD features are still missing, what skills should I be developing, and what systems need to be built?')">Growth Briefing ↗</button></div>
   </div>
   <div class="g2">
     <div class="card">
-      <div class="ct">Learning &amp; tools</div>
-      <div class="row"><div><div class="rn">Wispr Flow</div><div class="rs">Voice-to-text — loving it · free trial active</div></div><span class="badge bp">Active</span></div>
-      <div class="row"><div><div class="rn">Wispr custom vocabulary</div><div class="rs">Hebrew / Yiddish / business terms needed</div></div><span class="badge ba">Pending</span></div>
-      <div class="row"><div><div class="rn">Claude Code</div><div class="rs">Build AI agents and automations</div></div><span class="badge bx">Explore</span></div>
-      <div id="learningList"></div>
-      <div class="irow" style="margin-top:8px">
-        <input class="tinp" type="text" id="learningInput" placeholder="Add learning item..." style="flex:1">
-        <button class="addb" onclick="addLearning()">Add</button>
-      </div>
-      <button class="adb" onclick="ask('What should I be learning or developing right now to maximize my impact? Consider my role as COO and my goal of building a complete AI-powered personal OS.')"><span class="adb-icon">📚</span>What should I learn right now?</button>
+      <div class="ct">DONALD Wishlist</div>
+      <div id="growthStoreEl"></div>
+      <div id="growthAddRow"></div>
+      <div id="growthDeletedEl"></div>
     </div>
     <div class="card">
-      <div class="ct">DONALD wishlist</div>
-      <div class="row"><div><div class="rn">Evening Summary</div><div class="rs">Daily wrap-up</div></div><span class="badge bx">Wishlist</span></div>
-      <div class="row"><div><div class="rn">Weekly Report</div><div class="rs">Sundays — weekly wrap</div></div><span class="badge bx">Wishlist</span></div>
-      <div class="row"><div><div class="rn">Block Time</div><div class="rs">Calendar blocking automation</div></div><span class="badge bx">Wishlist</span></div>
-      <div class="row"><div><div class="rn">Email to DONALD</div><div class="rs">Auto-routing setup</div></div><span class="badge ba">Pending</span></div>
-      <div class="row"><div><div class="rn">Work DONALD daily summary</div><div class="rs">Shared Drive output</div></div><span class="badge ba">Pending</span></div>
-      <div class="row"><div><div class="rn">DONALD Dashboard build</div><div class="rs">Prompt ready</div></div><span class="badge ba">Pending</span></div>
-      <button class="adb" onclick="ask('Help me prioritize my DONALD improvement wishlist. What gives me the most value the fastest?')"><span class="adb-icon">⚡</span>Prioritize DONALD wishlist</button>
-      <textarea class="nta" id="growthNotes" placeholder="Growth notes, books to read, learning goals..." oninput="S('growthNotes',this.value)" style="min-height:60px;margin-top:10px"></textarea>
+      <div class="ct">This week's wins & focus</div>
+      <button class="adb" onclick="ask('Weekly growth review: what did I accomplish this week, what did I not get to, and what should be my #1 growth focus for next week?')"><span class="adb-icon">📈</span>Weekly growth review</button>
+      <button class="adb" onclick="ask('What skills or knowledge gaps do I have that are limiting my effectiveness as COO and as someone building AI systems?')"><span class="adb-icon">🎯</span>Skill gaps analysis</button>
+      <button class="adb" onclick="ask('What automations or AI integrations would give me the most leverage right now across Prime Source and my personal life?')"><span class="adb-icon">⚡</span>Automation opportunities</button>
+      <textarea class="nta" id="growthNotes" placeholder="Growth notes, ideas, wins..." oninput="S('growthNotes',this.value)" style="min-height:120px;margin-top:8px"></textarea>
     </div>
   </div>
-</div>
-
-<!-- EMAIL -->
-<div class="view" id="view-email">
+id="view-email">
   <div class="world-header">
-    <div><div class="world-title"><em>Email</em> World</div><div class="world-subtitle">Personal inbox · family inbox · AOL migration complete</div></div>
-    <div class="world-actions"><button class="cc-btn" onclick="ask('Scan both personal Gmail (davidlgenuth@gmail.com) and shared family inbox (davidmalky@gmail.com). Flag anything urgent or needing a reply today.')">Scan All Email ↗</button></div>
+    <div><div class="world-title"><em>Email</em> World</div><div class="world-subtitle">davidlgenuth@gmail.com · davidmalky@gmail.com</div></div>
+    <div class="world-actions"><button class="cc-btn" onclick="ask('Scan my personal and family email. Flag anything urgent, anything needing a reply today, and any important information I should know.')">Scan Email ↗</button></div>
   </div>
   <div class="g2">
     <div class="card">
-      <div class="ct">Email action queue <span id="emailQueueBadge" style="font-size:9px;color:var(--text3);font-weight:400"></span></div>
-      <div style="font-size:9px;color:var(--text3);margin-bottom:8px;line-height:1.5">Live items from your intel. Click to prefill draft workspace.</div>
-      <div id="personalEmailQueue"><div class="eq-empty">Push an intel update to populate email items.</div></div>
+      <div class="ct">Needs action</div>
+      <div id="emailStoreEl"></div>
+      <div id="emailAddRow"></div>
+      <div id="emailDeletedEl"></div>
     </div>
     <div class="card">
-      <div class="ct">Draft workspace</div>
-      <div class="ew-row"><div class="ew-lbl">To</div><input class="ew-inp" type="text" id="ewTo" placeholder="Recipient"></div>
-      <div class="ew-row"><div class="ew-lbl">Goal</div><input class="ew-inp" type="text" id="ewGoal" placeholder="What do you want to accomplish?"></div>
-      <div class="ew-row"><div class="ew-lbl">Context</div><input class="ew-inp" type="text" id="ewContext" placeholder="Background"></div>
-      <div class="ew-row"><div class="ew-lbl">Account</div>
-        <select class="ew-inp" id="ewFrom">
-          <option value="personal">davidlgenuth@gmail.com</option>
-          <option value="family">davidmalky@gmail.com</option>
-        </select>
-      </div>
-      <button class="addb" style="width:100%;padding:8px;margin-top:6px" onclick="buildPersonalEmailPrompt()">✦ Draft with DONALD</button>
-      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;padding-top:8px;border-top:1px solid var(--border)">
-        <button class="adb" onclick="ask('Check my personal Gmail (davidlgenuth@gmail.com) for anything urgent or needing a reply today.')"><span class="adb-icon">📧</span>Check personal inbox</button>
-        <button class="adb" onclick="ask('Check the shared family inbox (davidmalky@gmail.com) for anything urgent — financial alerts, Zoom invites, family items.')"><span class="adb-icon">👨‍👩‍👧</span>Check family inbox</button>
-        <button class="adb" onclick="ask('Are there any personal emails sitting unread more than 3 days that need my attention?')"><span class="adb-icon">⚠</span>Flag overdue</button>
-      </div>
+      <div class="ct">Quick actions</div>
+      <button class="adb" onclick="ask('Scan davidlgenuth@gmail.com — what emails need a response today? Give me the sender, subject, and a suggested one-line reply for each.')"><span class="adb-icon">📧</span>Personal inbox scan</button>
+      <button class="adb" onclick="ask('Scan davidmalky@gmail.com — any emails that need attention? Flag financial, family, or urgent items.')"><span class="adb-icon">👨‍👩‍👧</span>Family inbox scan</button>
+      <button class="adb" onclick="ask('Draft a follow-up email to Israel Steinberg about the 2022 tax amendment — we need charity receipts from 5 organizations and the deadline is June 11.')"><span class="adb-icon">📋</span>Tax amendment follow-up</button>
+      <button class="adb" onclick="ask('What emails have I been ignoring or putting off that I should deal with this week?')"><span class="adb-icon">⚠️</span>Overdue emails</button>
+      <div class="ct" style="margin-top:12px">Email accounts</div>
+      <div class="row"><span class="rn" style="font-size:10px">davidlgenuth@gmail.com</span><span class="badge bg">Connected</span></div>
+      <div class="row"><span class="rn" style="font-size:10px">davidmalky@gmail.com</span><span class="badge bg">Connected</span></div>
+      <div class="row"><span class="rn" style="font-size:10px">DGenuth@PrimeSourceX.com</span><span class="badge bg">Outlook</span></div>
     </div>
   </div>
-  <div class="card">
-    <div class="ct">AOL migration — complete ✓</div>
-    <div style="font-size:9px;color:var(--text3);margin-bottom:8px">25 accounts migrated from davidmalky@aol.com</div>
-    <div id="aolMigrationList" style="display:grid;grid-template-columns:repeat(4,1fr);gap:4px"></div>
-  </div>
-</div>
-
-<!-- WORK -->
-<div class="view" id="view-work">
+id="view-work">
   <div class="world-header">
-    <div><div class="world-title"><em>Work</em> Overview</div><div class="world-subtitle">Prime Source pulse · Outlook · meetings · open items</div></div>
+    <div><div class="world-title"><em>Work</em> World</div><div class="world-subtitle">Prime Source · COO command</div></div>
     <div class="world-actions">
-      <button class="cc-btn" onclick="ask('Work pulse — urgent Outlook emails, meetings today or tomorrow, key Prime Source items I should know about.')">Work Pulse ↗</button>
-      <a href="https://primesource-os.vercel.app" target="_blank" class="ib-btn primary" style="text-decoration:none;display:inline-flex;align-items:center;gap:4px">Prime Source OS ↗</a>
+      <button class="cc-btn" onclick="window.open('https://claude.ai/chat/fc096dae-272e-4c62-a2eb-59d4ec255a62','_blank')">Open Work DONALD ↗</button>
     </div>
+  </div>
+  <div class="metrics">
+    <div class="mc"><div class="ml">June 8 Event</div><div class="mv" style="font-size:14px;color:var(--red)">15d</div><div class="ms">COO speech — prep now</div></div>
+    <div class="mc"><div class="ml">Culligan deal</div><div class="mv" style="font-size:14px;color:var(--amber)">Pending</div><div class="ms">Redlined contract</div></div>
+    <div class="mc"><div class="ml">Mobotics</div><div class="mv" style="font-size:14px;color:var(--amber)">DocuSign</div><div class="ms">Yehuda + Mark pending</div></div>
+    <div class="mc"><div class="ml">Salesforce</div><div class="mv" style="font-size:14px;color:var(--green)">Active</div><div class="ms">4 dev items open</div></div>
   </div>
   <div class="g2">
     <div class="card">
-      <div class="ct">Work intel queue <span id="workQueueBadge" style="font-size:9px;color:var(--text3);font-weight:400"></span></div>
-      <div style="font-size:9px;color:var(--text3);margin-bottom:8px;line-height:1.5">High-level work items. For full depth, use Prime Source OS.</div>
-      <div id="workIntelQueue"><div class="eq-empty">Push an intel update to populate work items.</div></div>
+      <div class="ct">Work priorities</div>
+      <div id="workStoreEl"></div>
+      <div id="workAddRow"></div>
+      <div id="workDeletedEl"></div>
     </div>
     <div class="card">
-      <div class="ct">Quick work actions</div>
-      <button class="adb" onclick="ask('Check my Outlook inbox and calendar — urgent emails, meetings today or tomorrow, anything I should flag.')"><span class="adb-icon">📬</span>Check Outlook + Calendar</button>
-      <button class="adb" onclick="ask('What are the top 3 work priorities I should be pushing on right now at Prime Source?')"><span class="adb-icon">🎯</span>Top 3 work priorities</button>
-      <button class="adb" onclick="ask('Any work emails or commitments that have been sitting too long and need my attention?')"><span class="adb-icon">⚠</span>Flag overdue work items</button>
-      <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border)">
-        <div style="font-size:9px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px">Schedule</div>
-        <div class="row"><span class="rn" style="font-size:10px">Mon–Thu</span><span class="badge bx">Montvale (135 Chestnut Ridge Rd)</span></div>
-        <div class="row"><span class="rn" style="font-size:10px">Most Wed + Fri</span><span class="badge bg">Work from home</span></div>
-        <div class="row"><span class="rn" style="font-size:10px">Accumulated PTO</span><span class="badge ba">Significant — rolls over</span></div>
-      </div>
+      <div class="ct">Quick actions</div>
+      <button class="adb" onclick="ask('June 8 company event speech — I am COO presenting on procurement strategy. Give me a structure, key talking points, and an opening line that will get the room's attention.')"><span class="adb-icon">🎤</span>June 8 speech prep</button>
+      <button class="adb" onclick="ask('Prime Source work overview: Culligan deal, Mobotics DocuSign, BEP BAA, Salesforce items, and Purchasing Director hiring. What needs my attention most urgently?')"><span class="adb-icon">💼</span>Work overview</button>
+      <button class="adb" onclick="ask('Culligan contract — Thomas Caputo returned a heavily redlined agreement May 1. No response in over 3 weeks. What is my approach to close this or kill it?')"><span class="adb-icon">🤝</span>Culligan strategy</button>
+      <button class="adb" onclick="ask('Prepare a Salesforce meeting brief — ownership change logic, matching rule, parent-child case, and dormant opportunities. What do I need to know before the meeting?')"><span class="adb-icon">☁️</span>Salesforce brief</button>
     </div>
   </div>
-  <div class="card">
-    <div class="ct">Full work depth</div>
-    <div style="font-size:10px;color:var(--text2);line-height:1.7;margin-bottom:8px">Prime Source OS has the full command center — Command/Dashboard/Email/Salesforce/Deals/Vendors/Projects/Notes — with live intel panels, vendor tracking, deal management, and everything work-related.</div>
-    <a href="https://primesource-os.vercel.app" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:9px;background:var(--hi);color:#fff;border:none;border-radius:var(--rs);font-size:11px;font-weight:700;cursor:pointer;text-decoration:none;transition:opacity .12s;letter-spacing:.04em;text-transform:uppercase">Open Prime Source OS — Full Work Dashboard ↗</a>
-  </div>
-</div>
-
-
-<!-- FOCUS & TIME -->
-<div class="view" id="view-focus">
+id="view-focus">
   <div class="world-header">
-    <div><div class="world-title"><em>Focus</em> &amp; Time</div><div class="world-subtitle">Strategic daily plan · priority blocks · carry-forward · time maximization</div></div>
-    <div class="world-actions">
-      <button class="cc-btn" onclick="ask('Structure my day today by priority. Pull my calendar, open tasks, and pending items. Tell me exactly what I should be working on and in what order, with realistic time estimates.')">Structure My Day ↗</button>
+    <div><div class="world-title"><em>Focus</em> World</div><div class="world-subtitle">Priority stack · time blocks · what matters now</div></div>
+    <div class="world-actions"><button class="cc-btn" onclick="ask('Structure my day today by priority. What are my top 3 things, what should I defer, and what time blocks should I protect?')">Structure My Day ↗</button></div>
+  </div>
+  <div class="g2">
+    <div class="card">
+      <div class="ct">Today's priority stack</div>
+      <button class="adb" onclick="ask('Give me my top 3 priorities for today based on my tasks, deadlines, and calendar. Be specific — tell me exactly what to do and in what order.')"><span class="adb-icon">🎯</span>Top 3 for today</button>
+      <button class="adb" onclick="ask('What is the single most important thing I should be working on right now at this moment? Give me one sentence.')"><span class="adb-icon">⚡</span>One thing right now</button>
+      <button class="adb" onclick="ask('What have I been avoiding or procrastinating on that I really need to deal with this week?')"><span class="adb-icon">⚠️</span>What am I avoiding?</button>
+      <button class="adb" onclick="ask('End of day wrap: what did I accomplish today, what is unfinished, and what do I carry into tomorrow?')"><span class="adb-icon">🌙</span>End of day wrap</button>
+    </div>
+    <div class="card">
+      <div class="ct">Upcoming deadlines</div>
+      <div class="row"><div><div class="rn" style="font-size:10px;color:var(--red)">2022 tax amendment</div><div class="rs">June 11 — 18 days</div></div><span class="badge br">Urgent</span></div>
+      <div class="row"><div><div class="rn" style="font-size:10px;color:var(--red)">June 8 company event speech</div><div class="rs">15 days — start prep now</div></div><span class="badge br">Urgent</span></div>
+      <div class="row"><div><div class="rn" style="font-size:10px;color:var(--amber)">Milestone Metrics bank</div><div class="rs">Chase appt Tue May 26 11am</div></div><span class="badge ba">Tuesday</span></div>
+      <div class="row"><div><div class="rn" style="font-size:10px;color:var(--amber)">CPAP compliance</div><div class="rs">7/30 nights — window closes Jul 20</div></div><span class="badge ba">Ongoing</span></div>
+      <div class="row"><div><div class="rn" style="font-size:10px">MileagePlus merge</div><div class="rs">Call 1-800-421-4655 anytime</div></div><span class="badge bx">Pending</span></div>
+      <div class="ct" style="margin-top:12px">Notes</div>
+      <textarea class="nta" id="focusNotes" placeholder="Focus notes, daily intentions..." oninput="S('focusNotes',this.value)" style="min-height:80px;margin-top:6px"></textarea>
     </div>
   </div>
-  <div class="g2" style="margin-bottom:8px">
-    <div class="card" style="margin-bottom:0">
-      <div class="ct">Today's priority stack
-        <button class="al" onclick="ask('Rebuild my priority stack for today based on my tasks, calendar, emails, and what is most important to move forward. Give me a specific ordered list with time estimates.')">↻ Rebuild</button>
-      </div>
-      <div id="focusPriorityList"><div style="font-size:10px;color:var(--text3);font-style:italic;padding:6px 0">Click Rebuild to generate today's priority stack from your live data.</div></div>
-      <button class="adb" onclick="ask('I want to do a time block session. Build me a realistic schedule for the rest of today with specific time blocks for each priority item. Name the task, the duration, and what done looks like.')"><span class="adb-icon">⏱</span>Build time blocks for today</button>
-      <button class="adb" onclick="ask('What tasks have been sitting on my list the longest that I keep avoiding? What is the cost of continuing to delay them?')"><span class="adb-icon">↩</span>What am I avoiding?</button>
-    </div>
-    <div class="card" style="margin-bottom:0">
-      <div class="ct">Time estimates</div>
-      <div class="row"><div><div class="rn" style="font-size:10px">Set up Cube ACR → Drive</div><div class="rs">Call recording auto-backup</div></div><span class="badge bx">~30 min</span></div>
-      <div class="row"><div><div class="rn" style="font-size:10px">Set up SMS Backup → Drive</div><div class="rs">Text message backup</div></div><span class="badge bx">~20 min</span></div>
-      <div class="row"><div><div class="rn" style="font-size:10px">Set up Donor Advised Fund</div><div class="rs">Research + open account</div></div><span class="badge bx">~1 hr</span></div>
-      <div class="row"><div><div class="rn" style="font-size:10px">Auto insurance follow-up</div><div class="rs">Call insurer after completions</div></div><span class="badge bx">~20 min</span></div>
-      <div class="row"><div><div class="rn" style="font-size:10px">Review solar proposal</div><div class="rs">Call Avromi Weinberger 848-373-5885</div></div><span class="badge bx">~30 min</span></div>
-      <div class="row"><div><div class="rn" style="font-size:10px">Wave AI recovery</div><div class="rs">USB cable at home</div></div><span class="badge bx">~15 min</span></div>
-      <button class="adb" onclick="ask('I have 30 minutes right now. What is the single highest-leverage thing I can do that will have the most impact on my life or work?')"><span class="adb-icon">⚡</span>Best use of next 30 minutes</button>
-    </div>
-  </div>
-  <div class="g2" style="margin-bottom:8px">
-    <div class="card" style="margin-bottom:0">
-      <div class="ct">💡 Quick idea capture
-        <a href="https://docs.google.com/document/d/1AGcAn_THemQQvqv0Z4EJbKsTeRcVJEnXdQ4g8Inqv4I/edit" target="_blank" class="al">Open Ideas Log ↗</a>
-      </div>
-      <div style="font-size:9px;color:var(--text3);margin-bottom:8px;line-height:1.5">Half-formed thoughts you don't want to lose. DONALD saves to your Ideas Log in Drive.</div>
-      <textarea id="ideaInput" class="nta" placeholder="Type an idea — any thought, concept, or possibility..." style="min-height:80px;resize:none"></textarea>
-      <button class="addb" style="width:100%;padding:8px;margin-top:6px" onclick="captureIdea()">💡 Save to Ideas Log</button>
-      <div id="ideaCaptureStatus" style="font-size:9px;color:var(--text3);margin-top:4px;min-height:13px;text-align:center"></div>
-    </div>
-    <div class="card" style="margin-bottom:0">
-      <div class="ct">✅ Quick to-do capture
-        <a href="https://docs.google.com/document/d/19ORkFrJQUsyC_7g_y127CBgOnTbjxS-qskYERMItjzQ/edit" target="_blank" class="al">Open To-Do Log ↗</a>
-      </div>
-      <div style="font-size:9px;color:var(--text3);margin-bottom:8px;line-height:1.5">Committed actions that need to happen. DONALD saves to your To-Do Log in Drive.</div>
-      <textarea id="todoInput" class="nta" placeholder="Type a to-do — something specific you need to do..." style="min-height:80px;resize:none"></textarea>
-      <div class="irow" style="margin-top:6px">
-        <select id="todoPri" class="tinp"><option value="high">🔴 High priority</option><option value="med" selected>🟡 Medium priority</option><option value="low">🔵 Low priority</option></select>
-      </div>
-      <button class="addb" style="width:100%;padding:8px;margin-top:6px" onclick="captureTodo()">✅ Save to To-Do Log</button>
-      <div id="todoCaptureStatus" style="font-size:9px;color:var(--text3);margin-top:4px;min-height:13px;text-align:center"></div>
-    </div>
-  </div>
-  <div class="card">
-    <div class="ct">Weekly focus</div>
-    <button class="adb" onclick="ask('Build me a realistic weekly plan. What are the 3-5 most important things I should accomplish this week across personal, financial, health, and work? Structure it by day.')"><span class="adb-icon">📅</span>Build my weekly plan</button>
-    <button class="adb" onclick="ask('End of week review. What did I accomplish this week vs what I planned? What carries forward and what should I prioritize differently next week?')"><span class="adb-icon">📊</span>End of week review</button>
-    <button class="adb" onclick="ask('I am overwhelmed and do not know where to start. Help me triage everything and identify the one thing that will make the biggest difference today.')"><span class="adb-icon">🧭</span>I am overwhelmed — triage</button>
-  </div>
-</div>
 
-</div><!-- /main -->
-
-<div class="drag-div" id="dragDiv" onmousedown="startDrag(event)"><div class="drag-inner"></div></div>
-
-<!-- PANEL -->
-<div class="panel" id="panel" style="width:340px">
-  <div class="ptabs">
-    <button class="ptab active" onclick="PT('donald',this)">✦ DONALD</button>
-    <button class="ptab" onclick="PT('chats',this)">Chats</button>
-    <button class="ptab" onclick="PT('deploy',this)">Deploy</button>
-    <button class="ptab" onclick="PT('settings',this)">Settings</button>
-  </div>
-  <div class="psect active" id="psect-donald">
-    <div class="ph">
-      <div class="ph-title">DONALD — Personal Chief of Staff</div>
-      <div class="ph-status"><span class="sdot"></span>Ready · Gmail · Calendar · Drive · Fathom</div>
-      <div class="pmod" id="modLabel">Personal briefing</div>
-    </div>
-    <div class="qaw">
-      <div class="qal">Quick actions</div>
-      <div class="qa-grid">
-        <button class="qab" onclick="ask('Full morning briefing for today.')">☀ Morning briefing</button>
-        <button class="qab" onclick="ask('Scan personal and family email — flag anything urgent.')">✉ Scan all email</button>
-        <button class="qab" onclick="ask('CPAP check — how many nights remaining and what do I need to do tonight?')">💪 CPAP check</button>
-        <button class="qab" onclick="ask('What is my single most important personal priority right now?')">⚡ Top priority</button>
-        <button class="qab" onclick="ask('Quick work pulse — any urgent Outlook emails or meetings I should know about?')">📬 Work pulse</button>
-        <button class="qab" onclick="ask('What is on the Jewish calendar this week?')">✡ Jewish calendar</button>
-      </div>
-    </div>
-    <div class="odw">
-      <a class="odb" href="#" target="_blank" id="donaldChatLink">Open Personal DONALD ↗</a>
-      <div class="crow">
-        <input class="cinp" type="text" id="cinp" placeholder="Quick question for DONALD..." onkeydown="if(event.key==='Enter')compose()">
-        <button class="csend" onclick="compose()">Send ↗</button>
-      </div>
-    </div>
-    <div class="clw">
-      <div style="padding:8px 0;border-top:1px solid var(--border);margin:0 -12px;padding:8px 12px;background:var(--surf2)">
-        <div style="font-size:9px;font-weight:700;color:var(--text);margin-bottom:4px;text-transform:uppercase;letter-spacing:.04em">🧠 Update DONALD Memory</div>
-        <div style="font-size:8.5px;color:var(--text3);line-height:1.5;margin-bottom:5px">Tell DONALD what changed — naturally.</div>
-        <select id="memUpdateType" style="width:100%;margin-bottom:4px;font-size:9px;padding:4px 6px;background:var(--surf);border:1px solid var(--border);border-radius:var(--rsm);color:var(--text2);font-family:inherit">
-          <option value="finance">Finance update</option>
-          <option value="health">Health update</option>
-          <option value="family">Family update</option>
-          <option value="project">Project update</option>
-          <option value="contact">Contact / person</option>
-          <option value="habit">Habit / routine</option>
-          <option value="other">Other</option>
-        </select>
-        <textarea id="memUpdateText" style="width:100%;box-sizing:border-box;min-height:52px;resize:vertical;margin-bottom:4px;font-size:9px;padding:5px 7px;background:var(--surf);border:1px solid var(--border);border-radius:var(--rsm);color:var(--text);font-family:inherit;line-height:1.5" placeholder="e.g. CPAP night 4 completed. Kasa plug arrived — setting up tonight."></textarea>
-        <button class="csend" style="width:100%;justify-content:center;padding:5px" onclick="pushMemoryUpdate()">⇧ Update DONALD Memory</button>
-        <div id="memUpdateStatus" style="font-size:8.5px;margin-top:3px;color:var(--text3);min-height:13px"></div>
-      </div>
-    </div>
-  </div>
-  <div class="psect" id="psect-chats">
-    <div style="display:flex;flex-direction:column;flex:1;overflow:hidden;padding:12px;gap:8px">
-      <button class="addb" style="width:100%;padding:7px" onclick="loadRecentChats()">↻ Load my recent Claude chats</button>
-      <div id="chatLoadStatus" style="font-size:8.5px;color:var(--text3);min-height:12px;text-align:center"></div>
-      <div id="chatPasteArea" style="display:none">
-        <div style="font-size:8.5px;color:var(--text3);margin-bottom:4px">Paste DONALD's JSON response here:</div>
-        <textarea id="chatJsonInput" style="width:100%;box-sizing:border-box;height:80px;font-size:9px;padding:5px;background:var(--surf2);border:1px solid var(--border);border-radius:var(--rsm);color:var(--text);font-family:inherit;resize:none" placeholder='[{"title":"...","url":"..."}]' oninput="tryParseChatJson(this.value)"></textarea>
-      </div>
-      <div class="cll">DONALD chats</div>
-      <div id="pinnedChats" style="flex-shrink:0"></div>
-      <div class="cll" style="margin-top:4px">Recent chats <span id="chatCount" style="font-weight:400;color:var(--text3)"></span></div>
-      <div id="allChats" style="flex:1;overflow-y:auto;min-height:0"></div>
-      <div style="padding-top:8px;border-top:1px solid var(--border);flex-shrink:0">
-        <input class="tinp" style="width:100%;margin-bottom:4px;box-sizing:border-box" type="text" id="scUrl" placeholder="Or paste a chat URL manually...">
-        <div style="display:flex;gap:4px">
-          <input class="tinp" style="flex:1" type="text" id="scLabel" placeholder="Label">
-          <button class="addb" onclick="addChat()">Save</button>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="psect" id="psect-deploy">
-    <div class="deploy-area">
-      <div style="font-family:'Inter',sans-serif;font-size:13px;font-weight:800;color:var(--text);margin-bottom:4px">Deploy Update</div>
-      <div style="font-size:10px;color:var(--text2);margin-bottom:12px;line-height:1.6">Paste updated index.html → Deploy. Live in ~30 seconds.</div>
-      <textarea class="deploy-ta" id="deployCode" placeholder="Paste new index.html code here..."></textarea>
-      <button class="deploy-btn" id="deployBtn" onclick="deployUpdate()">Deploy to personal-os.vercel.app</button>
-      <div class="dstatus" id="dstatus"></div>
-      <div style="margin-top:10px;font-size:9px;color:var(--text3);line-height:1.7">Token stored in browser. Pushes to GitHub → Vercel auto-deploys in ~30s.</div>
-    </div>
-  </div>
-  <div class="psect" id="psect-settings">
-    <div style="flex:1;overflow-y:auto;padding:12px">
-      <div class="cll">Settings</div>
-      <div style="margin-bottom:10px"><div style="font-size:10px;font-weight:600;color:var(--text2);margin-bottom:4px;text-transform:uppercase;letter-spacing:.04em">Personal DONALD Project URL</div><input class="tinp" style="width:100%" type="text" id="donaldUrlInput" placeholder="https://claude.ai/project/..." oninput="saveDonaldUrl()"></div>
-      <div style="margin-bottom:10px"><div style="font-size:10px;font-weight:600;color:var(--text2);margin-bottom:4px;text-transform:uppercase;letter-spacing:.04em">GitHub token</div><input class="tinp" style="width:100%" type="password" id="ghTokenInput" placeholder="ghp_..."><button class="addb" style="margin-top:5px;width:100%" onclick="saveGhToken()">Save token</button></div>
-      <div style="margin-bottom:10px;padding:10px;background:var(--surf2);border-radius:var(--r);border:1px solid var(--border)">
-        <div style="font-size:10px;font-weight:700;color:var(--text);margin-bottom:6px">☁ Cloud Sync</div>
-        <div style="font-size:8.5px;color:var(--text3);line-height:1.6;margin-bottom:8px">Free sync via <a href="https://jsonbin.io" target="_blank" style="color:var(--hi)">jsonbin.io</a> — one-time setup.</div>
-        <div style="font-size:9px;font-weight:600;color:var(--text2);margin-bottom:3px">Master Key</div>
-        <input class="tinp" style="width:100%;box-sizing:border-box;margin-bottom:6px" type="password" id="jbKeyInput" placeholder="$2b$10$...">
-        <div style="font-size:9px;font-weight:600;color:var(--text2);margin-bottom:3px">Bin ID</div>
-        <input class="tinp" style="width:100%;box-sizing:border-box;margin-bottom:6px" type="text" id="jbBinInput" placeholder="64f3a1...">
-        <div style="display:flex;gap:5px;margin-bottom:5px">
-          <button class="addb" style="flex:1;padding:6px" onclick="saveSyncCredentials()">Save &amp; Connect</button>
-          <button class="addb" style="flex:1;padding:6px" onclick="createBin()">Create Bin</button>
-        </div>
-        <button class="addb" style="width:100%;padding:5px" onclick="loadFromCloud()">↻ Pull Latest from Cloud</button>
-        <div id="syncSetupStatus" style="font-size:8.5px;color:var(--text3);margin-top:4px;min-height:12px"></div>
-      </div>
-      <div style="margin-bottom:10px">
-        <div style="font-size:9px;font-weight:600;color:var(--text2);margin-bottom:4px;text-transform:uppercase;letter-spacing:.04em">Manual backup</div>
-        <div style="display:flex;gap:5px">
-          <button class="addb" style="flex:1;padding:5px;font-size:9px" onclick="exportData()">Export data</button>
-          <button class="addb" style="flex:1;padding:5px;font-size:9px" onclick="importData()">Import data</button>
-        </div>
-      </div>
-      <button class="addb" onclick="toggleTheme()" style="width:100%;margin-bottom:6px">Toggle dark / light mode</button>
-      <button class="addb" onclick="if(confirm('Clear all data?'))clearAll()" style="width:100%;color:var(--red)">Clear all saved data</button>
-      <div style="font-size:9px;color:var(--text3);line-height:1.8;margin-top:14px;padding-top:12px;border-top:1px solid var(--border)">Personal OS v2.0<br>personal-os.vercel.app<br>David Genuth — COO Prime Source</div>
-    </div>
-  </div>
-</div>
-
-</div><!-- /body -->
-</div><!-- /app -->
-
-<div class="panel-overlay" id="panelOverlay" onclick="togglePanel()"></div>
-<button class="mobile-donna-fab" onclick="togglePanel()" title="Open DONALD">✦</button>
-<div class="panel-handle" id="panelHandle" onclick="togglePanel()" title="Toggle DONALD panel"><span class="panel-handle-icon" id="panelHandleIcon">◧</span></div>
-
-<div class="prompt-panel" id="promptPanel">
-  <button class="pp-close" onclick="hidePrompt()">×</button>
-  <div class="pp-label-col"><div class="pp-chat-badge" id="ppChat">Personal DONALD</div></div>
-  <div class="pp-text-col">
-    <div class="pp-prompt-text" id="ppText">Prompt text</div>
-    <div class="pp-actions">
-      <a class="pp-open" id="ppLink" href="#" target="_blank">Open DONALD ↗</a>
-      <button class="pp-copy" onclick="copyAgain()" id="ppCopyBtn">Copy prompt</button>
-      <span class="pp-hint">Ctrl+V to paste</span>
-    </div>
-  </div>
-</div>
-
-<div class="cc-drawer-overlay" id="ccOverlay" onclick="closeCCDrawer()"></div>
-<div class="cc-drawer" id="ccDrawer">
-  <div class="cc-drawer-header"><div class="cc-drawer-title" id="ccDrawerTitle"></div><div class="cc-drawer-close" onclick="closeCCDrawer()">×</div></div>
-  <div class="cc-drawer-body" id="ccDrawerBody"></div>
-  <div class="cc-drawer-actions" id="ccDrawerActions"></div>
-</div>
-
-<div class="sel-bar" id="selBar">
-  <span class="sel-bar-ct" id="selCt">0 selected</span>
-  <button class="sel-bar-btn p" onclick="batchEmail()">✉ Draft Emails</button>
-  <button class="sel-bar-btn" onclick="batchTask()">✓ Add Tasks</button>
-  <span class="sel-bar-x" onclick="clearSel()" title="Clear">×</span>
-</div>
-
-<div class="undo-toast" id="undoToast"><span id="undoMsg">Item deleted</span><button class="undo-toast-btn" onclick="undoDelete()">Undo</button></div>
-
-<script>
-var PREFIX='po2_';
-var DONALD_URL='YOUR_PERSONAL_DONALD_URL';
-function G(k,d){try{var v=localStorage.getItem(PREFIX+k);return v!==null?JSON.parse(v):d;}catch(e){return d;}}
-function S(k,v){try{localStorage.setItem(PREFIX+k,JSON.stringify(v));}catch(e){}}
-
-var tasks=G('tasks',[
-  {id:1,text:'Set up Cube ACR → Google Drive auto-backup',pri:'high',cat:'projects',done:false},
-  {id:2,text:'Set up SMS Backup & Restore → Drive',pri:'high',cat:'projects',done:false},
-  {id:3,text:'Yeshiva Dvar Torah tuition — move on BuyersEdge/Mark',pri:'high',cat:'finance',done:false},
-  {id:4,text:'Follow up with insurer after household defensive driving completions',pri:'med',cat:'finance',done:false},
-  {id:5,text:'Set up Donor Advised Fund',pri:'med',cat:'finance',done:false},
-  {id:6,text:'Wave AI voice note recovery — USB cable at home',pri:'med',cat:'projects',done:false},
-  {id:7,text:'Configure CPAP Shabbos timer (Kasa plug)',pri:'med',cat:'health',done:false},
-  {id:8,text:'Get MVR report for auto insurance',pri:'low',cat:'finance',done:false},
-  {id:9,text:'Verify if NJ defensive driving applies to Avrumy in Israel',pri:'low',cat:'finance',done:false},
-]);
-var nid=G('nid',200);
-var appts=G('appts',[]);
-var homeItems=G('homeItems',[]);
-var learningItems=G('learningItems',[]);
-var chats=G('chats',[{id:1,label:'Personal DONALD (main)',url:'YOUR_PERSONAL_DONALD_URL',mod:'personal'},{id:2,label:'Prime Source OS',url:'https://primesource-os.vercel.app',mod:'work'}]);
-var intelCache=G('intelCache',{});
-var _dismissed=G('dismissed',[]);
-var _sel=[];
-var isDark=G('dark',true);
-var panelOpen=G('panel',true);
-var panelW=G('panelW',340);
-var _deletedTask=null,_deleteTimer=null,_drawerPanelId=null,_popTarget=null;
-var currentPrompt='',currentUrl='',promptTimer=null;
-var syncEnabled=false,syncTimer=null;
-
-var AOL_COMPLETE=['Tesla','TD Auto Finance','Principal Financial','Penn Mutual','Hyundai Motor Finance','Truist','AmeriHealth','Dropbox','Microsoft','Adobe','Target','US Bank','Verizon','Robinhood','Costco','E-ZPass NJ','Veolia Water','JCP&L/FirstEnergy','Chase','Schwab','Vanguard','Zoom','YouMail','Samsung','Airbnb'];
-
-var CC_PANELS=[
-  {id:'daily',icon:'☀',label:'Daily Briefing',pri:'blue',desc:'Morning routine, top priority, calendar, email highlights.',
-   actions:[{label:'Morning briefing',prompt:'Full morning briefing for today — calendar, email highlights, CPAP status, and top priority.'},{label:'Top priority',prompt:'What is the single most important thing I should be doing right now personally?'},{label:'Evening wrap',prompt:'End of day wrap-up — what did I accomplish, what is unfinished, what do I carry into tomorrow?'}],openTab:'dashboard'},
-  {id:'finance',icon:'💰',label:'Finance',pri:'amber',desc:'$93K owed, accounts, insurance, investments, DAF setup.',
-   badgeFn:function(){return {count:1,cls:'red'};},
-   actions:[{label:'Finance status',prompt:'Full personal finance status — Prime Procurement balance, Capital One, investments, DAF, what needs to move this week.'},{label:'Collect the $93K',prompt:'What do I need to do to collect the remaining $93K from Prime Procurement?'},{label:'Insurance discount',prompt:'Auto insurance discount follow-up. I completed defensive driving April 26. Next steps?'}],openTab:'finance'},
-  {id:'health',icon:'💪',label:'Health',pri:'amber',desc:'CPAP: 27 of 30 nights needed. SightMD May 15.',
-   badgeFn:function(){return {count:27,cls:'amber'};},
-   actions:[{label:'CPAP check',prompt:'CPAP compliance check — how many nights do I have, how many remaining, what do I do tonight?'},{label:'SightMD prep',prompt:'What do I need to prepare for my SightMD appointment on May 15?'},{label:'Health overview',prompt:'Full health status — CPAP compliance, upcoming appointments, anything I should be tracking.'}],openTab:'health'},
-  {id:'family',icon:'🏠',label:'Family & Home',pri:'blue',desc:'Malky, kids, home, Shabbos, Jewish calendar.',
-   actions:[{label:'Family check-in',prompt:'Family and home briefing — what is on the calendar this week for family, Shabbos, and home?'},{label:'Jewish calendar',prompt:'What is on the Jewish calendar this week and coming month?'},{label:'Shabbos prep',prompt:'Help me prepare for Shabbos this week. What do I need to do before zman on Friday?'}],openTab:'family'},
-  {id:'projects',icon:'🚀',label:'Personal Projects',pri:'gray',desc:'FashionScan25.3 (blocked), DONALD OS v2 (active).',
-   actions:[{label:'Projects status',prompt:'Personal projects status — FashionScan, DONALD OS, and side builds. What is moving and what is blocked?'},{label:'FashionScan decision',prompt:'FashionScan25.3 — Gradle issues, overlay alignment, unresolved references. Should I continue or pause? Help me decide.'},{label:'Next build step',prompt:'What is the single most valuable personal project I should be working on right now?'}],openTab:'projects'},
-  {id:'growth',icon:'📚',label:'Growth',pri:'gray',desc:'Wispr Flow, DONALD wishlist, AI mastery.',
-   actions:[{label:'Growth check-in',prompt:'Personal growth check-in — what should I be learning and developing right now?'},{label:'DONALD wishlist',prompt:'Prioritize my DONALD improvement wishlist. What gives me the most value fastest?'},{label:'AI mastery',prompt:'What AI tools and skills should I be developing given my role as COO and personal OS builder?'}],openTab:'growth'},
-  {id:'email',icon:'✉',label:'Email',pri:'red',desc:'8 unread. Personal Gmail + family inbox.',
-   badgeFn:function(){return {count:8,cls:'red'};},
-   actions:[{label:'Scan all email',prompt:'Scan personal Gmail and family inbox. Flag anything urgent or needing a reply today.'},{label:'Draft urgent replies',prompt:'Draft replies for my top 3 most urgent personal emails in my voice — direct, warm, no dashes. Show drafts before doing anything.'},{label:'Flag overdue',prompt:'Are there personal emails sitting unread more than 3 days that need a response?'}],openTab:'email'},
-  {id:'work',icon:'💼',label:'Work Overview',pri:'blue',desc:'Prime Source pulse. Full depth in Prime Source OS.',
-   actions:[{label:'Work pulse',prompt:'Work pulse — urgent Outlook emails, meetings today or tomorrow, key Prime Source items.'},{label:'Top work priorities',prompt:'Top 3 work priorities I should push on right now at Prime Source.'},{label:'Open Prime Source OS',url:'https://primesource-os.vercel.app'}],openTab:'work'},
-  {id:'notes',icon:'📝',label:'Capture',pri:'gray',desc:'Quick thoughts, scratchpad, notes.',
-   actions:[{label:'Quick capture',prompt:'I want to capture a thought or note. Ask me what I want to remember.'},{label:'Review notes',prompt:'What notes have I captured recently that I should review?'}],openTab:null},
-  {id:'focus',icon:'⏱',label:'Focus & Time',pri:'green',desc:'Priority stack: June 8 speech prep, tax amendment deadline Jun 11, Milestone Metrics bank, MileagePlus merge, Renzo build.',
-   badgeFn:function(){var op=tasks.filter(function(t){return !t.done&&t.pri==='high'});return op.length>0?{count:op.length,cls:'red'}:null;},
-   actions:[{label:'Structure my day',prompt:'Structure my day today by priority. Pull my calendar, open tasks, and pending items. Tell me exactly what I should work on in order with time estimates.'},{label:'Best use of next 30 min',prompt:'I have 30 minutes right now. What is the single highest-leverage thing I can do?'},{label:'Weekly plan',prompt:'Build me a realistic weekly plan. What are the 3-5 most important things to accomplish this week across personal, financial, health, and work?'}],openTab:'focus'},
-];
-
-var PANEL_INTEL_KEY={daily:'donald_personal_intel_daily',finance:'donald_personal_intel_finance',health:'donald_personal_intel_health',family:'donald_personal_intel_family',projects:'donald_personal_intel_projects',growth:'donald_personal_intel_growth',email:'donald_personal_intel_email',work:'donald_personal_intel_work',notes:'donald_personal_intel_notes',focus:'donald_personal_intel_focus'};
-
-function ask(prompt,urlOverride){
-  var url=urlOverride||(G('donaldUrl','')||'YOUR_PERSONAL_DONALD_URL');
-  currentPrompt=prompt;currentUrl=url;
-  var copy=function(){window.open(url,'_blank');showPP(url,prompt);};
-  if(navigator.clipboard){navigator.clipboard.writeText(prompt).then(copy).catch(function(){fb();copy();});}else{fb();copy();}
-  function fb(){var ta=document.createElement('textarea');ta.value=prompt;ta.style.cssText='position:fixed;opacity:0';document.body.appendChild(ta);ta.focus();ta.select();try{document.execCommand('copy');}catch(e){}document.body.removeChild(ta);}
-}
-function showPP(url,prompt){
-  document.getElementById('ppText').textContent=prompt;
-  document.getElementById('ppLink').href=url;
-  document.getElementById('ppCopyBtn').textContent='Copy prompt';
-  document.getElementById('promptPanel').classList.add('show');
-  if(promptTimer)clearTimeout(promptTimer);promptTimer=setTimeout(hidePrompt,15000);
-}
-function hidePrompt(){document.getElementById('promptPanel').classList.remove('show');}
-function copyAgain(){if(navigator.clipboard)navigator.clipboard.writeText(currentPrompt).catch(function(){});document.getElementById('ppCopyBtn').textContent='Copied ✓';setTimeout(function(){document.getElementById('ppCopyBtn').textContent='Copy prompt';},2000);}
-function compose(){var t=document.getElementById('cinp').value.trim();if(!t)return;ask(t);document.getElementById('cinp').value='';}
-
-function V(n){
-  document.querySelectorAll('.view').forEach(function(v){v.classList.remove('active');});
-  document.querySelectorAll('.ntab').forEach(function(t){t.classList.remove('active');});
-  var el=document.getElementById('view-'+n);if(el)el.classList.add('active');
-  document.querySelectorAll('.ntab').forEach(function(t){if(t.onclick&&t.onclick.toString().indexOf("'"+n+"'")>-1)t.classList.add('active');});
-}
-function PT(n,btn){
-  document.querySelectorAll('.psect').forEach(function(s){s.classList.remove('active');});
-  document.querySelectorAll('.ptab').forEach(function(t){t.classList.remove('active');});
-  document.getElementById('psect-'+n).classList.add('active');btn.classList.add('active');
-  if(n==='settings')loadSettings();
-}
-function applyTheme(){if(isDark)document.body.removeAttribute('data-light');else document.body.setAttribute('data-light','');}
-function toggleTheme(){isDark=!isDark;S('dark',isDark);applyTheme();}
-function togglePanel(){
-  var isMobile=window.innerWidth<=768;
-  if(isMobile){var p=document.getElementById('panel'),ov=document.getElementById('panelOverlay');var isOpen=p.classList.contains('mobile-open');if(isOpen){p.classList.remove('mobile-open');if(ov)ov.classList.remove('show');}else{p.classList.add('mobile-open');if(ov)ov.classList.add('show');}}
-  else{panelOpen=!panelOpen;S('panel',panelOpen);applyPanel();}
-  updateHandlePos();
-}
-function applyPanel(){
-  var isMobile=window.innerWidth<=768;
-  var p=document.getElementById('panel'),d=document.getElementById('dragDiv');
-  if(isMobile){p.style.width='';if(d)d.style.display='none';}
-  else{if(panelOpen){p.style.width=panelW+'px';p.classList.remove('closed');if(d)d.style.display='';}else{p.classList.add('closed');if(d)d.style.display='none';}}
-  updateHandlePos();
-}
-function updateHandlePos(){
-  var h=document.getElementById('panelHandle');if(!h)return;
-  if(panelOpen&&window.innerWidth>768){h.style.right=panelW+'px';document.getElementById('panelHandleIcon').textContent='❯';}
-  else{h.style.right='0';document.getElementById('panelHandleIcon').textContent='◧';}
-}
-var drag=false,sx=0,sw=0;
-function startDrag(e){drag=true;sx=e.clientX;sw=panelW;document.getElementById('dragDiv').classList.add('dragging');document.addEventListener('mousemove',onDrag);document.addEventListener('mouseup',stopDrag);}
-function onDrag(e){if(!drag)return;var nw=Math.min(600,Math.max(220,sw+(sx-e.clientX)));panelW=nw;document.getElementById('panel').style.width=nw+'px';}
-function stopDrag(){drag=false;S('panelW',panelW);document.getElementById('dragDiv').classList.remove('dragging');document.removeEventListener('mousemove',onDrag);document.removeEventListener('mouseup',stopDrag);}
-
-function setDate(){
-  var d=new Date();var days=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];var mo=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  var hr=d.getHours(),mn=d.getMinutes(),ampm=hr>=12?'PM':'AM';hr=hr%12||12;
-  var el=document.getElementById('tdate');if(el)el.textContent=days[d.getDay()]+' '+mo[d.getMonth()]+' '+d.getDate()+' · '+hr+':'+(mn<10?'0':'')+mn+' '+ampm;var hdEl=document.getElementById('hebrewDate');if(hdEl&&window.getHebrewDate){hdEl.textContent=window.getHebrewDate(d);}
-  var greet=document.getElementById('dayGreeting');if(greet){var h=d.getHours();greet.textContent=h<12?'morning':h<17?'afternoon':'evening';}
-  var sub=document.getElementById('dashSubtitle');if(sub){var ds=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];var mos=['January','February','March','April','May','June','July','August','September','October','November','December'];sub.textContent=ds[d.getDay()]+', '+mos[d.getMonth()]+' '+d.getDate()+', '+d.getFullYear();}
-}
-setDate();setInterval(setDate,1000);
-// Auto-refresh intel every 30 minutes if user has cloud sync set up
-setInterval(function(){
-  try {
-    if(typeof pushIntel === 'function' && document.getElementById('jbBinId') && G('jbBinId')) {
-      // Only auto-refresh if user has been active in last 30 min
-      if(typeof _lastActivity !== 'undefined' && (Date.now() - _lastActivity) < 30*60*1000) {
-        if(typeof sendRefreshPrompt === 'function') sendRefreshPrompt();
-      }
-    }
-  } catch(_) {}
-}, 30 * 60 * 1000);
-// Track user activity
-var _lastActivity = Date.now();
-document.addEventListener('click', function(){ _lastActivity = Date.now(); });
-document.addEventListener('keydown', function(){ _lastActivity = Date.now(); });
-
-function pBadge(p){return p==='high'?'<span class="badge br">High</span>':p==='med'?'<span class="badge ba">Med</span>':'<span class="badge bx">Low</span>';}
-function cBadge(c){return '<span class="badge bx">'+c+'</span>';}
-
-function taskRow(t){return '<div class="tr"><div class="cb'+(t.done?' done':'')+'" onclick="togTask('+t.id+')">'+(t.done?'✓':'')+'</div><div style="flex:1"><div class="tt'+(t.done?' done':'')+'">'+t.text+'</div><div class="tm">'+pBadge(t.pri)+cBadge(t.cat)+'</div></div><button class="xb" onclick="delTask('+t.id+')">×</button></div>';}
-function renderDashTasks(){
-  var op=tasks.filter(function(t){return !t.done}).sort(function(a,b){var o={high:0,med:1,low:2};return o[a.pri]-o[b.pri];});
-  var dn=tasks.filter(function(t){return t.done});
-  var all=op.concat(dn);
-  var el=document.getElementById('dashTaskList');if(!el)return;
-  el.innerHTML=all.slice(0,6).map(taskRow).join('');
-  var st=document.getElementById('dashTaskStats');if(st)st.textContent=op.length+' open · '+dn.length+' done';
-}
-function togTask(id){tasks=tasks.map(function(t){return t.id===id?Object.assign({},t,{done:!t.done}):t;});S('tasks',tasks);renderDashTasks();}
-function delTask(id){
-  var t=tasks.filter(function(x){return x.id===id;})[0];if(!t)return;
-  _deletedTask={task:t,index:tasks.indexOf(t)};tasks=tasks.filter(function(x){return x.id!==id;});S('tasks',tasks);renderDashTasks();
-  var toast=document.getElementById('undoToast');var msg=document.getElementById('undoMsg');
-  if(msg)msg.textContent='"'+t.text.substring(0,30)+(t.text.length>30?'…':'')+'" deleted';
-  if(toast)toast.classList.add('show');
-  if(_deleteTimer)clearTimeout(_deleteTimer);_deleteTimer=setTimeout(function(){_deletedTask=null;var to=document.getElementById('undoToast');if(to)to.classList.remove('show');},5000);
-}
-function undoDelete(){if(!_deletedTask)return;tasks.splice(_deletedTask.index,0,_deletedTask.task);_deletedTask=null;if(_deleteTimer)clearTimeout(_deleteTimer);S('tasks',tasks);renderDashTasks();var t=document.getElementById('undoToast');if(t)t.classList.remove('show');}
-function addTask(){var x=document.getElementById('dashNt').value.trim();if(!x)return;tasks.push({id:nid++,text:x,pri:document.getElementById('dashNp').value,cat:document.getElementById('dashNc').value,done:false});S('tasks',tasks);S('nid',nid);document.getElementById('dashNt').value='';renderDashTasks();}
-document.addEventListener('keydown',function(e){if(e.key==='Enter'&&document.activeElement.id==='dashNt')addTask();});
-
-function renderAppts(){var el=document.getElementById('apptList');if(!el)return;el.innerHTML=appts.map(function(a,i){return '<div class="row"><div><div class="rn" style="font-size:10px">'+a.name+'</div><div class="rs">'+a.date+'</div></div><button class="xb" onclick="delAppt('+i+')">×</button></div>';}).join('');}
-function addAppt(){var n=document.getElementById('apptInput').value.trim();if(!n)return;appts.push({name:n,date:document.getElementById('apptDate').value||'TBD'});S('appts',appts);document.getElementById('apptInput').value='';document.getElementById('apptDate').value='';renderAppts();}
-function delAppt(i){appts.splice(i,1);S('appts',appts);renderAppts();}
-
-function renderHomeItems(){var el=document.getElementById('homeItems');if(!el)return;el.innerHTML=homeItems.map(function(h,i){return '<div class="row"><div class="rn" style="font-size:10px;flex:1">'+h+'</div><button class="xb" onclick="delHomeItem('+i+')">×</button></div>';}).join('');}
-function addHomeItem(){var v=document.getElementById('homeInput').value.trim();if(!v)return;homeItems.push(v);S('homeItems',homeItems);document.getElementById('homeInput').value='';renderHomeItems();}
-function delHomeItem(i){homeItems.splice(i,1);S('homeItems',homeItems);renderHomeItems();}
-
-function renderLearning(){var el=document.getElementById('learningList');if(!el)return;el.innerHTML=learningItems.map(function(l,i){return '<div class="row"><div class="rn" style="font-size:10px;flex:1">'+l+'</div><button class="xb" onclick="delLearning('+i+')">×</button></div>';}).join('');}
-function addLearning(){var v=document.getElementById('learningInput').value.trim();if(!v)return;learningItems.push(v);S('learningItems',learningItems);document.getElementById('learningInput').value='';renderLearning();}
-function delLearning(i){learningItems.splice(i,1);S('learningItems',learningItems);renderLearning();}
-
-function addPersonalProject(){var n=prompt('Project name:');if(!n)return;var el=document.getElementById('personalProjectList');if(el)el.innerHTML+='<div class="row"><div><div class="rn">'+n+'</div><div class="rs">New project</div></div><span class="badge bx">New</span></div>';}
-
-function renderAOLMigration(){var el=document.getElementById('aolMigrationList');if(!el)return;el.innerHTML=AOL_COMPLETE.map(function(s){return '<div style="display:flex;align-items:center;justify-content:space-between;padding:3px 0"><span style="font-size:10px;color:var(--text2)">'+s+'</span><span class="badge bg" style="font-size:8px">✓</span></div>';}).join('');}
-
-function renderChats(){
-  var coreMods=['personal','work'];var pinned=chats.filter(function(c){return coreMods.indexOf(c.mod)>-1;});var rest=chats.filter(function(c){return coreMods.indexOf(c.mod)===-1;});
-  var mk=function(c){return '<a class="cli" href="'+c.url+'" target="_blank"><div class="cli-dot"></div><div style="flex:1;min-width:0"><div class="cli-title">'+c.label+'</div>'+(c.updated?'<div class="cli-mod">'+c.updated+'</div>':'')+'</div><button class="cli-del" onclick="event.preventDefault();delChat('+chats.indexOf(c)+')">×</button></a>';};
-  var p=document.getElementById('pinnedChats'),a=document.getElementById('allChats'),ct=document.getElementById('chatCount');
-  if(p)p.innerHTML=pinned.map(mk).join('');
-  if(a)a.innerHTML=rest.length?rest.map(mk).join(''):'<div style="font-size:10px;color:var(--text3);padding:4px 0">No additional chats saved.</div>';
-  if(ct)ct.textContent=rest.length?'('+rest.length+')':'';
-}
-function addChat(){var u=document.getElementById('scUrl').value.trim();if(!u)return;chats.push({id:nid++,label:document.getElementById('scLabel').value.trim()||'Chat',url:u,mod:'other'});S('chats',chats);S('nid',nid);document.getElementById('scUrl').value='';document.getElementById('scLabel').value='';renderChats();}
-function delChat(i){chats.splice(i,1);S('chats',chats);renderChats();}
-
-var _dockedCards=G('dockedCards',[]);
-function ccBadgeHtml(panel){var key=PANEL_INTEL_KEY?PANEL_INTEL_KEY[panel.id]:null;var liveData=key&&intelCache?intelCache[key]:null;if(liveData&&liveData.html){var h=liveData.html;var red=(h.match(/class=\"ii ii-red\"/g)||[]).length;var amber=(h.match(/class=\"ii ii-amber\"/g)||[]).length;var green=(h.match(/class=\"ii ii-green\"/g)||[]).length;var blue=(h.match(/class=\"ii ii-blue\"/g)||[]).length;var out='';if(red>0)out+='<span class="cp-badge red">'+red+'</span>';if(amber>0)out+='<span class="cp-badge amber">'+amber+'</span>';if(green>0)out+='<span class="cp-badge green">'+green+'</span>';if(blue>0)out+='<span class="cp-badge blue">'+blue+'</span>';if(out)return out;}var auto=panel.badgeFn?panel.badgeFn():null;var count=auto?auto.count:null;var cls=auto?auto.cls:'gray';if(count==null||count===0)return '';return '<span class="cp-badge '+(cls||'')+'">'+count+'</span>';}
-function renderCC(){
-  var grid=document.getElementById('ccGrid');if(!grid)return;
-  var html='';
-  CC_PANELS.forEach(function(panel){
-    var badge=ccBadgeHtml(panel);var key=PANEL_INTEL_KEY[panel.id];var liveData=key?intelCache[key]:null;
-    var tsStr='No live intel yet';if(liveData&&liveData.updated){var d=new Date(liveData.updated);var ageMin=Math.round((new Date()-d)/60000);tsStr=ageMin<60?'Updated '+ageMin+'m ago':'Updated '+Math.round(ageMin/60)+'h ago';}
-    var pid=panel.id;
-    html+='<div class="cp pri-'+panel.pri+'" id="cp-'+pid+'">';
-    html+='<div class="cp-head" onclick="openCCDrawer(\''+pid+'\')">';
-    html+='<div class="cp-icon">'+panel.icon+'</div><div class="cp-label">'+panel.label+'</div>';
-    html+='<div class="cp-meta">'+badge+'</div>';
-    html+='<button class="cp-compact-btn" onclick="event.stopPropagation();dockCard(\''+pid+'\')" title="Collapse">↑</button>';
-    html+='</div>';
-    html+='<div class="cp-body"><div id="cp-intel-'+pid+'">';
-    if(liveData&&liveData.items&&liveData.items.length){
-      liveData.items.forEach(function(item,ii){
-        var dot=item.type==='red'?'red':item.type==='amber'?'amber':item.type==='green'?'green':item.type==='blue'?'blue':'gray';
-        html+='<div class="ii-wrap" onclick="iiClick(this,\''+pid+'\','+ii+')" oncontextmenu="actPop(event,\''+pid+'\','+ii+');return false;"><span class="ii-dot '+dot+'"></span><strong>'+item.title+'</strong>'+(item.detail?' <span class="ii-detail">— '+item.detail+'</span>':'')+'</div>';
-      });
-    }else{html+='<div style="padding:8px 11px;font-size:10px;color:var(--text3)">'+panel.desc+'</div>';}
-    html+='</div></div>';
-    html+='<div class="cp-footer"><span class="cp-footer-ts">'+tsStr+'</span><div class="cp-footer-acts">';
-    html+='<button class="cp-footer-btn" onclick="event.stopPropagation();openCCDrawer(\''+pid+'\')">OPEN ↗</button>';
-    if(panel.openTab){html+='<button class="cp-footer-btn tab-btn" onclick="event.stopPropagation();V(\''+panel.openTab+'\')">WORLD ↗</button>';}
-    html+='</div></div></div>';
-  });
-  grid.innerHTML=html;
-  setTimeout(function(){applyCompactStates();injectAllIntel();},50);
-}
-
-function openCCDrawer(pid){
-  _drawerPanelId=pid;var panel=CC_PANELS.filter(function(p){return p.id===pid;})[0];if(!panel)return;
-  var key=PANEL_INTEL_KEY[pid];var liveData=key?intelCache[key]:null;
-  var title=document.getElementById('ccDrawerTitle');var body=document.getElementById('ccDrawerBody');var acts=document.getElementById('ccDrawerActions');
-  if(title)title.textContent=panel.icon+' '+panel.label;
-  var html='';
-  if(liveData&&liveData.items&&liveData.items.length){
-    if(liveData.updated){var d=new Date(liveData.updated);var ageMin=Math.round((new Date()-d)/60000);html+='<div class="cp-fresh" style="margin-bottom:10px">● Live intel · '+(ageMin<60?ageMin+'m ago':Math.round(ageMin/60)+'h ago')+'</div>';}
-    liveData.items.forEach(function(item){var dot=item.type==='red'?'red':item.type==='amber'?'amber':item.type==='green'?'green':item.type==='blue'?'blue':'gray';html+='<div class="ii-wrap"><span class="ii-dot '+dot+'"></span><strong>'+item.title+'</strong>'+(item.detail?' <span class="ii-detail">— '+item.detail+'</span>':'')+'</div>';});
-  }else{var fn=INTEL_MAP[pid];var appHtml=fn?fn():'';if(appHtml){html+='<div class="cp-fresh" style="margin-bottom:10px">○ App data · Ask DONALD to refresh for live intel</div>'+appHtml;}else{html+='<div style="padding:8px 0;font-size:10px;color:var(--text3)">'+panel.desc+'</div>';}}
-  if(body)body.innerHTML=html;
-  var actHtml='';
-  panel.actions.forEach(function(a,idx){
-    if(a.url){actHtml+='<a href="'+a.url+'" target="_blank" class="adb"><span class="adb-icon">↗</span>'+a.label+'</a>';}
-    else{actHtml+='<button class="adb" data-pidx="'+idx+'" onclick="execDrawerAction(this)"><span class="adb-icon">↗</span>'+a.label+' →</button>';}
-  });
-  if(acts)acts.innerHTML=actHtml;
-  document.getElementById('ccDrawer').classList.add('show');document.getElementById('ccOverlay').classList.add('show');document.body.style.overflow='hidden';
-}
-function execDrawerAction(btn){
-  var idx=parseInt(btn.getAttribute('data-pidx'));var panel=CC_PANELS.filter(function(p){return p.id===_drawerPanelId;})[0];if(!panel||isNaN(idx))return;
-  var a=panel.actions[idx];if(!a||!a.prompt)return;ask(a.prompt);closeCCDrawer();
-}
-function closeCCDrawer(){document.getElementById('ccDrawer').classList.remove('show');document.getElementById('ccOverlay').classList.remove('show');document.body.style.overflow='';}
-
-var INTEL_MAP={
-  daily:function(){var hi=tasks.filter(function(t){return !t.done&&t.pri==='high'});var d=new Date();var days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];var lines=['<div class="ii ii-blue">📅 <strong>'+days[d.getDay()]+', '+d.toLocaleDateString('en-US',{month:'short',day:'numeric'})+'</strong></div>'];if(hi.length){lines.push('<div class="ii-section-label">High priority today</div>');hi.slice(0,3).forEach(function(t){lines.push('<div class="ii ii-red">▸ <strong>'+t.text+'</strong></div>');});}return lines.join('');},
-  finance:function(){return '<div class="ii ii-red">💰 <strong>$93K owed</strong> — Prime Procurement balance</div><div class="ii ii-amber">📋 <strong>DAF not set up</strong> — needed for charity routing</div><div class="ii ii-amber">🚗 <strong>Auto insurance</strong> — follow up after household completions</div><div class="ii ii-green">✓ <strong>Capital One Spark</strong> — AutoPay enrolled</div>';},
-  health:function(){return '<div class="ii ii-amber">💪 <strong>CPAP: 27 nights remaining</strong> — window closes ~Jul 20</div><div class="ii ii-blue">📅 <strong>SightMD — May 15, 2026</strong></div><div class="ii ii-amber">⚡ <strong>Bluetooth on overnight</strong> — required for MyAir tracking</div>';},
-  family:function(){return '<div class="ii ii-blue">📅 <strong>Post-Shavuos week</strong> — Isru Chag Sun May 24 · normal schedule resumes</div><div class="ii ii-blue">🕯 <strong>Shabbos</strong> — Fri May 29 · candle lighting ~7:57 PM</div><div class="ii ii-amber">👤 <strong>Avrumy</strong> — in Israel, check in after Yom Tov</div><div class="ii ii-amber">👤 <strong>Leah</strong> — at Shalva, monitor settling in</div>';},
-  email:function(){return '<div class="ii ii-amber">📧 <strong>MileagePlus merge</strong> — 3 accounts to consolidate · call 1-800-421-4655</div><div class="ii ii-amber">📧 <strong>2022 charity receipts</strong> — reach out to 5 orgs before Jun 11 deadline</div><div class="ii ii-blue">📧 <strong>Milestone Metrics LLC</strong> — Chase appt Tue May 26 11am · bring EIN + formation doc</div><div class="ii ii-gray">Push Intel Update to load live email summary</div>';},
-  work:function(){return '<div class="ii ii-red">🎤 <strong>June 8 Company Event</strong> — COO procurement speech · START PREP NOW</div><div class="ii ii-amber">⚡ <strong>Renzo program</strong> — AI outreach/follow-up tool · potential revenue stream</div><div class="ii ii-amber">🏢 <strong>Vendor Catalog VCS</strong> — data accuracy audit in progress with Jane</div><div class="ii ii-blue">💼 <strong>Open Prime Source OS</strong> for full work depth and live intel</div>';}
-};
-function injectAllIntel(){CC_PANELS.forEach(function(p){injectPanelIntel(p.id);});}
-function injectPanelIntel(id){var key=PANEL_INTEL_KEY[id];if(key&&intelCache[key]&&intelCache[key].items&&intelCache[key].items.length)return;var fn=INTEL_MAP[id];if(!fn)return;var el=document.getElementById('cp-intel-'+id);if(!el)return;el.innerHTML=fn();}
-
-function updateIBStatus(){
-  var keys=Object.keys(intelCache);var dot=document.getElementById('ibDot');var txt=document.getElementById('ibStatusText');if(!dot||!txt)return;
-  if(!keys.length){dot.className='ib-dot never';txt.textContent='No live intel yet — ask DONALD to refresh';return;}
-  var latest=null;keys.forEach(function(k){var d=intelCache[k]&&intelCache[k].updated?new Date(intelCache[k].updated):null;if(d&&(!latest||d>latest))latest=d;});
-  var ageMin=latest?Math.round((new Date()-latest)/60000):null;
-  if(ageMin===null){dot.className='ib-dot never';txt.textContent='No live intel';}
-  else if(ageMin<60){dot.className='ib-dot live';txt.textContent=keys.length+' panels live · updated '+ageMin+'m ago';}
-  else{dot.className='ib-dot stale';txt.textContent=keys.length+' panels · updated '+Math.round(ageMin/60)+'h ago';}
-}
-
-function openIBModal(){document.getElementById('ibModal').classList.add('show');document.getElementById('ibPasteArea').value='';document.getElementById('ibModalStatus').textContent='';document.getElementById('ibModalStatus').className='ib-modal-status';setTimeout(function(){document.getElementById('ibPasteArea').focus();},100);}
-function closeIBModal(){document.getElementById('ibModal').classList.remove('show');}
-async function pasteAndPush(){
-  if(navigator.clipboard&&navigator.clipboard.readText){
-    navigator.clipboard.readText().then(function(text){
-      var ta=document.getElementById('ibPasteArea');
-      if(ta)ta.value=text;
-      pushIntelUpdate();
-    }).catch(function(){
-      var ta=document.getElementById('ibPasteArea');
-      if(ta)ta.focus();
-      document.execCommand('paste');
-      setTimeout(pushIntelUpdate,100);
-    });
-  }else{
-    var ta=document.getElementById('ibPasteArea');
-    if(ta){ta.focus();document.execCommand('paste');}
-    setTimeout(pushIntelUpdate,100);
-  }
-}
-function pushIntelUpdate(){
-  var raw=document.getElementById('ibPasteArea').value.trim();var st=document.getElementById('ibModalStatus');
-  if(!raw){st.textContent='Paste JSON from DONALD first.';st.className='ib-modal-status err';return;}
-  var cleaned=raw.trim();var s=cleaned.indexOf('{'),e=cleaned.lastIndexOf('}');if(s>-1&&e>s)cleaned=cleaned.slice(s,e+1);var parsed;try{parsed=JSON.parse(cleaned);}catch(e){st.textContent='Invalid JSON — make sure Claude returned the full JSON block.';st.className='ib-modal-status err';return;}
-  var entries=[];
-  if(parsed.panels&&Array.isArray(parsed.panels)){parsed.panels.forEach(function(p){if(p.key&&p.value)entries.push({key:p.key,value:p.value});});}
-  else if(parsed.key&&parsed.value){entries.push({key:parsed.key,value:parsed.value});}
-  else{st.textContent='Missing key or value.';st.className='ib-modal-status err';return;}
-  st.textContent='Pushing '+entries.length+' panel'+(entries.length>1?'s':'')+'...';
-  for(var ei=0;ei<entries.length;ei++){
-    var key=entries[ei].key;var value=entries[ei].value;
-    var intelData=typeof value==='string'?JSON.parse(value):value;
-    intelCache[key]=intelData;
-    var panelId=Object.keys(PANEL_INTEL_KEY).find(function(k){return PANEL_INTEL_KEY[k]===key;});
-    if(panelId)renderLiveIntel(panelId,intelData);
-  }
-  S('intelCache',intelCache);updateIBStatus();
-  st.textContent='✓ '+entries.length+' panel'+(entries.length>1?'s':'')+' updated';st.className='ib-modal-status ok';
-  setTimeout(closeIBModal,1800);if(syncEnabled)setTimeout(pushToCloud,1000);
-}
-function renderLiveIntel(panelId,data){
-  var el=document.getElementById('cp-intel-'+panelId);if(!el)return;
-  if(!data||!data.items||!data.items.length){el.innerHTML='';return;}
-  var html='';
-  data.items.forEach(function(item,ii){
-    var dot=item.type==='red'?'red':item.type==='amber'?'amber':item.type==='green'?'green':item.type==='blue'?'blue':'gray';
-    html+='<div class="ii-wrap" onclick="iiClick(this,\''+panelId+'\','+ii+')" oncontextmenu="actPop(event,\''+panelId+'\','+ii+');return false;"><span class="ii-dot '+dot+'"></span><strong>'+item.title+'</strong>'+(item.detail?' <span class="ii-detail">— '+item.detail+'</span>':'')+'</div>';
-  });
-  el.innerHTML=html;
-}
-
-function sendRefreshPrompt(){
-  var today=new Date();var days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];var months=['January','February','March','April','May','June','July','August','September','October','November','December'];
-  var dateStr=days[today.getDay()]+', '+months[today.getMonth()]+' '+today.getDate()+', '+today.getFullYear();var timeStr=today.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit',hour12:true});
-  var msg='DONALD, refresh all 9 Personal Command Center intel panels. Today is '+dateStr+' at '+timeStr+' Eastern.\n\nProcess:\n1. Check Google Calendar for today and this week\n2. Scan personal Gmail (davidlgenuth@gmail.com) and family inbox (davidmalky@gmail.com) for urgent items\n3. Check CPAP status and compliance (3 nights done, 27 needed, window closes Jul 20)\n4. Review Jewish calendar for upcoming observances\n5. Surface any pending action items from memory and past conversations\n\nFormat as a single JSON block:\n{"panels":[\n{"key":"donald_personal_intel_daily","value":{"updated":"ISO_TIMESTAMP","items":[{"type":"red|amber|green|blue|gray","title":"Topic","detail":"Short detail"},...]}},\n{"key":"donald_personal_intel_finance","value":{...}},\n{"key":"donald_personal_intel_health","value":{...}},\n{"key":"donald_personal_intel_family","value":{...}},\n{"key":"donald_personal_intel_projects","value":{...}},\n{"key":"donald_personal_intel_growth","value":{...}},\n{"key":"donald_personal_intel_email","value":{...}},\n{"key":"donald_personal_intel_work","value":{...}},\n{"key":"donald_personal_intel_notes","value":{...}}\n]}\n\nEach item needs: type, title, detail. Current, complete, actionable.\n\nCRITICAL FORMATTING RULE: Your response must contain ONLY the raw JSON. No explanation before. No explanation after. No markdown. No code fences. No backticks. The very first character of your response must be { and the very last character must be }. Nothing else.'
-  var url=G('donaldUrl','')||'YOUR_PERSONAL_DONALD_URL';
-  var copy=function(){window.open(url,'_blank');showToast('Prompt copied — Ctrl+V into DONALD');};
-  if(navigator.clipboard){navigator.clipboard.writeText(msg).then(copy).catch(function(){var ta=document.createElement('textarea');ta.value=msg;ta.style.cssText='position:fixed;opacity:0';document.body.appendChild(ta);ta.focus();ta.select();try{document.execCommand('copy');}catch(e){}document.body.removeChild(ta);copy();});}
-  else{var ta=document.createElement('textarea');ta.value=msg;ta.style.cssText='position:fixed;opacity:0';document.body.appendChild(ta);ta.focus();ta.select();try{document.execCommand('copy');}catch(e){}document.body.removeChild(ta);copy();}
-}
-
-function dockCard(pid){if(_dockedCards.indexOf(pid)<0)_dockedCards.push(pid);S('dockedCards',_dockedCards);var card=document.getElementById('cp-'+pid);if(card)card.classList.add('docked');renderDock();}
-function undockCard(pid){_dockedCards=_dockedCards.filter(function(id){return id!==pid;});S('dockedCards',_dockedCards);var card=document.getElementById('cp-'+pid);if(card)card.classList.remove('docked');renderDock();}
-function renderDock(){var dock=document.getElementById('ccDock');if(!dock)return;if(!_dockedCards.length){dock.innerHTML='';return;}dock.innerHTML=_dockedCards.map(function(pid){var panel=CC_PANELS.filter(function(p){return p.id===pid;})[0];if(!panel)return '';return '<div class="dock-chip" onclick="undockCard(\''+pid+'\')">'+panel.icon+' '+panel.label+' ↓</div>';}).join('');}
-function applyCompactStates(){_dockedCards.forEach(function(pid){var el=document.getElementById('cp-'+pid);if(el)el.classList.add('docked');});renderDock();}
-
-function iiClick(el,pid,ii){
-  // Toggle selection
-  if(el.classList.contains('selected')){
-    el.classList.remove('selected');
-    _sel=_sel.filter(function(s){return !(s.pid===pid&&s.ii===ii);});
-    closeActPop();
-  } else {
-    // Deselect others in same panel
-    document.querySelectorAll('.ii-wrap.selected').forEach(function(e){e.classList.remove('selected');});
-    _sel=[];
-    el.classList.add('selected');
-    var key=PANEL_INTEL_KEY[pid];var data=key?intelCache[key]:null;
-    if(data&&data.items&&data.items[ii]) _sel.push({pid:pid,ii:ii,item:data.items[ii]});
-    // Show context action popup
-    var rect=el.getBoundingClientRect();
-    var fakeEvent={clientX:Math.min(rect.left,window.innerWidth-220),clientY:Math.min(rect.bottom+4,window.innerHeight-180),stopPropagation:function(){}};
-    actPop(fakeEvent,pid,ii);
-  }
-  updateSelBar();
-}
-function updateSelBar(){var bar=document.getElementById('selBar');var ct=document.getElementById('selCt');if(!bar)return;if(_sel.length>0){bar.classList.add('show');ct.textContent=_sel.length+' item'+(_sel.length===1?'':'s')+' selected';}else{bar.classList.remove('show');}}
-function clearSel(){_sel=[];document.querySelectorAll('.ii-wrap.selected').forEach(function(e){e.classList.remove('selected');});updateSelBar();}
-function batchEmail(){if(!_sel.length)return;var items=_sel.map(function(s){return s.item;});var prompt='DONALD, draft '+items.length+' email'+(items.length>1?'s':'')+' in my voice — warm, direct, no dashes.\n\n'+items.map(function(it,n){return (n+1)+'. '+it.title+(it.detail?' — '+it.detail:'');}).join('\n')+'\n\nFor each: subject line + full email body. Show all drafts before doing anything.';ask(prompt);clearSel();}
-function batchTask(){if(!_sel.length)return;_sel.forEach(function(s){tasks.push({id:nid++,text:s.item.title,pri:s.item.type==='red'?'high':s.item.type==='amber'?'med':'low',cat:'other',done:false});});S('tasks',tasks);S('nid',nid);renderDashTasks();showToast(_sel.length+' item'+(_sel.length===1?'':'s')+' added to Priority Tasks');clearSel();}
-function actPop(e,pid,ii){
-  e.stopPropagation();closeActPop();var key=PANEL_INTEL_KEY[pid];var data=key?intelCache[key]:null;if(!data||!data.items||!data.items[ii])return;
-  _popTarget={pid:pid,ii:ii,item:data.items[ii]};var item=data.items[ii];var label=item.title.length>38?item.title.substring(0,38)+'...':item.title;
-  var pop=document.createElement('div');pop.className='act-pop';pop.id='actPop';
-  pop.innerHTML='<div class="act-pop-hdr">'+label+'</div><div class="act-pop-item" onclick="popAct(\'email\')"><span class="act-pop-icon">✉</span>Draft Email</div><div class="act-pop-item" onclick="popAct(\'task\')"><span class="act-pop-icon">✓</span>Add to Priority Tasks</div><div class="act-pop-div"></div><div class="act-pop-item" onclick="popAct(\'dismiss\')" style="color:var(--text3)"><span class="act-pop-icon">×</span>Dismiss</div>';
-  var x=Math.min(e.clientX,window.innerWidth-215);var y=Math.min(e.clientY+6,window.innerHeight-150);pop.style.left=x+'px';pop.style.top=y+'px';
-  document.body.appendChild(pop);setTimeout(function(){document.addEventListener('click',closeActPop,{once:true});},10);
-}
-function closeActPop(){var p=document.getElementById('actPop');if(p)p.remove();}
-function popAct(act){
-  closeActPop();
-  if(!_popTarget||!_popTarget.item) return;
-  var item=_popTarget.item;
-  var title=item.title||'';
-  var detail=item.detail||'';
-  var context='Item: '+title+(detail?' — '+detail:'');
-  if(act==='ask'){
-    ask('Regarding this item: "'+title+'" — '+detail+'. Give me the most important thing I should know or do about this right now.');
-  } else if(act==='email'){
-    ask('Draft a concise email response or follow-up related to: "'+title+'". Context: '+detail+'. Write in David\'s voice — direct, confident, no fluff.');
-  } else if(act==='task'){
-    var t=tasks||[];t.push({id:Date.now(),text:title,priority:'high',category:'urgent',done:false,created:new Date().toISOString()});
-    saveStore('tasks',t);if(typeof renderDashTasks==='function')renderDashTasks();
-    showToast('Added to Priority Tasks');
-  } else if(act==='calendar'){
-    ask('Help me schedule or prep for: "'+title+'". What do I need to do and when should I block time?');
-  } else if(act==='prepbrief'){
-    ask('Give me a prep brief for: "'+title+'". What should I know, what questions should I ask, what is my goal going in?');
-  } else if(act==='dealstrategy'){
-    ask('Deal strategy for: "'+title+'". What is my leverage, what should I push for, what should I accept, what are the risks?');
-  } else if(act==='summarize'){
-    ask('Summarize the key points and required action from: "'+title+'" — '+detail);
-  } else if(act==='finance'){
-    ask('What is the right financial action for: "'+title+'" — '+detail+'? Give me specific next steps.');
-  } else if(act==='dismiss'){
-    var pid=_popTarget.pid;var ii=_popTarget.ii;
-    var key=pid?PANEL_INTEL_KEY[pid]:null;
-    if(key&&intelCache[key]&&intelCache[key].items){
-      intelCache[key].items.splice(ii,1);
-      S('intelCache',intelCache);
-      if(typeof renderLiveIntel==='function') renderLiveIntel(pid,intelCache[key]);
-      if(typeof renderCC==='function') renderCC();
-    }
-  }
-  _popTarget=null;
-}
-function dismissItem(pid,ii){var key=PANEL_INTEL_KEY[pid];if(!key||!intelCache[key]||!intelCache[key].items)return;var removed=intelCache[key].items.splice(ii,1)[0];_dismissed.push({key:key,pid:pid,ii:ii,item:removed,ts:Date.now()});S('intelCache',intelCache);S('dismissed',_dismissed);renderLiveIntel(pid,intelCache[key]);renderCC();setTimeout(injectAllIntel,50);showToast('Item dismissed');}
-
-function renderEmailQueue(){
-  var el=document.getElementById('personalEmailQueue');var badge=document.getElementById('emailQueueBadge');if(!el)return;
-  var data=intelCache['donald_personal_intel_email'];
-  if(!data||!data.items||!data.items.length){el.innerHTML='<div class="eq-empty">Push an intel update to populate email items.</div>';if(badge)badge.textContent='';return;}
-  if(badge)badge.textContent='('+data.items.length+')';
-  el.innerHTML=data.items.map(function(item,i){var dc=item.type==='red'?'red':item.type==='amber'?'amber':item.type==='green'?'green':item.type==='blue'?'blue':'gray';return '<div class="eq-item" onclick="emailQClick(this,'+i+')"><div class="eq-d '+dc+'"></div><div><div class="eq-title">'+item.title+'</div><div class="eq-detail">'+item.detail+'</div></div></div>';}).join('');
-}
-function emailQClick(el,idx){var parent=el.parentElement;if(parent)parent.querySelectorAll('.eq-item').forEach(function(e){e.classList.remove('on');});el.classList.add('on');var data=intelCache['donald_personal_intel_email'];if(!data||!data.items||!data.items[idx])return;var item=data.items[idx];var g=document.getElementById('ewGoal');var c=document.getElementById('ewContext');if(g)g.value=item.title;if(c)c.value=item.detail||'';}
-function buildPersonalEmailPrompt(){
-  var to=document.getElementById('ewTo').value.trim();var goal=document.getElementById('ewGoal').value.trim();var ctx=document.getElementById('ewContext').value.trim();var fromEl=document.getElementById('ewFrom');var fromVal=fromEl?fromEl.value:'personal';
-  if(!goal){alert('Fill in the email goal first.');return;}
-  var prompt='DONALD, draft an email for me.\n\n'+(to?'To: '+to+'\n':'')+'Goal: '+goal+(ctx?'\nContext: '+ctx:'')+'\nSend from: '+(fromVal==='family'?'davidmalky@gmail.com (family/Malky shared)':'davidlgenuth@gmail.com (personal)')+'\nTone: Professional, warm, direct. No dashes. Natural flow.\n\nSubject line + full email body in my voice. Show draft before doing anything.';
-  ask(prompt);
-}
-
-function renderWorkQueue(){var el=document.getElementById('workIntelQueue');var badge=document.getElementById('workQueueBadge');if(!el)return;var data=intelCache['donald_personal_intel_work'];if(!data||!data.items||!data.items.length){el.innerHTML='<div class="eq-empty">Push an intel update to populate work items.</div>';if(badge)badge.textContent='';return;}if(badge)badge.textContent='('+data.items.length+')';el.innerHTML=data.items.map(function(item){var dc=item.type==='red'?'red':item.type==='amber'?'amber':item.type==='green'?'green':item.type==='blue'?'blue':'gray';return '<div class="eq-item"><div class="eq-d '+dc+'"></div><div><div class="eq-title">'+item.title+'</div><div class="eq-detail">'+item.detail+'</div></div></div>';}).join('');}
-
-function pushMemoryUpdate(){
-  var typeEl=document.getElementById('memUpdateType');var textEl=document.getElementById('memUpdateText');var statusEl=document.getElementById('memUpdateStatus');
-  if(!textEl||!textEl.value.trim()){if(statusEl){statusEl.textContent='Please describe the update first.';statusEl.style.color='var(--red)';}return;}
-  var updateType=typeEl?typeEl.options[typeEl.selectedIndex].text:'Update';var updateText=textEl.value.trim();var today=new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
-  var prompt='DONALD, please remember and update your knowledge with the following personal update.\n\nType: '+updateType+'\nDate: '+today+'\nUpdate: '+updateText+'\n\nConfirm when you have noted this.';
-  var url=G('donaldUrl','')||'YOUR_PERSONAL_DONALD_URL';
-  var _open=function(){window.open(url,'_blank');if(statusEl){statusEl.textContent='✓ Opening DONALD — Ctrl+V and Send';statusEl.style.color='var(--green)';}setTimeout(function(){if(textEl)textEl.value='';if(statusEl){statusEl.textContent='';statusEl.style.color='';}},4000);};
-  if(navigator.clipboard){navigator.clipboard.writeText(prompt).then(_open).catch(function(){var ta=document.createElement('textarea');ta.value=prompt;ta.style.cssText='position:fixed;opacity:0';document.body.appendChild(ta);ta.focus();ta.select();try{document.execCommand('copy');}catch(e){}document.body.removeChild(ta);_open();});}
-  else{var ta=document.createElement('textarea');ta.value=prompt;ta.style.cssText='position:fixed;opacity:0';document.body.appendChild(ta);ta.focus();ta.select();try{document.execCommand('copy');}catch(e){}document.body.removeChild(ta);_open();}
-}
-
-async function deployUpdate(){
-  var code=document.getElementById('deployCode').value.trim();if(!code){alert('Paste new index.html code first.');return;}
-  var token=localStorage.getItem('po2_ghToken')||'';if(!token){alert('No GitHub token. Add it in Settings.');return;}
-  var btn=document.getElementById('deployBtn'),st=document.getElementById('dstatus');btn.disabled=true;btn.textContent='Deploying...';st.className='dstatus loading show';st.textContent='Pushing to GitHub...';
-  try{
-    var r1=await fetch('https://api.github.com/repos/davidmalky/personal-os/contents/index.html',{headers:{'Authorization':'token '+token,'Accept':'application/vnd.github.v3+json'}});var d1=await r1.json();
-    var r2=await fetch('https://api.github.com/repos/davidmalky/personal-os/contents/index.html',{method:'PUT',headers:{'Authorization':'token '+token,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'},body:JSON.stringify({message:'Deploy Personal OS v2',content:btoa(unescape(encodeURIComponent(code))),sha:d1.sha})});
-    if(r2.ok){st.className='dstatus ok show';st.textContent='Deployed. Live in ~30 seconds.';document.getElementById('deployCode').value='';}
-    else{var err=await r2.json();throw new Error(err.message||r2.status);}
-  }catch(err){st.className='dstatus err show';st.textContent='Deploy failed: '+err.message;}
-  btn.disabled=false;btn.textContent='Deploy to personal-os.vercel.app';
-}
-function saveGhToken(){var t=document.getElementById('ghTokenInput').value.trim();if(!t)return;localStorage.setItem('po2_ghToken',t);alert('Token saved.');document.getElementById('ghTokenInput').value='';}
-function saveDonaldUrl(){var u=document.getElementById('donaldUrlInput').value.trim();S('donaldUrl',u);DONALD_URL=u;var link=document.getElementById('donaldChatLink');if(link&&u)link.href=u;}
-
-function initSync(){var binId=G('jbBinId','');var apiKey=G('jbKey','');if(!binId||!apiKey){setSyncStatus('local','Local only — set up Cloud Sync in Settings','');return;}syncEnabled=true;setSyncStatus('syncing','Connecting...','');loadFromCloud();}
-function setSyncStatus(state,msg,btn){var dot=document.getElementById('syncDot');var st=document.getElementById('syncStatus');var b=document.getElementById('syncBtn');if(dot)dot.className='sync-dot '+state;if(st)st.textContent=msg;if(b)b.textContent=btn;}
-function syncNow(){if(syncEnabled)loadFromCloud();else initSync();}
-async function loadFromCloud(){
-  var binId=G('jbBinId','');var apiKey=G('jbKey','');if(!binId||!apiKey){setSyncStatus('local','Local only','');return;}setSyncStatus('syncing','Loading...','');
-  fetch('https://api.jsonbin.io/v3/b/'+binId+'/latest',{headers:{'X-Master-Key':apiKey,'X-Bin-Meta':'false'}}).then(function(r){return r.json();}).then(function(data){
-    if(data&&data.record){var d=data.record;if(d.tasks&&d.tasks.length)tasks=d.tasks;if(d.chats&&d.chats.length)chats=d.chats;if(d.intelCache)intelCache=d.intelCache;['tasks','chats','intelCache'].forEach(function(k){if(d[k])S(k,d[k]);});
-      // Restore all po2_ keys from cloud
-      Object.keys(d).filter(function(k){return k.startsWith('po2_');}).forEach(function(k){try{localStorage.setItem(k,typeof d[k]==='string'?d[k]:JSON.stringify(d[k]));}catch(e){}});renderDashTasks();renderChats();renderCC();setTimeout(injectAllIntel,100);setSyncStatus('synced','Synced · '+(new Date()).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}),'');}else{pushToCloud();}
-  }).catch(function(){setSyncStatus('offline','Load failed','Retry');});
-}
-function pushToCloud(){
-  var binId=G('jbBinId','');var apiKey=G('jbKey','');if(!binId||!apiKey)return;setSyncStatus('syncing','Saving...','');
-  var data={tasks:tasks,chats:chats,intelCache:intelCache,updated:new Date().toISOString()};
-  // Include all po2_ localStorage keys for full cross-device sync
-  var allKeys=Object.keys(localStorage).filter(function(k){return k.startsWith('po2_');});
-  allKeys.forEach(function(k){try{data[k]=JSON.parse(localStorage.getItem(k));}catch(e){data[k]=localStorage.getItem(k);}});
-  fetch('https://api.jsonbin.io/v3/b/'+binId,{method:'PUT',headers:{'Content-Type':'application/json','X-Master-Key':apiKey},body:JSON.stringify(data)}).then(function(r){return r.json();}).then(function(result){if(result.metadata||result.record){setSyncStatus('synced','Synced · '+(new Date()).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}),'');}else{setSyncStatus('offline','Save failed','Retry');}}).catch(function(){setSyncStatus('offline','Save failed','Retry');});
-}
-function saveSyncCredentials(){var key=document.getElementById('jbKeyInput').value.trim();var bin=document.getElementById('jbBinInput').value.trim();var st=document.getElementById('syncSetupStatus');if(!key){if(st)st.textContent='Paste Master Key first.';return;}S('jbKey',key);if(bin)S('jbBinId',bin);syncEnabled=true;document.getElementById('jbKeyInput').value='';if(bin){if(st)st.textContent='✓ Saved. Connecting...';loadFromCloud();}else{if(st)st.textContent='✓ Key saved. Click Create Bin.';}}
-async function createBin(){var apiKey=G('jbKey','');if(!apiKey){alert('Paste Master Key first.');return;}setSyncStatus('syncing','Creating bin...','');fetch('https://api.jsonbin.io/v3/b',{method:'POST',headers:{'Content-Type':'application/json','X-Master-Key':apiKey,'X-Bin-Name':'PersonalOS'},body:JSON.stringify({initialized:true})}).then(function(r){return r.json();}).then(function(result){if(result.metadata&&result.metadata.id){var binId=result.metadata.id;S('jbBinId',binId);var el=document.getElementById('jbBinInput');if(el)el.value=binId;syncEnabled=true;setTimeout(pushToCloud,500);showToast('Sync bin created!');}else{setSyncStatus('offline','Create failed','');}}).catch(function(){setSyncStatus('offline','Create failed','');});}
-function exportData(){var data={tasks:tasks,chats:chats,intelCache:intelCache};var json=JSON.stringify(data);if(navigator.clipboard){navigator.clipboard.writeText(json).then(function(){showToast('Data copied to clipboard');}).catch(function(){var ta=document.createElement('textarea');ta.value=json;ta.style.cssText='position:fixed;opacity:0';document.body.appendChild(ta);ta.focus();ta.select();try{document.execCommand('copy');}catch(e){}document.body.removeChild(ta);showToast('Data copied');});}}
-function importData(){var json=prompt('Paste exported data here:');if(!json||!json.trim())return;try{var d=JSON.parse(json.trim());if(d.tasks)tasks=d.tasks;if(d.chats)chats=d.chats;if(d.intelCache)intelCache=d.intelCache;['tasks','chats','intelCache'].forEach(function(k){if(d[k])S(k,d[k]);});renderDashTasks();renderChats();renderCC();setTimeout(injectAllIntel,100);showToast('Data imported');}catch(e){alert('Could not parse data.');}}
-function clearAll(){localStorage.clear();location.reload();}
-
-function loadSettings(){var du=document.getElementById('donaldUrlInput');if(du)du.value=G('donaldUrl','');var jb=document.getElementById('jbBinInput');if(jb)jb.value=G('jbBinId','');}
-function showToast(msg){var t=document.getElementById('undoToast');if(!t)return;var span=document.getElementById('undoMsg');if(span)span.textContent=msg;var ubtn=t.querySelector('.undo-toast-btn');if(ubtn)ubtn.style.display='none';t.classList.add('show');setTimeout(function(){t.classList.remove('show');if(ubtn)ubtn.style.display='';},3000);}
-function loadNotes(){var fields=['financeNotes','healthNotes','familyNotes','projectNotes','growthNotes'];fields.forEach(function(f){var el=document.getElementById(f);if(el)el.value=G(f,'');});}
-
-var _origS=S;
-S=function(k,v){_origS(k,v);if(syncEnabled){clearTimeout(syncTimer);syncTimer=setTimeout(pushToCloud,3000);}};
-
-var savedDonaldUrl=G('donaldUrl','');
-if(savedDonaldUrl){DONALD_URL=savedDonaldUrl;var link=document.getElementById('donaldChatLink');if(link)link.href=savedDonaldUrl;}
-
-
-// ── IDEAS + TO-DO CAPTURE ─────────────────────────────────────────────────
-function captureIdea(){
-  var text=document.getElementById('ideaInput').value.trim();
-  var statusEl=document.getElementById('ideaCaptureStatus');
-  if(!text){if(statusEl){statusEl.textContent='Type an idea first.';statusEl.style.color='var(--red)';}return;}
-  var today=new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
-  var prompt='DONALD, add this idea to my Ideas Log in Google Drive (document ID: 1AGcAn_THemQQvqv0Z4EJbKsTeRcVJEnXdQ4g8Inqv4I, account: googledocs_argas-topaz).\n\nDate: '+today+'\nIdea: '+text+'\n\nAdd it under the most relevant section. Confirm when done.';
-  var url=G('donaldUrl','')||'YOUR_PERSONAL_DONALD_URL';
-  var _open=function(){window.open(url,'_blank');if(statusEl){statusEl.textContent='✓ Opening DONALD — Ctrl+V and Send to save to Drive';statusEl.style.color='var(--green)';}setTimeout(function(){if(statusEl){statusEl.textContent='';statusEl.style.color='';}document.getElementById('ideaInput').value='';},5000);};
-  if(navigator.clipboard){navigator.clipboard.writeText(prompt).then(_open).catch(function(){_open();});}else{_open();}
-}
-function captureTodo(){
-  var text=document.getElementById('todoInput').value.trim();
-  var priEl=document.getElementById('todoPri');
-  var statusEl=document.getElementById('todoCaptureStatus');
-  if(!text){if(statusEl){statusEl.textContent='Type a to-do first.';statusEl.style.color='var(--red)';}return;}
-  var pri=priEl?priEl.options[priEl.selectedIndex].text:'Medium priority';
-  var today=new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
-  var prompt='DONALD, add this to-do to my To-Do Log in Google Drive (document ID: 19ORkFrJQUsyC_7g_y127CBgOnTbjxS-qskYERMItjzQ, account: googledocs_argas-topaz).\n\nDate added: '+today+'\nPriority: '+pri+'\nTo-do: '+text+'\n\nAdd it under the correct priority section. Confirm when done.';
-  var url=G('donaldUrl','')||'YOUR_PERSONAL_DONALD_URL';
-  var _open=function(){window.open(url,'_blank');if(statusEl){statusEl.textContent='✓ Opening DONALD — Ctrl+V and Send to save to Drive';statusEl.style.color='var(--green)';}setTimeout(function(){if(statusEl){statusEl.textContent='';statusEl.style.color='';}document.getElementById('todoInput').value='';},5000);};
-  if(navigator.clipboard){navigator.clipboard.writeText(prompt).then(_open).catch(function(){_open();});}else{_open();}
-}
-// ── LOAD RECENT CHATS ─────────────────────────────────────────────────────
-function loadRecentChats(){
-  var statusEl=document.getElementById('chatLoadStatus');
-  var pasteArea=document.getElementById('chatPasteArea');
-  var prompt='Please use your recent_chats tool to fetch my 50 most recent conversations. Return ONLY a JSON array with no explanation, no markdown, no code fences. Format exactly:\n[{"title":"Chat title here","url":"https://claude.ai/chat/CHAT-ID","updated":"2026-05-12"}]\n\nReturn the raw JSON array only.';
-  var url=G('donaldUrl','')||'YOUR_PERSONAL_DONALD_URL';
-  var _open=function(){if(pasteArea)pasteArea.style.display='block';if(statusEl){statusEl.textContent="✓ Paste DONALD's JSON response in the box above";statusEl.style.color='var(--green)';}window.open(url,'_blank');};
-  if(navigator.clipboard){navigator.clipboard.writeText(prompt).then(_open).catch(function(){_open();});}else{_open();}
-}
-function tryParseChatJson(val){
-  var statusEl=document.getElementById('chatLoadStatus');
-  if(!val||!val.trim())return;
-  try{
-    var raw=val.trim().replace(/^```[a-z]*\n?/i,'').replace(/```+$/,'').trim();
-    var arr=null;
-    try{arr=JSON.parse(raw);}catch(e){var s=raw.indexOf('['),en=raw.lastIndexOf(']');if(s>-1&&en>s){try{arr=JSON.parse(raw.slice(s,en+1));}catch(e2){}}}
-    if(!arr||!Array.isArray(arr)||!arr.length){if(statusEl){statusEl.textContent='No chats found — paste the full JSON response.';statusEl.style.color='var(--red)';}return;}
-    var existing=chats.map(function(c){return c.url;});var added=0;
-    arr.forEach(function(item){if(!item.url)return;if(existing.indexOf(item.url)===-1){chats.push({label:item.title||'Untitled',url:item.url,mod:'recent',updated:item.updated||''});added++;}});
-    S('chats',chats);renderChats();
-    var pasteArea=document.getElementById('chatPasteArea');if(pasteArea)pasteArea.style.display='none';
-    if(statusEl){statusEl.textContent='✓ Loaded '+added+' new chats';statusEl.style.color='var(--green)';}
-    setTimeout(function(){if(statusEl)statusEl.textContent='';},4000);
-  }catch(e){if(statusEl){statusEl.textContent="Could not parse — paste DONALD's full response.";statusEl.style.color='var(--red)';}}
-}
-
-
-function oneClickRefresh(){
-  var btn=document.getElementById('oneClickBtn');
-  var apiKey=localStorage.getItem('po2_claudeApiKey')||'';
-  if(!apiKey){
-    apiKey=window.prompt?window.prompt('Paste your Claude API key (sk-ant-api03-...):'):'';
-    if(!apiKey)return;
-    localStorage.setItem('po2_claudeApiKey',apiKey);
-  }
-  if(btn){btn.textContent='Refreshing...';btn.disabled=true;}
-  var today=new Date();
-  var isoNow=today.toISOString();
-  var ks=['donald_personal_intel_daily','donald_personal_intel_finance','donald_personal_intel_health','donald_personal_intel_family','donald_personal_intel_projects','donald_personal_intel_growth','donald_personal_intel_email','donald_personal_intel_work','donald_personal_intel_notes','donald_personal_intel_focus'];
-  var pt=ks.map(function(k){return '{"key":"'+k+'","value":{"updated":"'+isoNow+'","items":[]}}';}).join(',');
-  var msg='You are DONALD, David Genuth personal AI Chief of Staff. Today is '+dateStr+' at '+timeStr+' Eastern.\n\nDo the following to generate accurate intel:\n1. Check Google Calendar (davidlgenuth@gmail.com) for today and next 7 days including Hebrew calendar\n2. Scan Gmail (davidlgenuth@gmail.com) and (davidmalky@gmail.com) for urgent unread items\n3. Scan Outlook (DGenuth@PrimeSourceX.com) for work items\n4. Search past conversations for: Prime Procurement, LLC, Vanguard, DAF, tuition, CPAP, SightMD, family members, agents, Personal OS, Salesforce, William, AmeriHealth\n5. Read DONALD Master Context in Google Drive (document ID: 11yJghORj9P4xnszfNeWCe3sl74Dq1bSLC1TVWcbmQ2w)\n\nGenerate intel for all 10 panels. Be specific — use real names, amounts, dates from actual data.\n\nCRITICAL: Return raw JSON only. No markdown. No code fences. No backticks. No explanation. Start response with { and end with }:\n{"panels":['+pt+']}\n\nRules: type is red/amber/green/blue/gray. Min 3 items per panel, max 8. Include chatLink for active conversations. Prioritize urgency.'
-  fetch('https://donald-proxy.davidlgenuth.workers.dev',{
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({model:'claude-sonnet-4-5',max_tokens:4000,messages:[{role:'user',content:msg}]})
-  }).then(function(r){return r.json();}).then(function(d){
-    if(d.error){alert('API error: '+d.error.message);if(btn){btn.textContent='One-Click Refresh (~10c)';btn.disabled=false;}return;}
-    var txt=(d.content&&d.content[0]&&d.content[0].text)||'';
-    try{
-      var s=txt.indexOf('{'),e=txt.lastIndexOf('}');
-      var parsed=JSON.parse(txt.slice(s,e+1));
-      if(parsed.panels){
-        parsed.panels.forEach(function(p){
-          if(!p.key||!p.value)return;
-          intelCache[p.key]=p.value;
-          var pid=Object.keys(PANEL_INTEL_KEY).find(function(k){return PANEL_INTEL_KEY[k]===p.key;});
-          if(pid)renderLiveIntel(pid,p.value);
-        });
-        S('intelCache',intelCache);
-        updateIBStatus();
-        renderCC();
-        if(syncEnabled)setTimeout(pushToCloud,500);
-        alert('Done! All panels updated.');
-      }
-    }catch(e2){alert('Parse error: '+e2.message);}
-    if(btn){btn.textContent='One-Click Refresh (~10c)';btn.disabled=false;}
-  }).catch(function(e3){alert('Network error: '+e3.message);if(btn){btn.textContent='One-Click Refresh (~10c)';btn.disabled=false;}});
-}
-
-applyTheme();applyPanel();setDate();var fn=document.getElementById('financeNotes');if(fn)fn.value=G('financeNotes')||'';
-renderDashTasks();renderChats();renderCC();
-setTimeout(injectAllIntel,100);
-setTimeout(updateIBStatus,200);
-setTimeout(function(){renderEmailQueue();renderWorkQueue();},400);
-renderAppts();renderHomeItems();renderLearning();renderAOLMigration();loadNotes();
-initSync();
-
-setTimeout(function(){
-  Object.keys(intelCache).forEach(function(key){var pid=Object.keys(PANEL_INTEL_KEY).find(function(k){return PANEL_INTEL_KEY[k]===key;});if(pid&&intelCache[key])renderLiveIntel(pid,intelCache[key]);});
-  updateIBStatus();
-},300);
-
-document.addEventListener('click',function(e){var drawer=document.getElementById('ccDrawer');if(drawer&&drawer.classList.contains('show')){var ov=document.getElementById('ccOverlay');if(ov&&ov.contains(e.target))closeCCDrawer();}});
-document.addEventListener('click',function(e){var modal=document.getElementById('ibModal');if(modal&&e.target===modal)closeIBModal();});
-
-(function(){
-  var panel=null,startY=0,currentY=0,isDragging=false;
-  function getPanel(){return document.getElementById('panel');}
-  document.addEventListener('touchstart',function(e){var p=getPanel();if(!p||window.innerWidth>768)return;if(!p.classList.contains('mobile-open'))return;startY=e.touches[0].clientY;isDragging=true;p.style.transition='none';},{passive:true});
-  document.addEventListener('touchmove',function(e){if(!isDragging||window.innerWidth>768)return;var p=getPanel();if(!p)return;currentY=e.touches[0].clientY;var delta=currentY-startY;if(delta>0){p.style.transform='translateY('+delta+'px)';}},{passive:true});
-  document.addEventListener('touchend',function(){if(!isDragging||window.innerWidth>768)return;var p=getPanel();if(!p)return;isDragging=false;p.style.transition='';var delta=currentY-startY;if(delta>80){p.style.transform='';p.classList.remove('mobile-open');var ov=document.getElementById('panelOverlay');if(ov)ov.classList.remove('show');}else{p.style.transform='';}});
-})();
-</script>
-
-<!-- DONALD CHAT WIDGET -->
-<div class="donald-fab">
-  <div class="donald-chat" id="donaldChatBox">
-    <div class="dc-head">
-      <div class="dc-title"><span>D</span>ONALD Chat</div>
-      <div class="dc-head-right">
-        <button class="dc-clear" onclick="clearDonaldChat()">Clear</button>
-        <div class="dc-close" onclick="closeDonaldChat()">✕</div>
-      </div>
-    </div>
-    <div class="dc-msgs" id="dcMsgs"></div>
-    <div class="dc-hint">Powered by Anthropic API</div>
-    <div class="dc-inp-row">
-      <input class="dc-inp" id="dcInp" placeholder="Ask DONALD anything..." onkeydown="dcKeyDown(event)">
-      <button class="dc-send" id="dcSendBtn" onclick="sendDcMsg()">Send</button>
-    </div>
-  </div>
-  <button class="donald-fab-btn" onclick="toggleDonaldChat()">
-    <div class="fab-dot"></div>Ask DONALD
-  </button>
-</div>
-
-</body>
-</html>
