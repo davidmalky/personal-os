@@ -1,0 +1,2483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Personal OS — DONALD</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0d0d0e;--bg2:#111214;--surf:#18191c;--surf2:#1f2024;--surf3:#28292e;--surf4:#32333a;--border:rgba(255,255,255,.06);--border2:rgba(255,255,255,.11);--border3:rgba(255,255,255,.18);--text:#e8e8ea;--text2:#8a8a96;--text3:#55555f;--green:#00c471;--gbg:rgba(0,196,113,.1);--teal:#3dbf8f;--amber:#e8a020;--abg:rgba(232,160,32,.1);--red:#e03030;--rbg:rgba(224,48,48,.1);--acc:#c8cbd0;--acc2:#e8e8ea;--acbg:rgba(200,203,208,.08);--acborder:rgba(200,203,208,.18);--hi:#1e7ec8;--hibg:rgba(30,126,200,.12);--r:8px;--rs:6px;--rsm:4px}
+[data-light]{--bg:#f0f0f2;--bg2:#e8e8ec;--surf:#fff;--surf2:#f4f4f6;--surf3:#eaeaee;--surf4:#dddde2;--border:rgba(0,0,0,.07);--border2:rgba(0,0,0,.12);--border3:rgba(0,0,0,.2);--text:#16161a;--text2:#6a6a76;--text3:#a0a0aa;--acc:#3a3a4a;--acc2:#16161a;--acbg:rgba(58,58,74,.06);--acborder:rgba(58,58,74,.2);--hi:#1565a8;--hibg:rgba(21,101,168,.1)}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);font-size:12px;-webkit-font-smoothing:antialiased}
+.app{display:flex;flex-direction:column;height:100vh}
+.topbar{display:flex;align-items:center;padding:0 16px;height:44px;border-bottom:1px solid var(--border);background:var(--bg2);flex-shrink:0;gap:10px}
+.topbar-nav{background:var(--bg2);border-bottom:1px solid var(--border);flex-shrink:0;display:none}
+.logo{font-family:'Syne',sans-serif;font-size:14px;font-weight:800;letter-spacing:-.01em;white-space:nowrap;color:var(--text)}
+.logo em{color:var(--hi);font-style:normal}
+.nav{display:flex;gap:1px;flex:1;justify-content:center}
+.ntab{padding:5px 11px;border-radius:var(--rsm);font-size:11px;font-weight:500;color:var(--text3);cursor:pointer;border:none;background:none;font-family:inherit;transition:all .12s;white-space:nowrap;letter-spacing:.02em}
+.ntab:hover:not(.active){color:var(--text2);background:var(--surf2)}
+.ntab.active{background:var(--surf3);color:var(--text);border:1px solid var(--border2)}
+.tbr{display:flex;align-items:center;gap:6px}
+.tdate{font-size:10px;color:var(--text3);white-space:nowrap;letter-spacing:.04em}
+.ibb{width:28px;height:28px;border-radius:var(--rsm);border:1px solid var(--border);background:var(--surf2);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text2);font-size:11px;font-family:inherit;transition:all .12s}
+.ibb:hover{border-color:var(--border2);color:var(--text);background:var(--surf3)}
+.sync-bar{display:flex;align-items:center;gap:6px;padding:4px 14px;background:var(--bg2);border-bottom:1px solid var(--border);font-size:9px;color:var(--text3);flex-shrink:0;letter-spacing:.04em}
+.sync-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
+.sync-dot.synced{background:var(--green)}.sync-dot.syncing{background:var(--amber);animation:sdp 1s infinite}.sync-dot.offline{background:var(--red)}.sync-dot.local{background:var(--text3)}
+@keyframes sdp{0%,100%{opacity:1}50%{opacity:.3}}
+@keyframes sdpulse{0%,100%{opacity:1}50%{opacity:.3}}
+.body{display:flex;flex:1;overflow:hidden}
+.main{flex:1;overflow-y:auto;padding:12px 14px}
+.view{display:none}.view.active{display:block}
+::-webkit-scrollbar{width:3px;height:3px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--surf4);border-radius:2px}
+.drag-div{width:4px;background:transparent;cursor:col-resize;flex-shrink:0;position:relative;user-select:none;z-index:10}
+.drag-div:hover .drag-inner,.drag-div.dragging .drag-inner{background:var(--hi)}
+.drag-inner{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:2px;height:40px;border-radius:1px;background:var(--border2);transition:background .12s}
+.panel{border-left:1px solid var(--border);background:var(--bg2);display:flex;flex-direction:column;overflow:hidden;flex-shrink:0}
+.panel.closed{width:0!important;border:none}
+.ptabs{display:flex;border-bottom:1px solid var(--border);flex-shrink:0}
+.ptab{padding:10px 11px 8px;font-size:10px;font-weight:600;color:var(--text3);cursor:pointer;border:none;border-bottom:2px solid transparent;background:none;font-family:inherit;white-space:nowrap;transition:all .12s;letter-spacing:.05em;text-transform:uppercase}
+.ptab.active{color:var(--text);border-bottom-color:var(--hi)}
+.psect{display:none;flex:1;flex-direction:column;overflow:hidden}.psect.active{display:flex}
+.card{background:var(--surf);border:1px solid var(--border);border-radius:var(--r);padding:12px;margin-bottom:8px}
+.card:last-child{margin-bottom:0}
+.ct{font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between}
+.al{font-size:10px;color:var(--acc);cursor:pointer;background:none;border:none;font-family:inherit;padding:0;transition:color .12s}.al:hover{color:var(--text)}
+.badge{display:inline-flex;align-items:center;padding:1px 6px;border-radius:3px;font-size:9px;font-weight:600;letter-spacing:.04em;white-space:nowrap}
+.bg{background:var(--gbg);color:var(--green)}.ba{background:var(--abg);color:var(--amber)}.br{background:var(--rbg);color:var(--red)}.bx{background:var(--surf3);color:var(--text2)}.bp{background:var(--hibg);color:var(--hi)}
+.row{display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);gap:8px}
+.row:last-child{border-bottom:none}
+.rn{font-size:11px;font-weight:500;color:var(--text)}.rs{font-size:9px;color:var(--text3);margin-top:1px}
+.xb{background:none;border:none;color:var(--text3);cursor:pointer;font-size:14px;padding:0;flex-shrink:0;line-height:1;transition:color .12s}.xb:hover{color:var(--red)}
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:10px}
+.mc{background:var(--surf);border:1px solid var(--border);border-radius:var(--r);padding:10px 12px;position:relative;overflow:hidden}
+.mc::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,var(--hi),transparent);opacity:.4}
+.ml{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;font-weight:600;margin-bottom:5px}
+.mv{font-size:26px;font-weight:800;color:var(--teal);line-height:1;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.ms{font-size:10px;color:var(--text3);margin-top:3px}
+.mc.clickable{cursor:pointer;transition:border-color .15s,background .15s}.mc.clickable:hover{border-color:var(--border2);background:var(--surf2)}.mc.clickable:hover .mv{color:var(--hi)}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:8px}
+.prog{margin-bottom:7px}.pt2{display:flex;justify-content:space-between;margin-bottom:3px}
+.pn{font-size:11px;color:var(--text);font-weight:500}.pp{font-size:10px;color:var(--text3)}
+.ptrack{height:4px;background:var(--surf3);border-radius:2px;overflow:hidden}
+.pfill{height:100%;border-radius:2px;transition:width .5s ease}
+.tr{display:flex;align-items:flex-start;gap:8px;padding:5px 0;border-bottom:1px solid var(--border)}.tr:last-child{border-bottom:none}
+.cb{width:13px;height:13px;border:1.5px solid var(--border2);border-radius:3px;cursor:pointer;flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;transition:all .12s;font-size:8px;color:#fff;background:var(--surf)}.cb.done{background:var(--green);border-color:var(--green)}
+.tt{font-size:11px;color:var(--text);flex:1;line-height:1.4}.tt.done{text-decoration:line-through;color:var(--text3)}
+.tm{display:flex;gap:3px;margin-top:2px}
+.irow{display:flex;gap:6px;margin-top:8px;align-items:center}
+.irow input,.irow select,.tinp{background:var(--surf2);border:1px solid var(--border);border-radius:var(--rsm);color:var(--text);font-size:11px;padding:6px 8px;font-family:inherit;outline:none;transition:border .12s}
+.irow input{flex:1}.irow input:focus,.tinp:focus{border-color:var(--border3)}
+.addb{padding:5px 10px;background:var(--surf3);border:1px solid var(--border2);border-radius:var(--rsm);color:var(--text2);font-size:10px;font-weight:600;cursor:pointer;font-family:inherit;white-space:nowrap;transition:all .12s;letter-spacing:.03em;text-transform:uppercase}.addb:hover{border-color:var(--border3);color:var(--text)}
+.adb{display:flex;align-items:center;gap:7px;width:100%;margin-top:6px;padding:7px 10px;background:var(--surf2);border:1px solid var(--border);border-radius:var(--rs);color:var(--text2);font-size:11px;cursor:pointer;text-align:left;font-family:inherit;font-weight:500;transition:all .12s}.adb:hover{border-color:var(--border2);color:var(--text);background:var(--surf3)}
+.adb-icon{font-size:12px;flex-shrink:0;color:var(--text3)}
+/* COMMAND CENTER */
+.cc-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-shrink:0}
+.cc-title{font-family:'Inter',sans-serif;font-size:15px;font-weight:700;color:var(--text);letter-spacing:-.01em}.cc-title em{color:var(--hi);font-style:normal}
+.cc-legend{display:flex;gap:10px;margin-top:4px;flex-wrap:wrap}.cc-leg-item{font-size:9px;color:var(--text3);display:flex;align-items:center;gap:4px}
+.cc-controls{display:flex;gap:6px;align-items:center}
+.cc-btn{padding:4px 10px;background:var(--surf2);border:1px solid var(--border);border-radius:var(--rsm);color:var(--text2);font-size:9px;font-weight:600;cursor:pointer;font-family:inherit;letter-spacing:.05em;text-transform:uppercase;transition:all .12s}.cc-btn:hover{border-color:var(--border2);color:var(--text)}
+.cc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;flex:1;min-height:0}
+#view-command.active{display:flex;flex-direction:column;height:calc(100vh - 94px);overflow:hidden}
+.cp{background:var(--surf);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;transition:all .15s;display:flex;flex-direction:column;min-height:0}
+.cp.pri-red{border-left:3px solid var(--red)}.cp.pri-amber{border-left:3px solid var(--amber)}.cp.pri-blue{border-left:3px solid #4a9eff}.cp.pri-gray{border-left:3px solid var(--surf4)}.cp.pri-green{border-left:3px solid var(--green)}
+.cp:hover{border-color:var(--border2)}
+.cp-head{display:flex;align-items:center;gap:8px;padding:8px 10px;cursor:pointer;user-select:none;position:relative;flex-shrink:0;border-bottom:1px solid var(--border)}.cp-head:hover{background:rgba(255,255,255,.02)}
+.cp-icon{font-size:14px;flex-shrink:0;width:20px;text-align:center}
+.cp-label{font-size:11px;font-weight:600;color:var(--text);flex:1;letter-spacing:.01em}
+.cp-meta{display:flex;align-items:center;gap:5px}
+.cp-badge{min-width:18px;height:18px;padding:0 5px;background:var(--hibg);color:var(--hi);border-radius:9px;font-size:9px;font-weight:700;display:inline-flex;align-items:center;justify-content:center}
+.cp-badge.red{background:var(--rbg);color:var(--red)}.cp-badge.amber{background:var(--abg);color:var(--amber)}.cp-badge.green{background:var(--gbg);color:var(--green)}.cp-badge.blue{background:var(--hibg);color:var(--hi)}
+.cp-badge.amber{background:var(--abg);color:var(--amber)}.cp-badge.green{background:var(--gbg);color:var(--green)}.cp-badge.gray{background:var(--surf3);color:var(--text2)}.cp-badge.red{background:var(--rbg);color:var(--red)}
+.cp-compact-btn{margin-left:auto;padding:3px 7px;font-size:13px;background:var(--surf2);border:1px solid var(--border);border-radius:var(--rsm);color:var(--text3);cursor:pointer;transition:all .12s;flex-shrink:0;font-family:inherit;line-height:1}.cp-compact-btn:hover{background:var(--hi);color:#fff;border-color:var(--hi)}
+.cp-body{display:block;padding:0 10px 10px;overflow-y:auto;flex:1}.cp-body::-webkit-scrollbar{width:3px}.cp-body::-webkit-scrollbar-thumb{background:var(--surf4)}
+.cp-footer{display:flex;align-items:center;justify-content:space-between;padding:5px 11px 7px;flex-shrink:0;border-top:1px solid var(--border);background:var(--surf)}
+.cp-footer-ts{font-size:8.5px;color:var(--text3);font-style:italic}
+.cp-footer-acts{display:flex;gap:4px;align-items:center}
+.cp-footer-btn{font-size:8px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--text3);background:none;border:none;cursor:pointer;font-family:inherit;padding:2px 5px;border-radius:var(--rsm);transition:all .12s;white-space:nowrap}.cp-footer-btn:hover{color:var(--hi);background:var(--surf2)}.cp-footer-btn.tab-btn:hover{color:var(--amber);background:var(--surf2)}
+.cc-dock{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px;min-height:0}.cc-dock:empty{display:none}
+.dock-chip{display:flex;align-items:center;gap:6px;padding:4px 10px;background:var(--surf2);border:1px solid var(--border2);border-radius:var(--r);cursor:pointer;transition:all .12s;white-space:nowrap;font-size:9.5px;color:var(--text2)}.dock-chip:hover{background:var(--surf3);border-color:var(--hi);color:var(--text)}
+.cp.docked{display:none!important}
+.ii-wrap{display:block;padding:5px 11px;font-size:10px;line-height:1.45;color:var(--text2);border-bottom:1px solid var(--border);cursor:pointer;user-select:none}.ii-wrap:last-child{border-bottom:none}.ii-wrap:hover{background:rgba(255,255,255,.02)}.ii-wrap.selected{background:rgba(30,126,200,.12);border-left:2px solid var(--hi)}
+.ii-dot{display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:5px;vertical-align:middle;position:relative;top:-1px}
+.ii-dot.red{background:var(--red)}.ii-dot.amber{background:var(--amber)}.ii-dot.green{background:var(--green)}.ii-dot.blue{background:#4a9eff}.ii-dot.gray{background:var(--surf4)}
+.ii-wrap strong{font-weight:600;color:var(--text)}.ii-detail{color:var(--text3)}
+.ii-section-label{font-size:8px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin:6px 0 3px;padding-left:2px}
+.ii{font-size:10px;line-height:1.5;padding:4px 6px;border-radius:var(--rsm);margin-bottom:3px;border-left:2px solid transparent}.ii strong{font-weight:600}
+.ii-red{background:rgba(239,68,68,.08);border-left-color:var(--red);color:var(--text)}.ii-amber{background:rgba(245,158,11,.08);border-left-color:var(--amber);color:var(--text)}.ii-green{background:rgba(16,185,129,.08);border-left-color:var(--green);color:var(--text)}.ii-blue{background:rgba(74,158,255,.08);border-left-color:#4a9eff;color:var(--text)}.ii-gray{background:var(--surf2);border-left-color:var(--surf4);color:var(--text2)}
+.cp-fresh{font-size:8px;color:var(--text3);margin-bottom:4px;font-style:italic}
+.ib-bar{display:flex;align-items:center;justify-content:space-between;padding:7px 10px;margin-bottom:8px;flex-shrink:0;background:var(--surf2);border:1px solid var(--border);border-radius:var(--r);gap:8px}
+.ib-status{font-size:9px;color:var(--text3);flex:1;display:flex;align-items:center;gap:6px}
+.ib-dot{width:5px;height:5px;border-radius:50%;background:var(--surf4);flex-shrink:0}.ib-dot.live{background:var(--green);animation:sdp 2s infinite}.ib-dot.stale{background:var(--amber)}.ib-dot.never{background:var(--surf4)}
+.ib-btn{padding:4px 10px;background:var(--surf3);border:1px solid var(--border2);border-radius:var(--rsm);color:var(--text2);font-size:9px;font-weight:600;cursor:pointer;font-family:inherit;letter-spacing:.04em;text-transform:uppercase;transition:all .12s;white-space:nowrap}.ib-btn:hover{background:var(--hi);color:#fff;border-color:var(--hi)}.ib-btn.primary{background:var(--hi);color:#fff;border-color:var(--hi)}.ib-btn.primary:hover{opacity:.85}
+.ib-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:9000;align-items:center;justify-content:center}.ib-modal.show{display:flex}
+.ib-modal-box{background:var(--surf);border:1px solid var(--border2);border-radius:var(--r);padding:16px;width:520px;max-width:90vw;box-shadow:0 8px 40px rgba(0,0,0,.5)}
+.ib-modal-title{font-family:'Inter',sans-serif;font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px}
+.ib-modal-sub{font-size:10px;color:var(--text3);margin-bottom:10px;line-height:1.5}
+.ib-modal-ta{width:100%;height:160px;padding:8px;background:var(--surf2);border:1px solid var(--border);border-radius:var(--rsm);color:var(--text);font-size:10px;font-family:'Courier New',monospace;resize:vertical;outline:none;line-height:1.4;box-sizing:border-box}.ib-modal-ta:focus{border-color:var(--border2)}.ib-modal-ta::placeholder{color:var(--text3)}
+.ib-modal-actions{display:flex;gap:6px;margin-top:8px;justify-content:flex-end;align-items:center}
+.ib-modal-status{flex:1;font-size:9px;color:var(--text3)}.ib-modal-status.ok{color:var(--green)}.ib-modal-status.err{color:var(--red)}
+.cc-drawer-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9400;backdrop-filter:blur(2px)}.cc-drawer-overlay.show{display:block}
+.cc-drawer{display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:min(860px,94vw);max-height:88vh;min-height:520px;background:var(--surf);border:1px solid var(--border2);border-radius:var(--r);z-index:9500;flex-direction:column;box-shadow:0 24px 80px rgba(0,0,0,.75)}.cc-drawer.show{display:flex}
+.cc-drawer-header{display:flex;align-items:center;justify-content:space-between;padding:14px 16px 12px;border-bottom:1px solid var(--border);flex-shrink:0}
+.cc-drawer-title{font-family:'Inter',sans-serif;font-size:17px;font-weight:700;color:var(--text);letter-spacing:-.01em}
+.cc-drawer-close{width:24px;height:24px;background:var(--surf2);border:1px solid var(--border);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px;color:var(--text2);flex-shrink:0;transition:all .12s}.cc-drawer-close:hover{background:var(--red);color:#fff;border-color:var(--red)}
+.cc-drawer-body{overflow-y:auto;padding:16px 20px;flex:1}.cc-drawer-body::-webkit-scrollbar{width:3px}.cc-drawer-body::-webkit-scrollbar-thumb{background:var(--surf4)}
+.cc-drawer-body .ii-wrap{padding:8px 14px;font-size:11px;line-height:1.55}
+.cc-drawer-body .ii-wrap strong{font-size:11.5px}
+.cc-drawer-body .ii-detail{font-size:10px}
+.cc-drawer-actions{padding:12px 20px 16px;border-top:1px solid var(--border);display:flex;gap:8px;flex-wrap:wrap;flex-shrink:0}
+.act-pop{position:fixed;z-index:9800;background:var(--surf2);border:1px solid var(--border2);border-radius:var(--r);box-shadow:0 8px 32px rgba(0,0,0,.7);min-width:195px;padding:5px 0}
+.act-pop-dim{color:var(--text3)!important}
+.act-pop-hdr{padding:5px 11px 4px;font-size:8px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text3);border-bottom:1px solid var(--border);margin-bottom:3px}
+.act-pop-item{display:flex;align-items:center;gap:7px;padding:5px 11px;font-size:10px;color:var(--text2);cursor:pointer;transition:background .1s;white-space:nowrap}.act-pop-item:hover{background:var(--surf3);color:var(--text)}
+.act-pop-icon{font-size:11px;width:13px;text-align:center}.act-pop-div{height:1px;background:var(--border);margin:3px 0}
+.sel-bar{position:fixed;bottom:56px;left:50%;transform:translateX(-50%);background:var(--surf2);border:1px solid var(--hi);border-radius:var(--r);padding:7px 13px;display:flex;align-items:center;gap:8px;z-index:9700;box-shadow:0 4px 24px rgba(0,0,0,.6);opacity:0;pointer-events:none;transition:opacity .15s}.sel-bar.show{opacity:1;pointer-events:all}
+.sel-bar-ct{font-size:10px;font-weight:700;color:var(--hi);white-space:nowrap}
+.sel-bar-btn{padding:4px 9px;font-size:8.5px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;border-radius:var(--rsm);cursor:pointer;border:1px solid var(--border2);background:var(--surf3);color:var(--text2);font-family:inherit;transition:all .12s;white-space:nowrap}.sel-bar-btn:hover{background:var(--hi);color:#fff;border-color:var(--hi)}.sel-bar-btn.p{background:var(--hi);color:#fff;border-color:var(--hi)}
+.sel-bar-x{font-size:16px;color:var(--text3);cursor:pointer;padding:0 3px;line-height:1}.sel-bar-x:hover{color:var(--text)}
+.prompt-panel{position:fixed;bottom:0;left:0;right:0;background:var(--surf);border-top:1px solid var(--border2);transform:translateY(100%);transition:transform .25s cubic-bezier(.4,0,.2,1);z-index:500;padding:12px 20px 16px;display:flex;gap:14px;align-items:flex-start}.prompt-panel.show{transform:translateY(0)}
+.pp-chat-badge{display:inline-flex;align-items:center;gap:4px;font-size:9px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--hi);background:var(--hibg);border:1px solid rgba(30,126,200,.2);padding:3px 8px;border-radius:3px;white-space:nowrap}
+.pp-text-col{flex:1;min-width:0}
+.pp-prompt-text{font-size:10px;color:var(--text2);line-height:1.5;background:var(--surf2);border:1px solid var(--border);border-radius:var(--rsm);padding:7px 10px;max-height:56px;overflow:hidden;cursor:pointer;margin-bottom:8px}
+.pp-actions{display:flex;gap:6px;align-items:center}
+.pp-open{padding:6px 14px;background:var(--hi);color:#fff;border:none;border-radius:var(--rsm);font-size:10px;font-weight:700;cursor:pointer;font-family:inherit;text-decoration:none;display:inline-flex;align-items:center;gap:5px;letter-spacing:.04em;text-transform:uppercase;transition:opacity .12s}.pp-open:hover{opacity:.85}
+.pp-copy{padding:6px 12px;background:var(--surf3);border:1px solid var(--border2);border-radius:var(--rsm);font-size:10px;font-weight:600;color:var(--text2);cursor:pointer;font-family:inherit;transition:all .12s;letter-spacing:.03em;text-transform:uppercase}.pp-copy:hover{border-color:var(--border3);color:var(--text)}
+.pp-hint{font-size:9px;color:var(--text3);margin-left:4px}
+.pp-close{position:absolute;right:14px;top:10px;background:none;border:none;color:var(--text3);cursor:pointer;font-size:18px;padding:0;line-height:1}.pp-close:hover{color:var(--text)}
+.ph{padding:10px 12px;border-bottom:1px solid var(--border);flex-shrink:0}
+.ph-title{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;font-weight:700;margin-bottom:3px}
+.ph-status{display:flex;align-items:center;gap:5px;font-size:11px;font-weight:500;color:var(--text)}
+.sdot{width:6px;height:6px;border-radius:50%;background:var(--green);flex-shrink:0;animation:sdp 3s infinite}
+.pmod{font-size:9px;color:var(--text2);margin-top:4px;padding:2px 7px;background:var(--surf3);border-radius:3px;display:inline-block;letter-spacing:.03em}
+.qaw{padding:10px 12px;border-bottom:1px solid var(--border);flex-shrink:0}
+.qal{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;font-weight:700;margin-bottom:6px}
+.qa-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px}
+.qab{padding:7px 8px;background:var(--surf2);border:1px solid var(--border);border-radius:var(--rsm);color:var(--text2);font-size:10px;cursor:pointer;text-align:left;font-family:inherit;font-weight:500;line-height:1.3;transition:all .12s}.qab:hover{border-color:var(--border2);color:var(--text);background:var(--surf3)}
+.odw{padding:10px 12px;border-bottom:1px solid var(--border);flex-shrink:0}
+.odb{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:8px;background:var(--hi);color:#fff;border:none;border-radius:var(--rs);font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;text-decoration:none;transition:opacity .12s;letter-spacing:.04em;text-transform:uppercase}.odb:hover{opacity:.85}
+.crow{display:flex;gap:5px;margin-top:6px}
+.cinp{flex:1;padding:6px 8px;font-size:11px;border:1px solid var(--border);border-radius:var(--rsm);background:var(--surf2);color:var(--text);font-family:inherit;outline:none;transition:border .12s}.cinp:focus{border-color:var(--border2)}
+.csend{padding:6px 10px;background:var(--surf3);border:1px solid var(--border2);border-radius:var(--rsm);color:var(--text2);font-size:10px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .12s;text-transform:uppercase;letter-spacing:.03em}.csend:hover{background:var(--hi);color:#fff;border-color:var(--hi)}
+.clw{flex:1;overflow-y:auto;padding:10px 12px}
+.cll{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;font-weight:700;margin-bottom:6px}
+.cli{display:flex;align-items:center;gap:7px;padding:7px 9px;background:var(--surf2);border:1px solid var(--border);border-radius:var(--rsm);margin-bottom:4px;text-decoration:none;transition:all .12s}.cli:hover{border-color:var(--border2);background:var(--surf3)}
+.cli-dot{width:6px;height:6px;border-radius:50%;background:var(--green);flex-shrink:0}
+.cli-title{font-size:11px;color:var(--text);font-weight:500;flex:1}.cli-mod{font-size:9px;color:var(--text3)}
+.cli-del{background:none;border:none;color:var(--text3);cursor:pointer;font-size:13px;padding:0;transition:color .12s}.cli-del:hover{color:var(--red)}
+.deploy-area{flex:1;overflow-y:auto;padding:12px}
+.deploy-ta{width:100%;height:220px;background:var(--surf2);border:1px solid var(--border);border-radius:var(--rsm);color:var(--text);font-size:10px;padding:8px;font-family:'Courier New',monospace;outline:none;resize:vertical;line-height:1.5}.deploy-ta:focus{border-color:var(--border2)}
+.deploy-btn{width:100%;margin-top:7px;padding:9px;background:var(--hi);color:#fff;border:none;border-radius:var(--rs);font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;transition:opacity .12s;letter-spacing:.04em;text-transform:uppercase}.deploy-btn:hover{opacity:.85}.deploy-btn:disabled{opacity:.35;cursor:not-allowed}
+.dstatus{margin-top:7px;padding:8px 10px;border-radius:var(--rsm);font-size:11px;display:none;line-height:1.5}.dstatus.show{display:block}.dstatus.ok{background:var(--gbg);color:var(--green)}.dstatus.err{background:var(--rbg);color:var(--red)}.dstatus.loading{background:var(--surf3);color:var(--text2)}
+.nta{width:100%;min-height:100px;background:var(--surf2);border:1px solid var(--border);border-radius:var(--rsm);color:var(--text);font-size:12px;padding:10px;font-family:inherit;outline:none;resize:vertical;line-height:1.6}.nta:focus{border-color:var(--border2)}
+.undo-toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--surf3);border:1px solid var(--border2);border-radius:var(--r);padding:9px 14px;display:flex;align-items:center;gap:10px;font-size:11px;color:var(--text);box-shadow:0 4px 20px rgba(0,0,0,.4);z-index:9999;transition:transform .22s cubic-bezier(.34,1.56,.64,1);white-space:nowrap}.undo-toast.show{transform:translateX(-50%) translateY(0)}
+.undo-toast-btn{padding:3px 10px;background:var(--hi);color:#fff;border:none;border-radius:var(--rsm);font-size:10px;font-weight:700;cursor:pointer;font-family:inherit;letter-spacing:.04em}.undo-toast-btn:hover{opacity:.85}
+.panel-handle{position:fixed;right:0;top:50%;transform:translateY(-50%);width:18px;height:64px;z-index:900;background:var(--surf3);border:1px solid var(--border2);border-right:none;border-radius:var(--r) 0 0 var(--r);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s;box-shadow:-2px 0 8px rgba(0,0,0,.25)}.panel-handle:hover{background:var(--surf4);width:22px}
+.panel-handle-icon{font-size:9px;color:var(--text2);writing-mode:vertical-rl;text-orientation:mixed;user-select:none;line-height:1}
+.dash-grid{display:grid;grid-template-columns:1fr 1.55fr 1fr;gap:8px;align-items:start;height:calc(100vh - 88px);overflow:hidden}
+.dash-col{display:flex;flex-direction:column;gap:8px;height:100%;overflow-y:auto;padding-bottom:8px}.dash-col::-webkit-scrollbar{width:2px}.dash-col::-webkit-scrollbar-thumb{background:var(--surf4)}
+.dash-metrics{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;margin-bottom:0}
+.world-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px}
+.world-title{font-family:'Inter',sans-serif;font-size:18px;font-weight:700;color:var(--text);letter-spacing:-.01em}.world-title em{color:var(--hi);font-style:normal}
+.world-subtitle{font-size:10px;color:var(--text3);margin-top:2px}
+.world-actions{display:flex;gap:6px;align-items:center}
+.eq-item{display:flex;align-items:flex-start;gap:7px;padding:6px 9px;border-radius:var(--rsm);border:1px solid var(--border);background:var(--surf2);margin-bottom:4px;cursor:pointer;transition:all .12s}.eq-item:hover{border-color:var(--border2);background:var(--surf3)}.eq-item.on{border-color:var(--hi);background:rgba(30,126,200,.08)}
+.eq-d{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:3px}.eq-d.red{background:var(--red)}.eq-d.amber{background:var(--amber)}.eq-d.green{background:var(--green)}.eq-d.blue{background:#4a9eff}.eq-d.gray{background:var(--surf4)}
+.eq-title{font-size:10px;font-weight:600;color:var(--text);line-height:1.3}.eq-detail{font-size:9px;color:var(--text3);margin-top:2px;line-height:1.4}
+.eq-empty{font-size:10px;color:var(--text3);padding:10px 0;font-style:italic}
+.ew-row{display:flex;gap:8px;align-items:center;margin-bottom:6px}.ew-lbl{font-size:10px;color:var(--text3);min-width:52px;font-weight:500;text-transform:uppercase;letter-spacing:.04em}.ew-inp{flex:1;padding:6px 8px;font-size:11px;border:1px solid var(--border);border-radius:var(--rsm);background:var(--surf2);color:var(--text);font-family:inherit;outline:none;transition:border .12s}.ew-inp:focus{border-color:var(--border2)}
+.conn-row{display:flex;align-items:center;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--border)}.conn-row:last-child{border-bottom:none}.conn-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-right:6px}
+@media(max-width:768px){
+  .topbar{padding:0 10px;gap:6px;height:44px}.topbar-nav{display:block}#mainNav{display:none}.logo{font-size:12px}
+  .nav{gap:1px;overflow-x:auto;flex:1;justify-content:flex-start;-webkit-overflow-scrolling:touch}.nav::-webkit-scrollbar{display:none}
+  .ntab{padding:5px 9px;font-size:10px;flex-shrink:0}.tdate{font-size:9px;display:block}.tbr{gap:5px}.main{padding:10px 10px 80px}
+  .drag-div{display:none!important}
+  .panel{position:fixed!important;bottom:0;left:0;right:0;width:100%!important;height:78vh;border-left:none;border-top:1px solid var(--border2);border-radius:16px 16px 0 0;transform:translateY(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);z-index:200;box-shadow:0 -8px 40px rgba(0,0,0,.6);overflow-y:auto;-webkit-overflow-scrolling:touch}
+  .panel.mobile-open{transform:translateY(0)}.panel.closed{width:100%!important;transform:translateY(100%)}
+  .panel::before{content:'';display:block;width:36px;height:4px;background:var(--surf4);border-radius:2px;margin:10px auto 0;flex-shrink:0}
+  .metrics{grid-template-columns:repeat(2,1fr);gap:6px}.dash-grid{display:block!important;height:auto!important;overflow:visible!important}.dash-col{height:auto!important;overflow-y:visible!important;margin-bottom:8px}.dash-metrics{grid-template-columns:repeat(2,1fr)}
+  .cc-grid{grid-template-columns:1fr}.g2{grid-template-columns:1fr}.g3{grid-template-columns:1fr 1fr}
+  .mobile-donna-fab{display:flex!important}
+  .panel-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:199}.panel-overlay.show{display:block}
+}
+@media(min-width:769px){.mobile-donna-fab{display:none!important}.panel-overlay{display:none!important}}
+.mobile-donna-fab{display:none;position:fixed;bottom:20px;right:16px;width:52px;height:52px;border-radius:50%;background:var(--hi);border:none;color:#fff;font-size:20px;cursor:pointer;z-index:198;box-shadow:0 4px 20px rgba(30,126,200,.4);align-items:center;justify-content:center;font-family:'Inter',sans-serif;font-weight:700;transition:transform .15s}.mobile-donna-fab:active{transform:scale(.94)}
+
+/* === CHAT WIDGET === */
+.donald-fab{position:fixed;bottom:20px;right:16px;z-index:8000;display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+.donald-fab-btn{display:flex;align-items:center;gap:7px;padding:10px 16px;background:var(--hi);color:#fff;border:none;border-radius:24px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;box-shadow:0 4px 20px rgba(30,126,200,.45);transition:all .15s;letter-spacing:.03em;white-space:nowrap}
+.donald-fab-btn:hover{opacity:.88;transform:translateY(-1px)}
+.donald-fab-btn .fab-dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:sdp 2s infinite;flex-shrink:0}
+.donald-chat{position:fixed;bottom:76px;right:16px;width:340px;max-width:calc(100vw - 32px);height:460px;max-height:calc(100vh - 120px);background:var(--surf);border:1px solid var(--border2);border-radius:var(--r);z-index:8001;display:none;flex-direction:column;box-shadow:0 16px 60px rgba(0,0,0,.7);overflow:hidden}
+.donald-chat.show{display:flex}
+.dc-head{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid var(--border);background:var(--bg2);flex-shrink:0}
+.dc-title{font-family:'Inter',sans-serif;font-size:12px;font-weight:700;color:var(--text)}
+.dc-title span{color:var(--hi)}
+.dc-head-right{display:flex;align-items:center;gap:6px}
+.dc-clear{font-size:9px;color:var(--text3);background:none;border:none;cursor:pointer;font-family:inherit;padding:2px 5px;border-radius:3px;transition:all .12s}.dc-clear:hover{color:var(--amber);background:var(--surf3)}
+.dc-close{width:20px;height:20px;background:var(--surf3);border:1px solid var(--border);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:11px;color:var(--text2);transition:all .12s}.dc-close:hover{background:var(--red);color:#fff;border-color:var(--red)}
+.dc-msgs{flex:1;overflow-y:auto;padding:10px;display:flex;flex-direction:column;gap:7px}.dc-msgs::-webkit-scrollbar{width:2px}.dc-msgs::-webkit-scrollbar-thumb{background:var(--surf4)}
+.dc-msg{max-width:88%;padding:7px 10px;border-radius:var(--r);font-size:11px;line-height:1.5}
+.dc-msg.user{background:var(--hi);color:#fff;align-self:flex-end;border-bottom-right-radius:3px}
+.dc-msg.assistant{background:var(--surf2);color:var(--text);align-self:flex-start;border:1px solid var(--border);border-bottom-left-radius:3px}
+.dc-msg.loading{color:var(--text3);font-style:italic}
+.dc-inp-row{display:flex;gap:6px;padding:10px;border-top:1px solid var(--border);flex-shrink:0}
+.dc-inp{flex:1;padding:7px 10px;background:var(--surf2);border:1px solid var(--border);border-radius:var(--rsm);color:var(--text);font-size:11px;font-family:inherit;outline:none;transition:border .12s}.dc-inp:focus{border-color:var(--border2)}
+.dc-send{padding:7px 12px;background:var(--hi);color:#fff;border:none;border-radius:var(--rsm);font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;transition:opacity .12s;flex-shrink:0}.dc-send:hover{opacity:.85}.dc-send:disabled{opacity:.4;cursor:not-allowed}
+.dc-hint{padding:4px 10px 8px;font-size:9px;color:var(--text3);flex-shrink:0;text-align:center}
+/* === DASHBOARD METRICS STRIP === */
+.dash-metrics-5{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:8px}
+/* === AGENTS PANEL === */
+.agent-row{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--border)}
+.agent-row:last-child{border-bottom:none}
+.agent-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.agent-dot.active{background:var(--green);animation:sdp 3s infinite}
+.agent-dot.idle{background:var(--surf4)}
+.agent-name{font-size:10px;font-weight:600;color:var(--text);flex:1}
+.agent-next{font-size:9px;color:var(--text3);white-space:nowrap}
+@media(max-width:768px){
+  .donald-chat{width:calc(100vw - 24px);right:12px;bottom:72px;height:380px}
+  .donald-fab{bottom:16px;right:12px}
+  .dash-metrics-5{grid-template-columns:repeat(3,1fr)}
+}
+
+
+/* === v3.0 INTERACTIVE ITEMS === */
+.iitem{display:flex;align-items:flex-start;gap:6px;padding:5px 0;border-bottom:1px solid var(--border)}
+.iitem:last-child{border-bottom:none}
+.iitem-body{flex:1;min-width:0}
+.iitem-text{font-size:10px;font-weight:600;color:var(--text);line-height:1.4}
+.iitem-sub{font-size:9px;color:var(--text3);margin-top:1px}
+.iitem-actions{display:flex;align-items:center;gap:3px;flex-shrink:0}
+.ibadge{font-size:8px;font-weight:700;padding:2px 5px;border-radius:3px;cursor:pointer;border:none;font-family:inherit;white-space:nowrap}
+.ibadge.pending{background:var(--abg);color:var(--amber)}
+.ibadge.done{background:var(--gbg);color:var(--green)}
+.ibadge.hold{background:var(--surf3);color:var(--text2)}
+.ibadge.urgent{background:var(--rbg);color:var(--red)}
+.ibadge.info{background:var(--hibg);color:var(--hi)}
+.idismiss{width:16px;height:16px;background:none;border:none;color:var(--text3);cursor:pointer;font-size:12px;padding:0;line-height:1;flex-shrink:0;border-radius:2px}
+.idismiss:hover{color:var(--red)}
+.iitem-edit{font-size:9px;padding:1px 3px;background:none;border:none;color:var(--text3);cursor:pointer}
+.iitem-edit:hover{color:var(--hi)}
+.iadd-row{display:flex;gap:5px;margin-top:8px}
+.iadd-inp{flex:1;padding:5px 8px;background:var(--surf2);border:1px solid var(--border);border-radius:var(--rsm);color:var(--text);font-size:10px;font-family:inherit;outline:none}
+.iadd-inp:focus{border-color:var(--border2)}
+.iadd-btn{padding:5px 10px;background:var(--surf3);border:1px solid var(--border);border-radius:var(--rsm);color:var(--text2);font-size:9px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap}
+.iadd-btn:hover{background:var(--hi);color:#fff;border-color:var(--hi)}
+</style>
+
+<script>
+(function(){
+  window.getHebrewDate = function(date) {
+    try {
+      var hM = ["ניסן","אייר","סיון","תמוז","אב","אלול","תשרי","חשון","כסלו","טבת","שבט","אדר"];
+      var hN = ["","א","ב","ג","ד","ה","ו","ז","ח","ט","י","יא","יב","יג","יד","טו","טז","יז","יח","יט","כ","כא","כב","כג","כד","כה","כו","כז","כח","כט","ל"];
+      var yM = {5786:'תשפ״ו',5787:'תשפ״ז'};
+      var anchor = new Date(2026, 4, 18);
+      var diff = Math.round((date - anchor) / 86400000);
+      var hDay = 1 + diff, hMonth = 3, hYear = 5786;
+      var mDays = [30,29,30,29,30,29,30,30,29,30,29,30];
+      while(hDay > mDays[hMonth-1]) { hDay -= mDays[hMonth-1]; hMonth++; if(hMonth>12){hMonth=1;hYear++;} }
+      while(hDay < 1) { hMonth--; if(hMonth<1){hMonth=12;hYear--;} hDay += mDays[hMonth-1]; }
+      return hN[hDay] + ' ' + hM[hMonth-1] + ' ' + (yM[hYear]||hYear);
+    } catch(e) { return ''; }
+  };
+})();
+
+// ============================================================
+// v2.6 ADDITIONS
+// ============================================================
+
+// --- CHAT WIDGET ---
+var _chatOpen = false;
+var _chatHistory = [];
+var _chatLoading = false;
+
+function toggleDonaldChat() {
+  _chatOpen = !_chatOpen;
+  var el = document.getElementById('donaldChatBox');
+  if (el) el.classList.toggle('show', _chatOpen);
+  if (_chatOpen) {
+    setTimeout(function() { var i = document.getElementById('dcInp'); if(i) i.focus(); }, 120);
+    if (document.getElementById('dcMsgs').children.length === 0) {
+      appendDcMsg('assistant', 'Hey David — what do you need?');
+    }
+  }
+}
+
+function closeDonaldChat() {
+  _chatOpen = false;
+  var el = document.getElementById('donaldChatBox');
+  if (el) el.classList.remove('show');
+}
+
+function clearDonaldChat() {
+  _chatHistory = [];
+  var msgs = document.getElementById('dcMsgs');
+  if (msgs) msgs.innerHTML = '';
+  appendDcMsg('assistant', 'Chat cleared. What do you need?');
+}
+
+function appendDcMsg(role, text, isLoading) {
+  var msgs = document.getElementById('dcMsgs');
+  if (!msgs) return null;
+  var div = document.createElement('div');
+  div.className = 'dc-msg ' + role + (isLoading ? ' loading' : '');
+  div.textContent = text;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+  return div;
+}
+
+function dcKeyDown(e) {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendDcMsg(); }
+}
+
+
+function buildDonaldContext() {
+  var now = new Date();
+  var dateStr = now.toLocaleDateString('en-US', {weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  var timeStr = now.toLocaleTimeString('en-US', {hour:'2-digit',minute:'2-digit',timeZone:'America/New_York'});
+  var hd = window.getHebrewDate ? window.getHebrewDate(now) : '';
+
+  // Pull open tasks
+  var taskLines = '';
+  try {
+    var t = tasks || JSON.parse(localStorage.getItem('po2_tasks') || '[]');
+    var open = t.filter(function(x){return !x.done;});
+    taskLines = open.slice(0,10).map(function(x){
+      return '- [' + (x.priority||'med').toUpperCase() + '] ' + x.text + (x.category?' ('+x.category+')':'');
+    }).join('\n');
+  } catch(e){}
+
+  // Pull intel summaries from Command Center panels
+  var intelLines = '';
+  try {
+    if(intelCache) {
+      var keys = Object.keys(intelCache);
+      keys.forEach(function(k) {
+        var panel = intelCache[k];
+        if(panel && panel.html) {
+          // Strip HTML tags to get plain text
+          var plain = panel.html.replace(/<[^>]+>/g,'').replace(/\s+/g,' ').trim().slice(0,300);
+          intelLines += '\n[' + k.toUpperCase() + ']: ' + plain;
+        }
+      });
+    }
+  } catch(e){}
+
+  return 'You are DONALD, David Genuth\'s personal AI Chief of Staff. You have full context of his life and operate with strategic intelligence and relentless execution.\n\n' +
+    'CURRENT DATE/TIME: ' + dateStr + ', ' + timeStr + ' Eastern. Hebrew date: ' + hd + '\n\n' +
+    'WHO YOU ARE SERVING:\n' +
+    'David Genuth, 43, COO at Prime Source Expense Experts (national consulting for post-acute care facilities), Toms River NJ.\n' +
+    'Observant/Hasidic. Shabbos starts tonight ' + (now.getDay()===5 ? 'at candle lighting' : 'Friday at candle lighting') + '.\n' +
+    'Key priorities: $93K owed from GenMed (Prime Procurement), 2022 tax amendment deadline June 11, Milestone Metrics LLC bank account needs to be opened, CPAP compliance (7/30 nights), MileagePlus merge.\n\n' +
+    'OPEN TASKS RIGHT NOW:\n' + (taskLines || 'No open tasks loaded') + '\n\n' +
+    'LIVE INTEL FROM COMMAND CENTER:\n' + (intelLines || 'No intel loaded — user needs to run Refresh Intel') + '\n\n' +
+    'YOUR OPERATING RULES:\n' +
+    '- Be direct and concise. No fluff.\n' +
+    '- When asked about priorities, reference the actual tasks and intel above.\n' +
+    '- When asked about calendar, acknowledge you\'re reading from the intel panels.\n' +
+    '- If intel is stale or missing, tell David to run Refresh Intel.\n' +
+    '- David approves all actions. You prepare, he decides.\n' +
+    '- Answer in 2-4 sentences unless the question requires more detail.';
+}
+
+async function sendDcMsg() {
+  if (_chatLoading) return;
+  var inp = document.getElementById('dcInp');
+  var btn = document.getElementById('dcSendBtn');
+  if (!inp) return;
+  var msg = inp.value.trim();
+  if (!msg) return;
+  inp.value = '';
+  _chatHistory.push({ role: 'user', content: msg });
+  appendDcMsg('user', msg);
+  _chatLoading = true;
+  if (btn) btn.disabled = true;
+  var loadEl = appendDcMsg('assistant', 'Thinking...', true);
+  try {
+    var res = await fetch('https://donald-proxy.davidlgenuth.workers.dev', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-5',
+        max_tokens: 800,
+        system: buildDonaldContext(),
+        messages: _chatHistory
+      })
+    });
+    var data = await res.json();
+    var reply = (data.content && data.content[0] && data.content[0].text) ? data.content[0].text : 'No response.';
+    _chatHistory.push({ role: 'assistant', content: reply });
+    if (loadEl) { loadEl.textContent = reply; loadEl.classList.remove('loading'); }
+  } catch(err) {
+    if (loadEl) { loadEl.textContent = 'Connection error — check Cloudflare Worker.'; loadEl.classList.remove('loading'); }
+  }
+  _chatLoading = false;
+  if (btn) btn.disabled = false;
+  var msgs = document.getElementById('dcMsgs');
+  if (msgs) msgs.scrollTop = msgs.scrollHeight;
+}
+
+// --- DASHBOARD METRICS ---
+function renderDashMetrics(liveMetrics) {
+  var tasks = [];
+  try { tasks = JSON.parse(localStorage.getItem('po2_tasks') || '[]'); } catch(e) {}
+  var open = tasks.filter(function(t){ return !t.done; }).length;
+  var urgent = tasks.filter(function(t){ return !t.done && t.priority === 'high'; }).length;
+  var now = new Date();
+  var taxDeadline = new Date('2026-06-11T23:59:00-04:00');
+  if (liveMetrics && liveMetrics.tax_days) taxDays = liveMetrics.tax_days; var eventDeadline = new Date('2026-06-08T00:00:00-04:00'); var eventDays = Math.max(0, Math.ceil((eventDeadline - now) / 86400000));
+  var taxDays = Math.max(0, Math.ceil((taxDeadline - now) / 86400000));
+  var taxColor = taxDays <= 7 ? 'var(--red)' : taxDays <= 14 ? 'var(--amber)' : 'var(--teal)';
+  var taxBg = taxDays <= 14 ? 'background:var(--rbg);border-color:rgba(224,48,48,.25)' : '';
+  var el = document.getElementById('dashMetrics5');
+  if (!el) return;
+  el.innerHTML =
+    '<div class="mc clickable" onclick="V(\'finance\',null)"><div class="ml">Open Tasks</div><div class="mv">' + open + '</div><div class="ms">across all areas</div></div>' +
+    '<div class="mc" style="' + (urgent > 0 ? 'background:var(--rbg);border-color:rgba(224,48,48,.25)' : '') + '"><div class="ml">Urgent</div><div class="mv" style="color:' + (urgent > 0 ? 'var(--red)' : 'var(--green)') + '">' + urgent + '</div><div class="ms">' + (urgent > 0 ? 'needs attention' : 'all clear') + '</div></div>' +
+    '<div class="mc clickable" onclick="V(\'finance\',null)"><div class="ml">PP Balance</div><div class="mv" style="color:var(--red)">$93K</div><div class="ms">GenMed remaining</div></div>' +
+    '<div class="mc" style="' + taxBg + '"><div class="ml">Tax Amendment</div><div class="mv" style="color:' + taxColor + '">' + taxDays + 'd</div><div class="ms">deadline Jun 11</div></div>' +
+    '<div class="mc"><div class="ml">Milestone LLC</div><div class="mv" style="font-size:13px;color:var(--amber)">Bank ↗</div><div class="ms">open account</div></div>';
+}
+
+// --- AGENTS PANEL ---
+var AGENT_LIST = [
+  { name: 'Morning Brief', icon: '☀️', status: 'active', next: 'Tomorrow 7:00 AM' },
+  { name: 'Task Extractor', icon: '📋', status: 'active', next: 'Every 2 hrs' },
+  { name: 'Email Triage', icon: '📧', status: 'active', next: 'Continuous' },
+  { name: 'Financial Tracker', icon: '💰', status: 'active', next: 'Daily 6pm' },
+  { name: 'Health Monitor', icon: '❤️', status: 'idle', next: 'Every 6 hrs' },
+  { name: 'Call Transcriber', icon: '🎙', status: 'active', next: 'On new file' },
+  { name: 'Work Intel', icon: '💼', status: 'idle', next: 'Every hr' }
+];
+
+function renderAgentsPanel() {
+  var el = document.getElementById('agentsPanel');
+  if (!el) return;
+  var activeCount = AGENT_LIST.filter(function(a){ return a.status === 'active'; }).length;
+  var html = '<div class="ct">Autonomous Agents <span style="font-size:9px;color:var(--green);font-weight:400;text-transform:none;letter-spacing:0">' + activeCount + ' active</span></div>';
+  AGENT_LIST.forEach(function(a) {
+    html += '<div class="agent-row"><div class="agent-dot ' + a.status + '"></div><span style="font-size:11px;width:18px;flex-shrink:0">' + a.icon + '</span><span class="agent-name">' + a.name + '</span><span class="agent-next">' + a.next + '</span></div>';
+  });
+  el.innerHTML = html;
+}
+
+// --- HEBREW DATE ---
+function renderHebrewDate() {
+  var hd = window.getHebrewDate ? window.getHebrewDate(new Date()) : '';
+  var el = document.getElementById('hebrewDate');
+  if (el && hd) el.textContent = hd;
+}
+
+// v2.6+ init — fault-tolerant, fires after DOM ready
+(function() {
+  
+
+
+// ============================================================
+// v3.0 UNIVERSAL INTERACTIVE DATA STORE - fixed global scope
+// ============================================================
+
+window.STORE_DEFAULTS = {
+  pending: [
+    {id:'p1', text:'Cube ACR \u2192 Drive auto-backup', sub:'Call pipeline active \u2014 transcripts going to Drive', status:'info'},
+    {id:'p2', text:'Wave AI voice notes', sub:'Upload valuable recordings to Drive manually', status:'pending'},
+    {id:'p3', text:'Yeshiva tuition \u2014 on hold', sub:'Waiting on BuyersEdge platform and Mark', status:'hold'},
+    {id:'p4', text:'MileagePlus merge \u2014 3 accounts', sub:'Call 1-800-421-4655 \u00b7 XV915448, YH388442, + 1 by SSN', status:'urgent'},
+    {id:'p5', text:'2022 tax amendment', sub:'June 11 deadline \u2014 reach out to 5 orgs for receipts', status:'urgent'},
+    {id:'p6', text:'Milestone Metrics bank account', sub:'Chase appt Tue May 26 11am \u2014 bring EIN + formation doc', status:'urgent'},
+    {id:'p7', text:'Handicap placard', sub:'Reapply Aug/Sep 2026 with new prescription', status:'info'},
+    {id:'p8', text:'Kia $40 refund', sub:'MVC refund \u2014 mail in form', status:'pending'}
+  ],
+  finance: [
+    {id:'f1', text:'Prime Procurement \u2014 GenMed balance', sub:'$93K remaining of $193K total', status:'urgent', val:'~$93K'},
+    {id:'f2', text:'Capital One Spark', sub:'AutoPay enrolled \u2014 Malky authorized user', status:'done', val:'AutoPay \u2713'},
+    {id:'f3', text:'Donor Advised Fund', sub:'Not set up \u2014 needed for charity routing and tax strategy', status:'pending', val:'Not set up'},
+    {id:'f4', text:'Auto insurance discount', sub:'David done \u2014 Malky and Esty still need to complete', status:'pending', val:'Follow up'},
+    {id:'f5', text:'IRS installment agreement', sub:'$439/month auto-debit \u2014 balance ~$32K', status:'info', val:'$439/mo'},
+    {id:'f6', text:'AmeriHealth', sub:'$1,974.82/mo \u2014 AutoPay via Chase checking 3529', status:'done', val:'AutoPay \u2713'}
+  ],
+  health: [
+    {id:'h1', text:'CPAP compliance', sub:'7 of 30 nights \u2014 window closes Jul 20, 2026', status:'pending', val:'7/30'},
+    {id:'h2', text:'Tapezza Treatment 3', sub:'Call Option Care 973-597-0414 \u2014 schedule before Jun 1', status:'urgent'},
+    {id:'h3', text:'Dr. Landsman ENT', sub:'Mon May 25 11am', status:'info'},
+    {id:'h4', text:'Kasa Smart Plug \u2014 CPAP timer', sub:'Plugged in and running on auto start/stop', status:'done'}
+  ],
+  projects: [
+    {id:'pr1', text:'Personal DONALD OS', sub:'v3.3 live at personal-os-phi-gray.vercel.app', status:'info'},
+    {id:'pr2', text:'Renzo \u2014 AI outreach tool', sub:'AI-powered follow-up program \u2014 potential revenue stream', status:'pending'},
+    {id:'pr3', text:'FashionScan25.3', sub:'AR + AI wardrobe app \u2014 Gradle issues blocking progress', status:'hold'}
+  ],
+  email: [
+    {id:'em1', text:'MileagePlus merge \u2014 3 accounts', sub:'Call 1-800-421-4655 \u00b7 XV915448 YH388442 plus 1 more', status:'urgent'},
+    {id:'em2', text:'2022 charity receipts \u2014 5 orgs', sub:'Reach out for receipts before June 11 deadline', status:'urgent'},
+    {id:'em3', text:'Israel Steinberg \u2014 2022 amendment', sub:'Has it been filed yet? Confirm status.', status:'pending'}
+  ],
+  work: [
+    {id:'w1', text:'June 8 event \u2014 COO speech prep', sub:'Procurement presentation \u2014 15 days away', status:'urgent'},
+    {id:'w2', text:'Culligan \u2014 redlined contract', sub:'Thomas Caputo \u2014 no response in 3+ weeks', status:'urgent'},
+    {id:'w3', text:'Mobotics \u2014 DocuSign pending', sub:'Yehuda + Mark need to sign \u00b7 sent Apr 30', status:'pending'},
+    {id:'w4', text:'Salesforce \u2014 4 dev items', sub:'Ownership change, matching rule, parent-child, dormant opps', status:'info'}
+  ],
+  growth: [
+    {id:'g1', text:'Auto-refresh intel every 30 min', sub:'So panels never need manual refresh', status:'pending'},
+    {id:'g2', text:'Per-panel embedded chat', sub:'Each CC card gets its own chat input', status:'pending'},
+    {id:'g3', text:'Evening Summary automation', sub:'Daily wrap from DONALD each evening', status:'pending'},
+    {id:'g4', text:'Salesforce metrics in dashboard', sub:'Pull pipeline data into command center', status:'pending'},
+    {id:'g5', text:'Wispr Flow custom vocabulary', sub:'Hebrew, Yiddish, business terms', status:'pending'},
+    {id:'g6', text:'Drive cleanup', sub:'Delete stale duplicate files identified earlier', status:'pending'}
+  ],
+  defensive: [
+    {id:'d1', text:'David', sub:'Completed Apr 26 \u2014 SAVEFIVE code used', status:'done'},
+    {id:'d2', text:'Malky', sub:'Course link sent \u2014 not yet completed', status:'pending'},
+    {id:'d3', text:'Esty', sub:'Course link sent \u2014 not yet completed', status:'pending'},
+    {id:'d4', text:'Avrumy', sub:'In Israel \u2014 verify if NJ course applies on return', status:'hold'}
+  ]
+};
+
+function loadStore(name) {
+  try {
+    var raw = localStorage.getItem('po2_store_' + name);
+    if (raw) return JSON.parse(raw);
+  } catch(e) {}
+  var defs = window.STORE_DEFAULTS[name] || [];
+  window.saveStore(name, defs);
+  return defs;
+}
+
+window.saveStore = function(name, items) {
+  try { localStorage.setItem('po2_store_' + name, JSON.stringify(items)); } catch(e) {}
+};
+
+window.dismissStoreItem = function(name, id) {
+  var items = loadStore(name);
+  var item = items.find(function(i){ return i.id === id; });
+  if (!item) return;
+  var deleted = loadStore(name + '_deleted');
+  item._deletedAt = new Date().toISOString();
+  deleted.push(item);
+  window.saveStore(name + '_deleted', deleted);
+  window.saveStore(name, items.filter(function(i){ return i.id !== id; }));
+  window.renderStore(name);
+  window.renderDeletedSection(name, name + 'DeletedEl');
+  try { pushToCloud(); } catch(e) {}
+};
+
+window.restoreStoreItem = function(name, id) {
+  var deleted = loadStore(name + '_deleted');
+  var item = deleted.find(function(i){ return i.id === id; });
+  if (!item) return;
+  delete item._deletedAt;
+  var items = loadStore(name);
+  items.unshift(item);
+  window.saveStore(name, items);
+  window.saveStore(name + '_deleted', deleted.filter(function(i){ return i.id !== id; }));
+  window.renderStore(name);
+  window.renderDeletedSection(name, name + 'DeletedEl');
+  try { pushToCloud(); } catch(e) {}
+};
+
+window.cycleStatus = function(name, id) {
+  var items = loadStore(name);
+  var item = items.find(function(i){ return i.id === id; });
+  if (!item) return;
+  var cycle = ['pending','done','hold','urgent','info'];
+  item.status = cycle[(cycle.indexOf(item.status) + 1) % cycle.length];
+  item.updated = new Date().toISOString();
+  window.saveStore(name, items);
+  window.renderStore(name);
+  try { pushToCloud(); } catch(e) {}
+};
+
+window.editStoreItem = function(name, id) {
+  var items = loadStore(name);
+  var item = items.find(function(i){ return i.id === id; });
+  if (!item) return;
+  var newText = prompt('Edit item:', item.text);
+  if (newText === null) return;
+  if (newText.trim()) item.text = newText.trim();
+  var newSub = prompt('Edit note (blank to keep):', item.sub || '');
+  if (newSub !== null) item.sub = newSub;
+  item.updated = new Date().toISOString();
+  window.saveStore(name, items);
+  window.renderStore(name);
+};
+
+window.addStoreItem = function(name, text, sub, status) {
+  if (!text || !text.trim()) return;
+  var items = loadStore(name);
+  items.push({id: name+'_'+Date.now(), text:text.trim(), sub:sub||'', status:status||'pending', source:'user', updated:new Date().toISOString()});
+  window.saveStore(name, items);
+  window.renderStore(name);
+  try { pushToCloud(); } catch(e) {}
+};
+
+window.renderStore = function(name, containerId) {
+  var el = document.getElementById(containerId || (name + 'StoreEl'));
+  if (!el) return;
+  var items = loadStore(name);
+  var labels = {pending:'Pending',done:'Done',hold:'Hold',urgent:'Urgent',info:'Info'};
+  if (!items.length) { el.innerHTML = '<div style="font-size:10px;color:var(--text3);font-style:italic;padding:6px 0">All clear \u2014 tap + Add to add items</div>'; return; }
+  // Use data-attributes to avoid onclick escaping issues
+  el.innerHTML = items.map(function(item) {
+    return '<div class="iitem" data-store="'+name+'" data-id="'+item.id+'">' +
+      '<div class="iitem-body">' +
+        '<div class="iitem-text">'+item.text+'</div>' +
+        (item.sub ? '<div class="iitem-sub">'+item.sub+'</div>' : '') +
+      '</div>' +
+      '<div class="iitem-actions">' +
+        (item.val ? '<span style="font-size:9px;color:var(--text2);margin-right:3px">'+item.val+'</span>' : '') +
+        '<button class="ibadge '+(item.status||'pending')+'" data-action="cycle" title="Tap to cycle status">'+(labels[item.status]||item.status)+'</button>' +
+        '<button class="iitem-edit" data-action="edit" title="Edit">\u270e</button>' +
+        '<button class="idismiss" data-action="dismiss" title="Dismiss">\u00d7</button>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+};
+
+// Single event listener on document handles ALL store interactions
+document.addEventListener('click', function(e) {
+  var btn = e.target.closest('[data-action]');
+  if (!btn) return;
+  var row = btn.closest('[data-store]');
+  if (!row) return;
+  var name = row.getAttribute('data-store');
+  var id = row.getAttribute('data-id');
+  var action = btn.getAttribute('data-action');
+  if (action === 'cycle') window.cycleStatus(name, id);
+  else if (action === 'edit') window.editStoreItem(name, id);
+  else if (action === 'dismiss') window.dismissStoreItem(name, id);
+  else if (action === 'restore') window.restoreStoreItem(name, id);
+});
+
+window.renderDeletedSection = function(name, containerId) {
+  var el = document.getElementById(containerId);
+  if (!el) return;
+  var deleted = loadStore(name + '_deleted');
+  if (!deleted.length) { el.innerHTML = ''; return; }
+  el.innerHTML = '<details style="margin-top:8px;padding-top:6px;border-top:1px solid var(--border)">' +
+    '<summary style="font-size:9px;color:var(--text3);cursor:pointer;font-weight:600;text-transform:uppercase;letter-spacing:.04em">\uD83D\uDDD1 Deleted ('+deleted.length+')</summary>' +
+    deleted.map(function(item) {
+      return '<div class="iitem" style="opacity:.55" data-store="'+name+'_deleted" data-id="'+item.id+'">' +
+        '<div class="iitem-body"><div class="iitem-text" style="text-decoration:line-through;font-size:9px">'+item.text+'</div></div>' +
+        '<div class="iitem-actions"><button class="ibadge info" data-action="restore" style="font-size:7px">Restore</button></div>' +
+        '</div>';
+    }).join('') + '</details>';
+};
+
+// Handle restore from deleted section
+document.addEventListener('click', function(e) {
+  var btn = e.target.closest('[data-action="restore"]');
+  if (!btn) return;
+  var row = btn.closest('[data-store]');
+  if (!row) return;
+  var store = row.getAttribute('data-store'); // e.g. "pending_deleted"
+  var realName = store.replace('_deleted','');
+  var id = row.getAttribute('data-id');
+  window.restoreStoreItem(realName, id);
+});
+
+function renderAddRow(name, placeholder) {
+  return '<div class="iadd-row" style="margin-top:8px">' +
+    '<input class="iadd-inp" placeholder="'+(placeholder||'Add item...')+'" ' +
+    'onkeydown="if(event.key===\'Enter\'&&this.value.trim()){window.addStoreItem(\''+name+'\',this.value);this.value=\'\';}">' +
+    '<button class="iadd-btn" onclick="var i=this.previousSibling;if(i.value.trim()){window.addStoreItem(\''+name+'\',i.value);i.value=\'\';}">' +
+    '+ Add</button>' +
+  '</div>';
+}
+
+
+function renderCalendarFromWorker() {
+  var now = new Date();
+  var lbl = document.getElementById('calDateLabel');
+  if (lbl && window.getHebrewDate) { try { lbl.textContent = window.getHebrewDate(now); } catch(e){} }
+  var todayEl = document.getElementById('calTodayItems');
+  var weekEl = document.getElementById('calWeekItems');
+  if (!todayEl) return;
+  // Build today's events from known calendar data
+  var today = now.toDateString();
+  var todayEvents = [];
+  var weekEvents = [];
+  // Static known events (updated to current week)
+  var knownEvents = [
+    {date:'Mon May 25 2026', title:'Dr. Landsman ENT', time:'11:00 AM', type:'appt'},
+    {date:'Tue May 26 2026', title:'Chase — Milestone Metrics LLC', time:'11:00 AM', note:'Adam King · 201-391-8350 · bring EIN + formation doc', type:'bank'},
+    {date:'Fri May 29 2026', title:'Shabbos candle lighting', time:'7:57 PM', type:'jewish'},
+    {date:'Sat May 30 2026', title:'Havdalah', time:'9:03 PM', type:'jewish'},
+    {date:'Sun Jun 8 2026', title:'Prime Source company event — COO speech', time:'All day', type:'work'}
+  ];
+  knownEvents.forEach(function(ev) {
+    var evDate = new Date(ev.date);
+    var todayDate = new Date(now.toDateString());
+    if (evDate.toDateString() === todayDate.toDateString()) todayEvents.push(ev);
+    else if (evDate > todayDate) weekEvents.push(ev);
+  });
+  // Render today
+  if (!todayEvents.length) {
+    todayEl.innerHTML = '<div style="font-size:10px;color:var(--text3);padding:6px 0">No scheduled events today</div>';
+  } else {
+    todayEl.innerHTML = todayEvents.map(function(ev) {
+      var color = ev.type==='jewish'?'var(--red)':ev.type==='work'?'var(--amber)':'var(--text)';
+      return '<div class="row"><div><div class="rn" style="font-size:10px;color:'+color+'">'+ev.title+'</div>'+
+        '<div class="rs">'+ev.time+(ev.note?' · '+ev.note:'')+'</div></div></div>';
+    }).join('');
+  }
+  // Render week
+  if (weekEl) {
+    weekEl.innerHTML = weekEvents.slice(0,6).map(function(ev) {
+      var d = new Date(ev.date);
+      var ds = d.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
+      var color = ev.type==='jewish'?'var(--hi)':ev.type==='work'?'var(--amber)':'var(--text)';
+      return '<div class="row"><div><div class="rn" style="font-size:10px;color:'+color+'">'+ev.title+'</div>'+
+        '<div class="rs">'+ds+(ev.time?' · '+ev.time:'')+'</div></div></div>';
+    }).join('');
+  }
+}
+
+
+function loadJewishCal() {
+  var el = document.getElementById('jewishCalItems');
+  var hdCard = document.getElementById('hebrewDateCard');
+  if (hdCard && window.getHebrewDate) { try { hdCard.textContent = window.getHebrewDate(new Date()); } catch(_) {} }
+  if (!el) return;
+  var url = 'https://www.hebcal.com/hebcal?v=1&cfg=json&maj=on&min=on&mod=on&nx=on&year=now&month=x&ss=on&mf=on&c=on&geo=pos&latitude=39.9534&longitude=-74.1978&tzid=America/New_York&b=18&M=on&lg=en&s=on';
+  fetch(url).then(function(r){return r.json();}).then(function(data){
+    if(!data.items||!data.items.length){el.innerHTML='<div style="font-size:10px;color:var(--text3)">No events found</div>';return;}
+    var now=new Date();now.setHours(0,0,0,0);
+    var upcoming=data.items.filter(function(item){return new Date(item.date)>=now;}).slice(0,10);
+    el.innerHTML=upcoming.map(function(item){
+      var d=new Date(item.date);
+      var isYT=item.category==='holiday';
+      var isCL=item.category==='candles'||item.category==='havdalah';
+      var color=isYT?'var(--red)':isCL?'var(--hi)':'var(--text)';
+      var ds=d.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
+      return '<div class="row" style="padding:3px 0"><div><div class="rn" style="font-size:10px;color:'+color+'">'+item.title+'</div><div class="rs">'+ds+'</div></div></div>';
+    }).join('');
+  }).catch(function(){
+    el.innerHTML='<div style="font-size:10px;color:var(--text3)">Tap refresh to load</div>';
+  });
+}
+
+function updateWorkCountdowns() {
+  var now = new Date();
+  var eventEl = document.getElementById('workEventDays');
+  if (eventEl) {
+    var days = Math.ceil((new Date('2026-06-08') - now) / 86400000);
+    eventEl.textContent = days + 'd';
+    eventEl.style.color = days <= 7 ? 'var(--red)' : days <= 14 ? 'var(--amber)' : 'var(--green)';
+  }
+}
+
+function renderFocusToday() {
+  var el = document.getElementById('focusTodayEl');
+  if (!el) return;
+  var now = new Date();
+  var taxDays = Math.ceil((new Date('2026-06-11') - now) / 86400000);
+  var eventDays = Math.ceil((new Date('2026-06-08') - now) / 86400000);
+  var items = [
+    {color:'var(--red)', label:'June 8 speech', detail: eventDays+'d — COO procurement presentation, NOT prepped'},
+    {color:'var(--red)', label:'Tax amendment', detail: taxDays+'d — June 11 deadline, charity receipts needed'},
+    {color:'var(--amber)', label:'Chase bank appt', detail:'Tue May 26 11am — bring EIN + formation doc for Milestone Metrics'},
+    {color:'var(--amber)', label:'CPAP tonight', detail:'7/30 nights — put mask on before sleep, Bluetooth on'},
+    {color:'var(--text)', label:'MileagePlus merge', detail:'Call 1-800-421-4655 when ready — 3 accounts to consolidate'},
+  ];
+  el.innerHTML = items.map(function(item) {
+    return '<div style="display:flex;align-items:flex-start;gap:8px;padding:4px 0;border-bottom:1px solid var(--border)">' +
+      '<div style="width:3px;min-height:32px;background:'+item.color+';border-radius:2px;flex-shrink:0;margin-top:2px"></div>' +
+      '<div><div style="font-size:10px;font-weight:600;color:'+item.color+'">'+item.label+'</div>' +
+      '<div style="font-size:9px;color:var(--text3)">'+item.detail+'</div></div>' +
+      '</div>';
+  }).join('');
+}
+
+// ============================================================
+// DRIVE LIVE INTEL READER
+// Fetches donald-live-intel.json from Google Drive on page load
+// ============================================================
+var _liveIntel = null;
+var DONALD_INTEL_FILE_ID = '137MUmEXKnGgkNRKjaOUsSxbTf5ir9VVx';
+
+function fetchDriveIntel() {
+  var status = document.getElementById('liveIntelStatus');
+  var masterKey = localStorage.getItem('po2_jbKey') || G('jbKey') || '';
+  var binId = localStorage.getItem('po2_jbBinId') || G('jbBinId') || '6a02c186adc21f119a894914';
+  
+  if (!masterKey) {
+    if (status) { status.textContent = 'Enter JSONBin Master Key in Cloud Sync below first'; status.style.color = 'var(--amber)'; }
+    return;
+  }
+  
+  if (status) { status.textContent = 'Fetching from JSONBin...'; status.style.color = 'var(--amber)'; }
+  
+  fetch('https://api.jsonbin.io/v3/b/' + binId + '/latest', {
+    method: 'GET',
+    headers: { 'X-Master-Key': masterKey, 'X-Bin-Meta': 'false' }
+  })
+  .then(function(r) {
+    if (!r.ok) throw new Error('JSONBin HTTP ' + r.status);
+    return r.json();
+  })
+  .then(function(data) {
+    var intel = data.record || data;
+    if (!intel || !intel.updated) throw new Error('No intel data in bin');
+    _liveIntel = intel;
+    applyLiveIntel(intel);
+    try {
+      localStorage.setItem('po2_liveIntelCache', JSON.stringify(intel));
+      localStorage.setItem('po2_liveIntelTime', Date.now().toString());
+    } catch(e) {}
+    if (status) { status.textContent = 'Connected \u2713 ' + (intel.updated_et || intel.updated); status.style.color = 'var(--green)'; }
+    var syncEl = document.querySelector('.sync-bar');
+    if (syncEl && intel.updated_et) syncEl.textContent = '\u25CF Live \u00b7 ' + intel.updated_et;
+  })
+  .catch(function(err) {
+    if (status) { status.textContent = 'Error: ' + err.message; status.style.color = 'var(--red)'; }
+    // Fall back to cached
+    try {
+      var cached = localStorage.getItem('po2_liveIntelCache');
+      if (cached) { var c = JSON.parse(cached); if (c && c.updated) applyLiveIntel(c); }
+    } catch(e) {}
+  });
+}function fetchDriveIntel() {
+  var status = document.getElementById('liveIntelStatus');
+  
+  // Try cached intel first (from last successful fetch)
+  try {
+    var cached = localStorage.getItem('po2_liveIntelCache');
+    var cacheTime = parseInt(localStorage.getItem('po2_liveIntelTime') || '0');
+    if (cached && (Date.now() - cacheTime) < 60 * 60 * 1000) {
+      var c = JSON.parse(cached);
+      if (c && c.updated) {
+        applyLiveIntel(c);
+        if (status) { status.textContent = 'Using cached intel from ' + (c.updated_et || ''); status.style.color = 'var(--text3)'; }
+        return;
+      }
+    }
+  } catch(e) {}
+  
+  if (status) { status.textContent = 'Generating fresh intel...'; status.style.color = 'var(--amber)'; }
+  
+  // Generate fresh intel via Claude through the Worker
+  var now = new Date();
+  var prompt = 'Generate a DONALD personal command center intel update for David Genuth. ' +
+    'Today is ' + now.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'}) + '. ' +
+    'Return ONLY a JSON object with this exact structure, no markdown:\n' +
+    '{"updated_et":"' + now.toLocaleString('en-US',{timeZone:'America/New_York'}) + ' ET",' +
+    '"hebrew_date":"' + (window.getHebrewDate ? window.getHebrewDate(now) : '') + '",' +
+    '"panels":{' +
+    '"daily":"<div class=\'ii ii-red\'><strong>June 8 COO speech</strong> — 15 days, zero prep done</div><div class=\'ii ii-amber\'><strong>Tax amendment</strong> — June 11 deadline, follow up with 5 orgs</div><div class=\'ii ii-amber\'><strong>Milestone Metrics bank</strong> — Chase appt Tue May 26 11am</div>",' +
+    '"finance":"<div class=\'ii ii-red\'><strong>$93K owed GenMed</strong> — collect Prime Procurement balance</div><div class=\'ii ii-amber\'><strong>DAF not set up</strong> — needed for 2026 tax strategy</div><div class=\'ii ii-green\'><strong>AmeriHealth AutoPay</strong> — $1,974.82/mo via Chase 3529</div>",' +
+    '"health":"<div class=\'ii ii-amber\'><strong>CPAP 7/30 nights</strong> — use machine every night, window closes Jul 20</div><div class=\'ii ii-red\'><strong>Tapezza Treatment 3</strong> — call Option Care 973-597-0414</div>",' +
+    '"work":"<div class=\'ii ii-red\'><strong>June 8 speech — 15 days</strong> — COO procurement, not started</div><div class=\'ii ii-red\'><strong>Culligan redlined contract</strong> — Thomas Caputo, 3+ weeks no response</div><div class=\'ii ii-amber\'><strong>Mobotics DocuSign</strong> — Yehuda + Mark pending</div>",' +
+    '"email":"<div class=\'ii ii-amber\'><strong>MileagePlus merge</strong> — 3 accounts, call 1-800-421-4655</div><div class=\'ii ii-amber\'><strong>2022 charity receipts</strong> — follow up with 5 orgs, Jun 11 deadline</div>",' +
+    '"family":"<div class=\'ii ii-blue\'><strong>Shabbos</strong> — Fri May 29 candle lighting 7:57 PM</div><div class=\'ii ii-amber\'><strong>Avrumy</strong> — in Israel, check in</div><div class=\'ii ii-amber\'><strong>Leah</strong> — at Shalva, monitor settling in</div>",' +
+    '"projects":"<div class=\'ii ii-blue\'><strong>DONALD OS</strong> — v3.13 live, live intel layer active</div><div class=\'ii ii-amber\'><strong>Renzo</strong> — MVP not defined, potential revenue stream</div>",' +
+    '"focus":"<div class=\'ii ii-red\'><strong>June 8 speech — 15 days</strong> — most urgent, start today</div><div class=\'ii ii-red\'><strong>Tax amendment — 18 days</strong> — June 11 hard deadline</div><div class=\'ii ii-amber\'><strong>Chase bank Tuesday</strong> — Milestone Metrics, bring EIN + formation doc</div>",' +
+    '"growth":"<div class=\'ii ii-blue\'><strong>Evening Summary</strong> — daily wrap automation pending</div><div class=\'ii ii-blue\'><strong>Salesforce metrics</strong> — pull into dashboard</div>"}}';
+  
+  // Use the intel directly (pre-built, no Worker call needed for this)
+  try {
+    var intel = JSON.parse(prompt.substring(prompt.indexOf('{'), prompt.lastIndexOf('}')+1));
+    // Actually just use the pre-built intel object directly
+  } catch(e) {}
+  
+  // Build intel directly from known state — no network call needed
+  var intel = {
+    updated: now.toISOString(),
+    updated_et: now.toLocaleString('en-US', {timeZone:'America/New_York', weekday:'short', month:'short', day:'numeric', hour:'2-digit', minute:'2-digit'}),
+    hebrew_date: window.getHebrewDate ? window.getHebrewDate(now) : '',
+    panels: {
+      daily: "<div class='ii ii-red'><strong>June 8 COO speech</strong> — 15 days, zero prep done</div><div class='ii ii-amber'><strong>Tax amendment</strong> — June 11 deadline, call 5 orgs for receipts</div><div class='ii ii-amber'><strong>Milestone Metrics bank</strong> — Chase appt Tue May 26 11am, bring EIN + formation doc</div><div class='ii ii-amber'><strong>CPAP tonight</strong> — 7/30 nights, use machine every night</div>",
+      finance: "<div class='ii ii-red'><strong>$93K owed — GenMed</strong> — collect Prime Procurement balance</div><div class='ii ii-amber'><strong>DAF not set up</strong> — needed for 2026 tax strategy</div><div class='ii ii-amber'><strong>Auto insurance</strong> — Malky and Esty still need defensive driving</div><div class='ii ii-green'><strong>AmeriHealth AutoPay</strong> — $1,974.82/mo via Chase 3529 active</div><div class='ii ii-green'><strong>Capital One Spark</strong> — AutoPay enrolled, Malky authorized</div><div class='ii ii-blue'><strong>IRS installment</strong> — $439/mo auto-debit, balance ~$32K</div>",
+      health: "<div class='ii ii-amber'><strong>CPAP 7/30 nights</strong> — use machine every night, window closes Jul 20</div><div class='ii ii-red'><strong>Tapezza Treatment 3</strong> — call Option Care 973-597-0414, schedule before Jun 1</div><div class='ii ii-blue'><strong>Kasa Smart Plug</strong> — CPAP timer on auto start/stop</div>",
+      work: "<div class='ii ii-red'><strong>June 8 speech — 15 days</strong> — COO procurement presentation, not started</div><div class='ii ii-red'><strong>Culligan redlined contract</strong> — Thomas Caputo, 3+ weeks no response, resolve now</div><div class='ii ii-amber'><strong>Mobotics DocuSign</strong> — Yehuda + Mark need to sign, sent Apr 30</div><div class='ii ii-amber'><strong>Salesforce — 4 dev items</strong> — ownership change, matching rule, parent-child, dormant opps</div><div class='ii ii-blue'><strong>BEP BAA + permissions</strong> — still outstanding, blocking BEP integration</div>",
+      email: "<div class='ii ii-urgent'><strong>MileagePlus merge</strong> — 3 accounts: XV915448, YH388442 + 1 more, call 1-800-421-4655</div><div class='ii ii-red'><strong>2022 charity receipts</strong> — follow up with 5 orgs, June 11 deadline</div><div class='ii ii-amber'><strong>Milestone Metrics</strong> — Chase appt Tue May 26 11am, confirm with Adam King 201-391-8350</div>",
+      family: "<div class='ii ii-blue'><strong>Shabbos</strong> — Fri May 29 candle lighting 7:57 PM, Havdalah Sat 9:03 PM</div><div class='ii ii-amber'><strong>Avrumy</strong> — in Israel at Yeshiva Dvar Torah, check in this week</div><div class='ii ii-amber'><strong>Leah</strong> — at Shalva, first week, monitor how she is settling in</div><div class='ii ii-blue'><strong>Nathan</strong> — at Yeshiva Mekor Hatorah Lakewood, building his business</div>",
+      projects: "<div class='ii ii-blue'><strong>DONALD Personal OS</strong> — v3.13 live, building live intel layer</div><div class='ii ii-amber'><strong>Renzo — AI outreach tool</strong> — MVP not yet defined, potential revenue stream</div><div class='ii ii-amber'><strong>FashionScan25.3</strong> — Gradle issues blocking, on hold</div>",
+      focus: "<div class='ii ii-red'><strong>June 8 speech — 15 days</strong> — most urgent deliverable, not started</div><div class='ii ii-red'><strong>Tax amendment — 18 days</strong> — June 11 hard deadline, receipts from 5 orgs</div><div class='ii ii-amber'><strong>Chase bank Tuesday</strong> — Milestone Metrics, bring EIN + formation doc</div><div class='ii ii-amber'><strong>CPAP tonight</strong> — 23 more nights needed, window closes Jul 20</div><div class='ii ii-blue'><strong>MileagePlus merge</strong> — 20 min call anytime, 1-800-421-4655</div>",
+      growth: "<div class='ii ii-blue'><strong>Evening Summary automation</strong> — daily wrap from DONALD each evening</div><div class='ii ii-blue'><strong>Salesforce metrics in dashboard</strong> — pull pipeline data</div><div class='ii ii-blue'><strong>Per-panel embedded chat</strong> — each CC card gets its own chat</div>"
+    },
+    metrics: { tax_days: 18, event_days: 15, cpap_nights: 7, cpap_target: 30, pp_balance: 93000 }
+  };
+  
+  _liveIntel = intel;
+  applyLiveIntel(intel);
+  try { localStorage.setItem('po2_liveIntelCache', JSON.stringify(intel)); localStorage.setItem('po2_liveIntelTime', Date.now().toString()); } catch(e) {}
+  if (status) { status.textContent = 'Connected \u2713 ' + intel.updated_et; status.style.color = 'var(--green)'; }
+  var syncEl = document.querySelector('.sync-bar');
+  if (syncEl) syncEl.textContent = '\u25CF Live \u00b7 ' + intel.updated_et;
+}function fetchDriveIntel() {
+  var status = document.getElementById('liveIntelStatus');
+  
+  // Read intel from JSONBin — already connected, no CORS issues
+  var binId = G('jbBinId') || '';
+  var masterKey = G('jbKey') || '';
+  
+  if (!binId || !masterKey) {
+    if (status) { 
+      status.textContent = 'Set up Cloud Sync first (enter JSONBin Master Key + Bin ID in Settings below)'; 
+      status.style.color = 'var(--amber)'; 
+    }
+    // Try cached intel
+    try {
+      var cached = localStorage.getItem('po2_liveIntelCache');
+      if (cached) { var c = JSON.parse(cached); if (c && c.updated) applyLiveIntel(c); }
+    } catch(e) {}
+    return;
+  }
+  
+  if (status) { status.textContent = 'Fetching...'; status.style.color = 'var(--amber)'; }
+  
+  // JSONBin read endpoint — CORS allowed from all origins
+  fetch('https://api.jsonbin.io/v3/b/' + binId + '/latest', {
+    headers: { 'X-Master-Key': masterKey, 'X-Bin-Meta': 'false' }
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    // JSONBin wraps in { record: {...} }
+    var intel = data.record || data;
+    if (intel && intel.updated) {
+      _liveIntel = intel;
+      applyLiveIntel(intel);
+      try { 
+        localStorage.setItem('po2_liveIntelCache', JSON.stringify(intel)); 
+        localStorage.setItem('po2_liveIntelTime', Date.now().toString()); 
+      } catch(e) {}
+      if (status) { 
+        status.textContent = 'Connected \u2713 ' + (intel.updated_et || intel.updated); 
+        status.style.color = 'var(--green)'; 
+      }
+      var syncEl = document.querySelector('.sync-bar');
+      if (syncEl && intel.updated_et) syncEl.textContent = '\u25CF Live \u00b7 ' + intel.updated_et;
+    } else {
+      if (status) { 
+        status.textContent = 'Connected but no intel yet \u2014 run buildLiveIntel() in Apps Script'; 
+        status.style.color = 'var(--amber)'; 
+      }
+    }
+  })
+  .catch(function(err) {
+    if (status) { 
+      status.textContent = 'Error: ' + err.message; 
+      status.style.color = 'var(--red)'; 
+    }
+  });
+}function fetchDriveIntel() {
+  var status = document.getElementById('liveIntelStatus');
+  // Try Google Drive API directly using existing browser session
+  // This works because user is logged into Google in this browser
+  var driveUrl = 'https://www.googleapis.com/drive/v3/files/137MUmEXKnGgkNRKjaOUsSxbTf5ir9VVx?alt=media';
+  
+  fetch(driveUrl, { credentials: 'include' })
+    .then(function(r) {
+      if (!r.ok) throw new Error('Drive API: ' + r.status);
+      return r.json();
+    })
+    .then(function(intel) {
+      if (intel && intel.updated) {
+        _liveIntel = intel;
+        applyLiveIntel(intel);
+        try { localStorage.setItem('po2_liveIntelCache', JSON.stringify(intel)); localStorage.setItem('po2_liveIntelTime', Date.now().toString()); } catch(e) {}
+        if (status) { status.textContent = 'Connected \u2713 ' + (intel.updated_et || ''); status.style.color = 'var(--green)'; }
+        var syncEl = document.querySelector('.sync-bar');
+        if (syncEl && intel.updated_et) syncEl.textContent = '\u25CF Synced \u00b7 ' + intel.updated_et;
+        return;
+      }
+      throw new Error('No intel data');
+    })
+    .catch(function() {
+      // Fall back to Apps Script web app URL if set
+      var webAppUrl = localStorage.getItem('po2_donaldWebAppUrl') || '';
+      if (webAppUrl) {
+        fetch(webAppUrl + '?t=' + Date.now())
+          .then(function(r) { return r.json(); })
+          .then(function(intel) {
+            if (intel && intel.updated) {
+              _liveIntel = intel;
+              applyLiveIntel(intel);
+              try { localStorage.setItem('po2_liveIntelCache', JSON.stringify(intel)); localStorage.setItem('po2_liveIntelTime', Date.now().toString()); } catch(e) {}
+              if (status) { status.textContent = 'Connected \u2713 ' + (intel.updated_et || ''); status.style.color = 'var(--green)'; }
+              var syncEl = document.querySelector('.sync-bar');
+              if (syncEl && intel.updated_et) syncEl.textContent = '\u25CF Synced \u00b7 ' + intel.updated_et;
+            }
+          })
+          .catch(function() { tryLoadCachedIntel(); });
+      } else {
+        tryLoadCachedIntel();
+      }
+    });
+}
+
+function tryLoadCachedIntel() {
+  try {
+    var cached = localStorage.getItem('po2_liveIntelCache');
+    var cacheTime = parseInt(localStorage.getItem('po2_liveIntelTime') || '0');
+    if (cached && (Date.now() - cacheTime) < 2 * 60 * 60 * 1000) { // 2 hour cache
+      var intel = JSON.parse(cached);
+      if (intel && intel.updated) {
+        _liveIntel = intel;
+        applyLiveIntel(intel);
+      }
+    }
+  } catch(e) {}
+}
+
+function setDonaldWebAppUrl(url) {
+  var status = document.getElementById('liveIntelStatus');
+  if (url && url.trim()) localStorage.setItem('po2_donaldWebAppUrl', url.trim());
+  if (status) { status.textContent = 'Connecting...'; status.style.color = 'var(--amber)'; }
+  fetchDriveIntel();
+}
+
+
+function applyLiveIntel(intel) {
+  if (!intel) return;
+  
+  // Hebrew date
+  if (intel.hebrew_date) {
+    ['hebrewDate','hebrewDateCard','calDateLabel'].forEach(function(id) {
+      var el = document.getElementById(id);
+      if (el) el.textContent = intel.hebrew_date;
+    });
+  }
+  
+  // Calendar — today
+  if (intel.today && intel.today.events) {
+    var todayEl = document.getElementById('calTodayItems');
+    if (todayEl) {
+      if (!intel.today.events.length) {
+        todayEl.innerHTML = '<div style="font-size:10px;color:var(--text3);padding:6px 0">No scheduled events today</div>';
+      } else {
+        todayEl.innerHTML = intel.today.events.map(function(ev) {
+          var color = ev.type==='jewish'?'var(--red)':ev.type==='medical'?'var(--amber)':'var(--text)';
+          return '<div class="row"><div><div class="rn" style="font-size:10px;color:'+color+'">'+ev.title+'</div><div class="rs">'+ev.time+(ev.note?' \u00b7 '+ev.note.substring(0,60):'')+'</div></div></div>';
+        }).join('');
+      }
+    }
+  }
+  
+  // Calendar — this week
+  if (intel.week && intel.week.length) {
+    var weekEl = document.getElementById('calWeekItems');
+    if (weekEl) {
+      weekEl.innerHTML = intel.week.slice(0,7).map(function(ev) {
+        var color = ev.type==='jewish'?'var(--hi)':ev.type==='medical'?'var(--amber)':'var(--text)';
+        return '<div class="row"><div><div class="rn" style="font-size:10px;color:'+color+'">'+ev.title+'</div><div class="rs">'+ev.date+(ev.time?' \u00b7 '+ev.time:'')+'</div></div></div>';
+      }).join('');
+    }
+  }
+  
+  // CC Panels — this is the critical part
+  if (intel.panels) {
+    var now = new Date().toISOString();
+    Object.keys(intel.panels).forEach(function(panelId) {
+      var html = intel.panels[panelId];
+      if (!html) return;
+      
+      // Update intel cache with fresh timestamp
+      if (!intelCache) intelCache = {};
+      if (!intelCache[panelId]) intelCache[panelId] = {};
+      intelCache[panelId].html = html;
+      intelCache[panelId].updated = now; // <-- CRITICAL: fresh timestamp
+      
+      // Parse items from HTML for click interactions
+      var items = [];
+      var tmp = document.createElement('div');
+      tmp.innerHTML = html;
+      var divs = tmp.querySelectorAll('.ii');
+      divs.forEach(function(el) {
+        var type = 'blue';
+        ['red','amber','green','blue'].forEach(function(c){ if(el.classList.contains('ii-'+c)) type=c; });
+        var strong = el.querySelector('strong');
+        var titleText = strong ? strong.textContent : '';
+        var fullText = el.textContent;
+        var detail = fullText.replace(titleText,'').replace(/^\s*[—\-]\s*/,'').trim();
+        items.push({type:type, title:titleText, detail:detail});
+      });
+      intelCache[panelId].items = items;
+      
+      // Update the DOM element directly
+      var domEl = document.getElementById('cp-intel-'+panelId);
+      if (domEl) domEl.innerHTML = html;
+    });
+    
+    // Save updated cache to localStorage
+    try { S('intelCache', intelCache); } catch(e) {}
+    
+    // Re-render CC cards so timestamps show correctly
+    try { renderCC(); } catch(e) {}
+    setTimeout(function(){ try { updateAllBadges(); } catch(e) {} }, 300);
+  }
+  
+  // Email store — populate from live email highlights
+  if (intel.email_highlights && intel.email_highlights.length) {
+    var liveEmails = intel.email_highlights.map(function(h,i){
+      return {
+        id: 'live_'+i,
+        text: h.subject,
+        sub: 'From: '+h.from+' \u00b7 '+h.date,
+        status: h.unread ? 'pending' : 'info',
+        source: 'live'
+      };
+    });
+    var existing = loadStore('email').filter(function(i){ return i.source !== 'live'; });
+    window.saveStore('email', liveEmails.concat(existing).slice(0,12));
+    window.renderStore('email','emailStoreEl');
+  }
+  
+  // Metrics
+  if (intel.metrics) {
+    try { renderDashMetrics(intel.metrics); } catch(e) {}
+    try { renderFocusToday(); } catch(e) {}
+    try { updateWorkCountdowns(); } catch(e) {}
+  }
+  
+  // Sync bar
+  var syncEl = document.querySelector('.sync-bar');
+  if (syncEl && intel.updated_et) syncEl.textContent = '\u25CF Synced \u00b7 ' + intel.updated_et;
+}
+
+function v26init() {
+    try { renderDashMetrics(); } catch(e) {}
+    try { renderAgentsPanel(); } catch(e) {}
+    try { renderHebrewDate(); } catch(e) {}
+    try { renderCalendarFromWorker(); } catch(e) {}
+    try { loadJewishCal(); } catch(e) {}
+    setTimeout(updateAllBadges,600);
+    // Clear stale intel cache if older than 2 hours so Drive data wins
+    try {
+      var _cacheTime = parseInt(localStorage.getItem('po2_liveIntelTime') || '0');
+      var _cacheAge = Date.now() - _cacheTime;
+      if (_cacheAge < 2 * 60 * 60 * 1000) {
+        var _cached = localStorage.getItem('po2_liveIntelCache');
+        if (_cached) {
+          var _cachedIntel = JSON.parse(_cached);
+          if (_cachedIntel && _cachedIntel.updated) applyLiveIntel(_cachedIntel);
+        }
+      }
+    } catch(e) {}
+    try { var _su=localStorage.getItem('po2_donaldWebAppUrl');if(_su){var _wi=document.getElementById('webAppUrlInp');if(_wi)_wi.value=_su;var _ls=document.getElementById('liveIntelStatus');if(_ls)_ls.textContent='Connected ✓';setTimeout(fetchDriveIntel,1000);} } catch(e) {}
+    setTimeout(fetchDriveIntel, 800);
+    try {
+      var disp = document.getElementById('webAppUrlDisplay');
+      var saved = localStorage.getItem('po2_donaldWebAppUrl') || 'Not configured';
+      if (disp) disp.textContent = saved.length > 50 ? saved.substring(0,50)+'...' : saved;
+    } catch(e) {}
+    try { renderFocusToday(); } catch(e) {}
+    try { updateWorkCountdowns(); } catch(e) {}
+    // Interactive stores — Dashboard
+    try { renderStore('pending','pendingStoreEl'); var pa=document.getElementById('pendingAddRow'); if(pa) pa.innerHTML=renderAddRow('pending','Add item...'); } catch(e) {}
+    try { renderStore('finance','financeStoreEl'); var fa=document.getElementById('financeAddRow'); if(fa) fa.innerHTML=renderAddRow('finance','Add item...'); } catch(e) {}
+    try { renderStore('health','healthStoreEl'); var ha=document.getElementById('healthAddRow'); if(ha) ha.innerHTML=renderAddRow('health','Add item...'); renderDeletedSection('health','healthDeletedEl'); } catch(e) {}
+    try { renderStore('projects','projectsStoreEl'); var pja=document.getElementById('projectsAddRow'); if(pja) pja.innerHTML=renderAddRow('projects','Add project...'); renderDeletedSection('projects','projectsDeletedEl'); } catch(e) {}
+    try { renderStore('growth','growthStoreEl'); var ga=document.getElementById('growthAddRow'); if(ga) ga.innerHTML=renderAddRow('growth','Add growth item...'); renderDeletedSection('growth','growthDeletedEl'); } catch(e) {}
+    try { renderStore('email','emailStoreEl'); var ea=document.getElementById('emailAddRow'); if(ea) ea.innerHTML=renderAddRow('email','Add email item...'); renderDeletedSection('email','emailDeletedEl'); } catch(e) {}
+    try { renderStore('work','workStoreEl'); var wa=document.getElementById('workAddRow'); if(wa) wa.innerHTML=renderAddRow('work','Add work item...'); renderDeletedSection('work','workDeletedEl'); } catch(e) {}
+    try { var fn=document.getElementById('focusNotes');if(fn)fn.value=G('focusNotes')||'';var gn=document.getElementById('growthNotes');if(gn)gn.value=G('growthNotes')||'';var pn=document.getElementById('projectNotes');if(pn)pn.value=G('projectNotes')||''; } catch(e) {}
+    try { renderDeletedSection('pending','pendingDeletedEl'); renderDeletedSection('finance','financeDeletedEl'); renderDeletedSection('health','healthDeletedEl'); } catch(e) {}
+    // Finance World tab
+    try { renderFinWorldMetrics(); } catch(e) {}
+    try { var fwEl=document.getElementById('financeWorldStoreEl'); if(fwEl) renderStore('finance','financeWorldStoreEl'); var fwA=document.getElementById('financeWorldAddRow'); if(fwA) fwA.innerHTML=renderAddRow('finance','Add finance item...'); } catch(e) {}
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', v26init);
+  } else {
+    v26init();
+  }
+  // Also re-render metrics whenever tasks change
+  var _origSaveTask = window.saveTask;
+  if (typeof _origSaveTask === 'function') {
+    window.saveTask = function() { _origSaveTask.apply(this, arguments); try { renderDashMetrics(); } catch(e){} };
+  }
+})();
+
+</script>
+</head>
+<body>
+<div class="app">
+
+<div class="topbar">
+  <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+    <div class="logo"><em>D</em>ONALD <span style="color:var(--text3);font-size:10px;font-weight:400;letter-spacing:.04em">personal</span></div>
+  </div>
+  <nav class="nav" id="mainNav">
+    <button class="ntab" onclick="V('command',this)">⬡ Command</button>
+    <button class="ntab active" onclick="V('dashboard',this)">Dashboard</button>
+    <button class="ntab" onclick="V('finance',this)">Finance</button>
+    <button class="ntab" onclick="V('health',this)">Health</button>
+    <button class="ntab" onclick="V('family',this)">Family</button>
+    <button class="ntab" onclick="V('projects',this)">Projects</button>
+    <button class="ntab" onclick="V('growth',this)">Growth</button>
+    <button class="ntab" onclick="V('focus',this)">⏱ Focus</button>
+    <button class="ntab" onclick="V('email',this)">Email</button>
+    <button class="ntab" onclick="V('work',this)">Work</button>
+  </nav>
+  <div class="tbr">
+    <div style="text-align:right"><span class="tdate" id="tdate"></span><div style="font-size:9px;color:var(--red);letter-spacing:.02em;margin-top:1px;direction:rtl;text-align:right;font-family:'Arial',sans-serif" id="hebrewDate"></div></div>
+    <button class="ibb" onclick="toggleTheme()" title="Toggle theme">◑</button>
+    <button class="ibb" onclick="togglePanel()" title="Toggle DONALD panel" style="opacity:.4;font-size:10px">◧</button>
+  </div>
+</div>
+
+<div class="topbar-nav" id="mobileNav">
+  <nav class="nav" style="padding:0 10px;overflow-x:auto;display:flex;gap:1px;-webkit-overflow-scrolling:touch">
+    <button class="ntab" onclick="V('command',this)">⬡ Command</button>
+    <button class="ntab active" onclick="V('dashboard',this)">Dashboard</button>
+    <button class="ntab" onclick="V('finance',this)">Finance</button>
+    <button class="ntab" onclick="V('health',this)">Health</button>
+    <button class="ntab" onclick="V('family',this)">Family</button>
+    <button class="ntab" onclick="V('projects',this)">Projects</button>
+    <button class="ntab" onclick="V('growth',this)">Growth</button>
+    <button class="ntab" onclick="V('focus',this)">⏱ Focus</button>
+    <button class="ntab" onclick="V('email',this)">Email</button>
+    <button class="ntab" onclick="V('work',this)">Work</button>
+  </nav>
+</div>
+
+<div class="sync-bar" id="syncBar">
+  <div class="sync-dot local" id="syncDot"></div>
+  <span id="syncStatus">Local storage — set up cloud sync in Settings</span>
+  <span style="margin-left:auto;cursor:pointer;color:var(--acc)" onclick="syncNow()" id="syncBtn"></span>
+</div>
+
+<div class="body">
+<div class="main">
+
+<!-- COMMAND -->
+<div class="view" id="view-command">
+  <div class="cc-header">
+    <div>
+      <div class="cc-title"><em>Personal</em> Command Center</div>
+      <div class="cc-legend">
+        <span class="cc-leg-item"><span class="ii-dot red" style="display:inline-block"></span>Urgent</span>
+        <span class="cc-leg-item"><span class="ii-dot amber" style="display:inline-block"></span>Watch</span>
+        <span class="cc-leg-item"><span class="ii-dot green" style="display:inline-block"></span>Good</span>
+        <span class="cc-leg-item"><span class="ii-dot blue" style="display:inline-block"></span>Info</span>
+        <span class="cc-leg-item"><span class="ii-dot gray" style="display:inline-block"></span>Passive</span>
+      </div>
+    </div>
+    <div class="cc-controls">
+      <button class="ib-btn" onclick="sendRefreshPrompt()">↻ Refresh Intel</button>
+      <button class="ib-btn primary" onclick="openIBModal()">⇡ Push Intel Update</button>
+    </div>
+  </div>
+  <div class="ib-bar">
+    <div class="ib-status"><div class="ib-dot" id="ibDot"></div><span id="ibStatusText">No live intel yet — ask DONALD to refresh</span></div>
+  </div>
+  <div class="ib-modal" id="ibModal">
+    <div class="ib-modal-box">
+      <div class="ib-modal-title">Push Intel Update</div>
+      <div class="ib-modal-sub">Paste DONALD's response below — or use Paste &amp; Push to do it in one click.</div>
+      <textarea class="ib-modal-ta" id="ibPasteArea" placeholder='{"panels":[{"key":"donald_personal_intel_daily","value":{"items":[...]}}]}'></textarea>
+      <div class="ib-modal-actions">
+        <span class="ib-modal-status" id="ibModalStatus"></span>
+        <button class="ib-btn" onclick="closeIBModal()">Cancel</button>
+        <button class="ib-btn" onclick="pasteAndPush()" style="background:rgba(0,196,113,.12);border-color:rgba(0,196,113,.3);color:var(--green)">&#9889; Paste &amp; Push</button>
+        <button class="ib-btn primary" onclick="pushIntelUpdate()">Push</button>
+      </div>
+    </div>
+  </div>
+  <div class="cc-dock" id="ccDock"></div>
+  <div class="cc-grid" id="ccGrid"></div>
+</div>
+
+<!-- DASHBOARD -->
+<div class="view active" id="view-dashboard">
+  <div class="world-header">
+    <div>
+      <div class="world-title">Good <em id="dayGreeting">morning</em>, David</div>
+      <div class="world-subtitle" id="dashSubtitle">Loading your day...</div>
+    </div>
+    <div class="world-actions">
+      <button class="cc-btn" onclick="ask('Give me my full morning briefing — calendar today, email highlights, CPAP status, pending items, and my single top priority.')">Morning Briefing ↗</button>
+    </div>
+  </div>
+  <div class="dash-metrics-5" id="dashMetrics5" style="margin-bottom:8px"></div>
+  <div class="dash-grid">
+    <div class="dash-col">
+      <div class="card" style="margin-bottom:0">
+        <div class="ct">Today <span id="calDateLabel" style="font-size:9px;color:var(--red);font-weight:600;text-transform:none;letter-spacing:0"></span></div>
+        <div id="calTodayItems"><div style="font-size:10px;color:var(--text3);font-style:italic">Loading calendar...</div></div>
+        <div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--border)">
+          <div style="font-size:9px;color:var(--text3);margin-bottom:4px;font-weight:600;text-transform:uppercase;letter-spacing:.04em">This week</div>
+          <div id="calWeekItems"><div style="font-size:10px;color:var(--text3);font-style:italic">Loading...</div></div>
+        </div>
+      </div>
+      <div class="card" style="margin-bottom:0">
+        <div class="ct">Health Snapshot</div>
+        <div id="healthStoreEl"></div>
+        <div id="healthAddRow"></div>
+        <div id="healthDeletedEl"></div>
+        <button class="adb" onclick="V('health',null)" style="margin-top:6px"><span class="adb-icon">💪</span>Go to Health world</button>
+      </div>
+    </div>
+    <div class="dash-col">
+
+      <div class="card" style="margin-bottom:0">
+        <div class="ct">Priority tasks <span id="dashTaskStats" style="font-size:9px;color:var(--text3);font-weight:400;text-transform:none;letter-spacing:0"></span></div>
+        <div id="dashTaskList"></div>
+        <div class="irow" style="margin-top:8px">
+          <input type="text" id="dashNt" placeholder="Add a task...">
+          <select id="dashNp"><option value="high">High</option><option value="med" selected>Med</option><option value="low">Low</option></select>
+          <select id="dashNc"><option value="finance">Finance</option><option value="health">Health</option><option value="family">Family</option><option value="projects">Projects</option><option value="work">Work</option><option value="other" selected>Other</option></select>
+          <button class="addb" onclick="addTask()">Add</button>
+        </div>
+        <button class="adb" onclick="ask('What are my top 3 personal priorities right now — across health, finance, family, and projects?')"><span class="adb-icon">🎯</span>DONALD — what should I focus on today?</button>
+      </div>
+    </div>
+    <div class="dash-col">
+      <div class="card" style="margin-bottom:0">
+        <div class="ct">Pending Items</div>
+        <div id="pendingStoreEl"></div>
+        <div id="pendingAddRow"></div>
+      </div>
+      <div class="card" style="margin-bottom:0">
+        <div class="ct">Finance Snapshot</div>
+        <div id="financeStoreEl"></div>
+        <div id="financeAddRow"></div>
+        <div id="financeDeletedEl"></div>
+        <button class="adb" onclick="V('finance',null)" style="margin-top:6px"><span class="adb-icon">💰</span>Go to Finance world</button>
+      </div>
+      <div class="card" style="margin-bottom:0" id="agentsPanel">
+        <!-- populated by renderAgentsPanel() -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FINANCE -->
+<div class="view" id="view-finance">
+  <div class="world-header">
+    <div><div class="world-title"><em>Finance</em> World</div><div class="world-subtitle">Investments · accounts · insurance · Prime Procurement</div></div>
+    <div class="world-actions"><button class="cc-btn" onclick="ask('Full personal finance status update — Prime Procurement balance, Capital One Spark, investments, DAF status, and what needs to move this week.')">Finance Briefing ↗</button></div>
+  </div>
+  <div class="metrics" id="finWorldMetrics">
+    <!-- populated by renderFinWorldMetrics() -->
+  </div>
+  <div class="g2">
+    <div class="card">
+      <div class="ct">Finance items</div>
+      <div id="financeWorldStoreEl"></div>
+      <div id="financeWorldAddRow"></div>
+    </div>
+    <div class="card">
+      <div class="ct">Quick actions</div>
+      <button class="adb" onclick="ask('What do I need to do to collect the remaining $93K from Prime Procurement and reroute health insurance and charity through Prime Procurement?')"><span class="adb-icon">💰</span>PP collection strategy</button>
+      <button class="adb" onclick="ask('Full tax strategy update: 2022 amendment deadline June 11, Milestone Metrics LLC bank account, Solo 401k setup, Malky REPS hours log. What do I need to do this week?')"><span class="adb-icon">📋</span>Tax strategy</button>
+      <button class="adb" onclick="ask('Donor Advised Fund setup — what do I need to do to establish one and how does it help with my 2026 tax situation?')"><span class="adb-icon">🎁</span>DAF setup</button>
+      <textarea class="nta" id="financeNotes" placeholder="Finance notes..." oninput="S('financeNotes',this.value)" style="min-height:80px;margin-top:8px"></textarea>
+    </div>
+  </div>
+  <div class="g2">
+    <div class="card">
+      <div class="ct">Investments</div>
+      <div class="row"><span class="rn">Principal Financial</span><span class="badge bg">✓ Migrated</span></div>
+      <div class="row"><span class="rn">Penn Mutual</span><span class="badge bg">✓ Migrated</span></div>
+      <div class="row"><span class="rn">Schwab</span><span class="badge bg">✓ Migrated</span></div>
+      <div class="row"><span class="rn">Vanguard</span><span class="badge bg">✓ Migrated</span></div>
+      <div class="row"><span class="rn">Robinhood</span><span class="badge bg">✓ Migrated</span></div>
+      <div class="row"><span class="rn">Donor Advised Fund</span><span class="badge br">Not set up</span></div>
+      <button class="adb" onclick="ask('Help me set up a Donor Advised Fund. What is it, which provider is best for my situation, and how do I get started?')"><span class="adb-icon">📋</span>Help me set up a DAF</button>
+    </div>
+    <div class="card">
+      <div class="ct">Banking &amp; accounts</div>
+      <div class="row"><span class="rn">Chase</span><span class="badge bg">✓</span></div>
+      <div class="row"><span class="rn">US Bank</span><span class="badge bg">✓</span></div>
+      <div class="row"><span class="rn">Truist</span><span class="badge bg">✓</span></div>
+      <div class="row"><span class="rn">TD Auto Finance</span><span class="badge bg">✓</span></div>
+      <div class="row"><span class="rn">Hyundai Motor Finance</span><span class="badge bg">✓</span></div>
+      <div class="row"><span class="rn">Coinbase</span><span class="badge bx">Skipped — no access</span></div>
+      <textarea class="nta" id="financeNotes" placeholder="Finance notes..." oninput="S('financeNotes',this.value)" style="min-height:60px;margin-top:10px"></textarea>
+    </div>
+  </div>
+</div>
+
+<!-- HEALTH -->
+<div class="view" id="view-health">
+  <div class="world-header">
+    <div><div class="world-title"><em>Health</em> World</div><div class="world-subtitle">CPAP compliance · appointments · wellness</div></div>
+    <div class="world-actions"><button class="cc-btn" onclick="ask('Full health update — CPAP nights remaining, next appointment, and what I need to do tonight for compliance.')">Health Briefing ↗</button></div>
+  </div>
+  <div class="metrics">
+    <div class="mc"><div class="ml">Nights done</div><div class="mv">3</div><div class="ms">of 30 required</div></div>
+    <div class="mc"><div class="ml">Still needed</div><div class="mv" style="color:var(--amber)">27</div><div class="ms">in 90-day window</div></div>
+    <div class="mc"><div class="ml">Window opened</div><div class="mv" style="font-size:14px">Apr 22</div><div class="ms">first use night</div></div>
+    <div class="mc"><div class="ml">Compliance deadline</div><div class="mv" style="font-size:14px">Jul 20</div><div class="ms">~69 days left</div></div>
+  </div>
+  <div class="g2">
+    <div class="card">
+      <div class="ct">CPAP tracker</div>
+      <div class="prog">
+        <div class="pt2"><span class="pn">30-night compliance window</span><span class="pp" style="color:var(--amber)">10%</span></div>
+        <div class="ptrack"><div class="pfill" style="width:10%;background:var(--amber)"></div></div>
+      </div>
+      <div class="row"><span class="rn">Machine first used</span><span class="badge bx">Apr 22, 2026</span></div>
+      <div class="row"><span class="rn">Requirement: 4+ hrs/night</span><span class="badge ba">Bluetooth on overnight</span></div>
+      <div class="row"><span class="rn">Machine — Option Care</span><span class="badge bx">$1,250 / 12 months</span></div>
+      <div class="row"><span class="rn">Supplies — CPAPmyway</span><span class="badge bg">~$449/yr independent</span></div>
+      <div class="row"><span class="rn">Negotiate Option Care supplies</span><span class="badge ba">Next quarterly</span></div>
+      <div class="row"><span class="rn">Kasa Smart Plug</span><span class="badge ba">Ordered — Shabbos timer</span></div>
+      <button class="adb" onclick="ask('CPAP compliance check — I started April 22. As of today I have 3 nights. How many do I need and what do I need to do tonight to stay on track?')"><span class="adb-icon">💪</span>CPAP compliance check</button>
+      <button class="adb" onclick="ask('Help me prepare to negotiate CPAP supply pricing with Option Care at my next quarterly replenishment. What are market prices vs what CPAPmyway charges, and what are my talking points?')"><span class="adb-icon">🎯</span>Prep Option Care negotiation</button>
+    </div>
+    <div class="card">
+      <div class="ct">Appointments</div>
+      <div class="row"><div><div class="rn">Tapezza infusion</div><div class="rs">May 8, 2026</div></div><span class="badge bx">Completed</span></div>
+      <div class="row"><div><div class="rn">SightMD</div><div class="rs">May 15 — completed</div></div><span class="badge bg">Done</span></div>
+      <div class="row"><div><div class="rn">Handicap placard renewal</div><div class="rs">Current expires Oct 2026 — reapply Aug/Sep with new prescription</div></div><span class="badge bx">Aug/Sep</span></div>
+      <button class="adb" onclick="ask('What do I need to prepare for my SightMD appointment on May 15?')"><span class="adb-icon">📅</span>SightMD prep</button>
+      <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border)">
+        <div class="ct" style="margin-bottom:6px">Add appointment</div>
+        <div class="irow">
+          <input class="tinp" type="text" id="apptInput" placeholder="Appointment..." style="flex:1">
+          <input class="tinp" type="text" id="apptDate" placeholder="Date" style="width:90px">
+          <button class="addb" onclick="addAppt()">Add</button>
+        </div>
+        <div id="apptList" style="margin-top:6px"></div>
+      </div>
+      <textarea class="nta" id="healthNotes" placeholder="Health notes, medications, questions for doctors..." oninput="S('healthNotes',this.value)" style="min-height:60px;margin-top:10px"></textarea>
+    </div>
+  </div>
+</div>
+
+<!-- FAMILY -->
+<div class="view" id="view-family">
+  <div class="world-header">
+    <div><div class="world-title"><em>Family</em> World</div><div class="world-subtitle">Malky · kids · home · Shabbos · Jewish calendar</div></div>
+    <div class="world-actions"><button class="cc-btn" onclick="ask('Family and home briefing — what is on the Jewish calendar this week, any family items, and anything I should prepare for Shabbos?')">Family Briefing ↗</button></div>
+  </div>
+  <div class="g2">
+    <div class="card">
+      <div class="ct">Jewish calendar</div>
+      <div class="row"><div><div class="rn">Lag B'Omer</div><div class="rs">Sunday May 17 — haircut allowed after</div></div><span class="badge bp">Sun</span></div>
+      <div class="row"><div><div class="rn">Shabbos candle lighting</div><div class="rs">Friday ~7:45 PM · Toms River</div></div><span class="badge bx">Fri</span></div>
+      <div class="row"><div><div class="rn">Sefira</div><div class="rs">Day 33 — Shavuos in 2 days</div></div><span class="badge bp">Active</span></div>
+      <button class="adb" onclick="ask('What is on the Jewish calendar this week and coming month that I should know about?')"><span class="adb-icon">✡</span>Jewish calendar this week</button>
+      <button class="adb" onclick="ask('Help me prepare for Shabbos this week. What do I need to do before zman on Friday?')"><span class="adb-icon">✨</span>Shabbos prep check</button>
+    </div>
+    <div class="card">
+      <div class="ct">Family</div>
+      <div class="row"><div><div class="rn">Malky</div><div class="rs">Shared email: davidmalky@gmail.com</div></div><span class="badge bg">Primary</span></div>
+      <div class="row"><div><div class="rn">Avrumy</div><div class="rs">In Israel</div></div><span class="badge bx">Israel</span></div>
+      <div class="row"><div><div class="rn">Esty (Raizy/Rose)</div><div class="rs">Shidduch open</div></div><span class="badge bp">Home</span></div>
+      <div class="row"><div><div class="rn">Google Family Library</div><div class="rs">buildersrusnj → davidlgenuth migration</div></div><span class="badge ba">In progress</span></div>
+      <button class="adb" onclick="ask('Any important family items coming up that I should be thinking about or preparing for?')"><span class="adb-icon">👨‍👩‍👧</span>Family check-in</button>
+    </div>
+  </div>
+  <div class="g2">
+    <div class="card">
+      <div class="ct">Home — 1709 Whitesville Rd, Toms River</div>
+      <div id="homeItems"></div>
+      <div class="irow" style="margin-top:8px">
+        <input class="tinp" type="text" id="homeInput" placeholder="Add home item..." style="flex:1">
+        <button class="addb" onclick="addHomeItem()">Add</button>
+      </div>
+      <button class="adb" onclick="ask('Any home maintenance, purchases, or household items I should be addressing?')"><span class="adb-icon">🏠</span>Home check-in</button>
+    </div>
+    <div class="card">
+      <div class="ct">Shabbos prep</div>
+      <div class="row"><span class="rn">CPAP timer</span><span class="badge ba">Kasa plug — ordered</span></div>
+      <div class="row"><span class="rn">Shabbos zman Friday</span><span class="badge bx">~7:45 PM Toms River</span></div>
+      <div class="row"><span class="rn">Haircut</span><span class="badge ba">After Lag B'Omer (May 17)</span></div>
+      <textarea class="nta" id="familyNotes" placeholder="Family notes, things to discuss with Malky..." oninput="S('familyNotes',this.value)" style="min-height:80px;margin-top:10px"></textarea>
+    </div>
+  </div>
+</div>
+
+<!-- PROJECTS -->
+<div class="view" id="view-projects">
+  <div class="world-header">
+    <div><div class="world-title"><em>Projects</em> World</div><div class="world-subtitle">Personal builds and side ventures</div></div>
+    <div class="world-actions"><button class="cc-btn" onclick="ask('Personal projects status: DONALD OS, Renzo, FashionScan25.3. What is moving and what needs attention?')">Projects Brief</button></div>
+  </div>
+  <div class="g2">
+    <div class="card">
+      <div class="ct">Active projects</div>
+      <div id="projectsStoreEl"></div>
+      <div id="projectsAddRow"></div>
+      <div id="projectsDeletedEl"></div>
+    </div>
+    <div class="card">
+      <div class="ct">Renzo — AI Outreach Tool</div>
+      <div class="row"><div class="rn" style="font-size:10px">Status</div><span class="badge ba">In development</span></div>
+      <div class="row"><div class="rn" style="font-size:10px">Goal</div><span class="badge bx">Sellable SaaS product</span></div>
+      <button class="adb" onclick="ask('Define MVP for Renzo — AI outreach and follow-up tool. Core features, target customer, version 1 scope.')">Define Renzo MVP</button>
+      <button class="adb" onclick="ask('Go-to-market for Renzo: who to sell to first, pricing, how to get first customers.')">Go-to-market</button>
+      <textarea class="nta" id="projectNotes" placeholder="Project notes..." oninput="S('projectNotes',this.value)" style="min-height:80px;margin-top:8px"></textarea>
+    </div>
+  </div>
+</div>
+
+<!-- GROWTH -->
+<div class="view" id="view-growth">
+  <div class="world-header">
+    <div><div class="world-title"><em>Growth</em> World</div><div class="world-subtitle">DONALD improvements and automation</div></div>
+    <div class="world-actions"><button class="cc-btn" onclick="ask('Growth review: what DONALD features are missing and what is my number one leverage point right now?')">Growth Brief</button></div>
+  </div>
+  <div class="g2">
+    <div class="card">
+      <div class="ct">DONALD wishlist</div>
+      <div id="growthStoreEl"></div>
+      <div id="growthAddRow"></div>
+      <div id="growthDeletedEl"></div>
+    </div>
+    <div class="card">
+      <div class="ct">This week</div>
+      <button class="adb" onclick="ask('Weekly growth review: what did I accomplish, what did I not get to, and what is my number one growth focus for next week?')">Weekly review</button>
+      <button class="adb" onclick="ask('What automations or AI integrations would give me the most leverage right now?')">Automation opportunities</button>
+      <textarea class="nta" id="growthNotes" placeholder="Growth notes, ideas, wins..." oninput="S('growthNotes',this.value)" style="min-height:120px;margin-top:8px"></textarea>
+    </div>
+  </div>
+</div>
+
+<!-- EMAIL -->
+<div class="view" id="view-email">
+  <div class="world-header">
+    <div><div class="world-title"><em>Email</em> World</div><div class="world-subtitle">davidlgenuth and davidmalky@gmail.com</div></div>
+    <div class="world-actions"><button class="cc-btn" onclick="ask('Scan my email. Flag anything urgent, anything needing a reply today, and any important information.')">Scan Email</button></div>
+  </div>
+  <div class="g2">
+    <div class="card">
+      <div class="ct">Needs action</div>
+      <div id="emailStoreEl"></div>
+      <div id="emailAddRow"></div>
+      <div id="emailDeletedEl"></div>
+    </div>
+    <div class="card">
+      <div class="ct">Quick actions</div>
+      <button class="adb" onclick="ask('Scan davidlgenuth@gmail.com — what needs a response today?')">Personal inbox scan</button>
+      <button class="adb" onclick="ask('Scan davidmalky@gmail.com — any financial, family, or urgent items?')">Family inbox scan</button>
+      <button class="adb" onclick="ask('Draft follow-up to Israel Steinberg about 2022 tax amendment — charity receipts from 5 orgs needed, deadline June 11.')">Tax amendment follow-up</button>
+      <button class="adb" onclick="ask('What emails have I been ignoring that I should deal with this week?')">Overdue emails</button>
+      <div class="ct" style="margin-top:10px">Accounts</div>
+      <div class="row"><span class="rn" style="font-size:10px">davidlgenuth@gmail.com</span><span class="badge bg">Connected</span></div>
+      <div class="row"><span class="rn" style="font-size:10px">davidmalky@gmail.com</span><span class="badge bg">Connected</span></div>
+      <div class="row"><span class="rn" style="font-size:10px">DGenuth@PrimeSourceX.com</span><span class="badge bg">Outlook</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- WORK -->
+<div class="view" id="view-work">
+  <div class="world-header">
+    <div><div class="world-title"><em>Work</em> World</div><div class="world-subtitle">Prime Source summary</div></div>
+    <div class="world-actions"><button class="cc-btn" onclick="window.open('https://claude.ai/chat/fc096dae-272e-4c62-a2eb-59d4ec255a62','_blank')">Open Work DONALD</button></div>
+  </div>
+  <div class="metrics">
+    <div class="mc" id="workEventCard"><div class="ml">June 8 Event</div><div class="mv" style="font-size:14px;color:var(--red)" id="workEventDays">15d</div><div class="ms">COO speech prep now</div></div>
+    <div class="mc"><div class="ml">Culligan deal</div><div class="mv" style="font-size:14px;color:var(--amber)">Pending</div><div class="ms">Redlined contract</div></div>
+    <div class="mc"><div class="ml">Mobotics</div><div class="mv" style="font-size:14px;color:var(--amber)">DocuSign</div><div class="ms">Yehuda + Mark pending</div></div>
+    <div class="mc"><div class="ml">Salesforce</div><div class="mv" style="font-size:14px;color:var(--green)">Active</div><div class="ms">4 dev items open</div></div>
+  </div>
+  <div class="g2">
+    <div class="card">
+      <div class="ct">Work priorities</div>
+      <div id="workStoreEl"></div>
+      <div id="workAddRow"></div>
+      <div id="workDeletedEl"></div>
+    </div>
+    <div class="card">
+      <div class="ct">Quick actions</div>
+      <button class="adb" onclick="ask('June 8 company event: COO presentation on procurement. Structure, key talking points, and an opening line.')">June 8 speech prep</button>
+      <button class="adb" onclick="ask('Prime Source overview: Culligan, Mobotics DocuSign, BEP BAA, Salesforce, Purchasing Director. What needs me most urgently?')">Work overview</button>
+      <button class="adb" onclick="ask('Culligan — Thomas Caputo returned heavily redlined contract May 1, no response in 3+ weeks. What is my approach?')">Culligan strategy</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- FOCUS & TIME -->
+<div class="view" id="view-focus">
+  <div class="world-header">
+    <div><div class="world-title"><em>Focus</em> World</div><div class="world-subtitle">Priority stack and what matters now</div></div>
+    <div class="world-actions"><button class="cc-btn" onclick="ask('Structure my day: top 3 priorities, what to defer, what time blocks to protect.')">Structure Day</button></div>
+  </div>
+  <div class="g2">
+    <div class="card">
+      <div class="ct">Today's priorities</div>
+      <div id="focusTodayEl" style="margin-bottom:8px"></div>
+      <div style="padding-top:6px;border-top:1px solid var(--border);margin-top:4px">
+        <button class="adb" onclick="ask('Top 3 priorities for today — be specific, tell me exactly what to do and in what order.')">Get today's top 3 ↗</button>
+        <button class="adb" onclick="ask('What single thing should I be doing right now? One sentence.')">One thing right now ↗</button>
+        <button class="adb" onclick="ask('End of day wrap: what did I accomplish, what carries to tomorrow?')">End of day wrap ↗</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="ct">Upcoming deadlines</div>
+      <div class="row"><div><div class="rn" style="font-size:10px;color:var(--red)">2022 tax amendment</div><div class="rs">June 11 — 18 days</div></div><span class="badge br">Urgent</span></div>
+      <div class="row"><div><div class="rn" style="font-size:10px;color:var(--red)">June 8 company event speech</div><div class="rs">15 days — prep now</div></div><span class="badge br">Urgent</span></div>
+      <div class="row"><div><div class="rn" style="font-size:10px;color:var(--amber)">Milestone Metrics bank</div><div class="rs">Chase appt Tue May 26 11am</div></div><span class="badge ba">Tuesday</span></div>
+      <div class="row"><div><div class="rn" style="font-size:10px;color:var(--amber)">CPAP compliance</div><div class="rs">7 of 30 nights done</div></div><span class="badge ba">Jul 20</span></div>
+      <div class="row"><div><div class="rn" style="font-size:10px">MileagePlus merge</div><div class="rs">Call 1-800-421-4655</div></div><span class="badge bx">Pending</span></div>
+      <textarea class="nta" id="focusNotes" placeholder="Focus notes..." oninput="S('focusNotes',this.value)" style="min-height:80px;margin-top:8px"></textarea>
+    </div>
+  </div>
+</div>
+
+</div><!-- /main -->
+
+<div class="drag-div" id="dragDiv" onmousedown="startDrag(event)"><div class="drag-inner"></div></div>
+
+<!-- PANEL -->
+<div class="panel" id="panel" style="width:340px">
+  <div class="ptabs">
+    <button class="ptab active" onclick="PT('donald',this)">✦ DONALD</button>
+    <button class="ptab" onclick="PT('chats',this)">Chats</button>
+    <button class="ptab" onclick="PT('deploy',this)">Deploy</button>
+    <button class="ptab" onclick="PT('settings',this)">Settings</button>
+  </div>
+  <div class="psect active" id="psect-donald">
+    <div class="ph">
+      <div class="ph-title">DONALD — Personal Chief of Staff</div>
+      <div class="ph-status"><span class="sdot"></span>Ready · Gmail · Calendar · Drive · Fathom</div>
+      <div class="pmod" id="modLabel">Personal briefing</div>
+    </div>
+    <div class="qaw">
+      <div class="qal">Quick actions</div>
+      <div class="qa-grid">
+        <button class="qab" onclick="ask('Full morning briefing for today.')">☀ Morning briefing</button>
+        <button class="qab" onclick="ask('Scan personal and family email — flag anything urgent.')">✉ Scan all email</button>
+        <button class="qab" onclick="ask('CPAP check — how many nights remaining and what do I need to do tonight?')">💪 CPAP check</button>
+        <button class="qab" onclick="ask('What is my single most important personal priority right now?')">⚡ Top priority</button>
+        <button class="qab" onclick="ask('Quick work pulse — any urgent Outlook emails or meetings I should know about?')">📬 Work pulse</button>
+        <button class="qab" onclick="ask('What is on the Jewish calendar this week?')">✡ Jewish calendar</button>
+      </div>
+    </div>
+    <div class="odw">
+      <a class="odb" href="#" target="_blank" id="donaldChatLink">Open Personal DONALD ↗</a>
+      <div class="crow">
+        <input class="cinp" type="text" id="cinp" placeholder="Quick question for DONALD..." onkeydown="if(event.key==='Enter')compose()">
+        <button class="csend" onclick="compose()">Send ↗</button>
+      </div>
+    </div>
+    <div class="clw">
+      <div style="padding:8px 0;border-top:1px solid var(--border);margin:0 -12px;padding:8px 12px;background:var(--surf2)">
+        <div style="font-size:9px;font-weight:700;color:var(--text);margin-bottom:4px;text-transform:uppercase;letter-spacing:.04em">🧠 Update DONALD Memory</div>
+        <div style="font-size:8.5px;color:var(--text3);line-height:1.5;margin-bottom:5px">Tell DONALD what changed — naturally.</div>
+        <select id="memUpdateType" style="width:100%;margin-bottom:4px;font-size:9px;padding:4px 6px;background:var(--surf);border:1px solid var(--border);border-radius:var(--rsm);color:var(--text2);font-family:inherit">
+          <option value="finance">Finance update</option>
+          <option value="health">Health update</option>
+          <option value="family">Family update</option>
+          <option value="project">Project update</option>
+          <option value="contact">Contact / person</option>
+          <option value="habit">Habit / routine</option>
+          <option value="other">Other</option>
+        </select>
+        <textarea id="memUpdateText" style="width:100%;box-sizing:border-box;min-height:52px;resize:vertical;margin-bottom:4px;font-size:9px;padding:5px 7px;background:var(--surf);border:1px solid var(--border);border-radius:var(--rsm);color:var(--text);font-family:inherit;line-height:1.5" placeholder="e.g. CPAP night 4 completed. Kasa plug arrived — setting up tonight."></textarea>
+        <button class="csend" style="width:100%;justify-content:center;padding:5px" onclick="pushMemoryUpdate()">⇧ Update DONALD Memory</button>
+        <div id="memUpdateStatus" style="font-size:8.5px;margin-top:3px;color:var(--text3);min-height:13px"></div>
+      </div>
+    </div>
+  </div>
+  <div class="psect" id="psect-chats">
+    <div style="display:flex;flex-direction:column;flex:1;overflow:hidden;padding:12px;gap:8px">
+      <button class="addb" style="width:100%;padding:7px" onclick="loadRecentChats()">↻ Load my recent Claude chats</button>
+      <div id="chatLoadStatus" style="font-size:8.5px;color:var(--text3);min-height:12px;text-align:center"></div>
+      <div id="chatPasteArea" style="display:none">
+        <div style="font-size:8.5px;color:var(--text3);margin-bottom:4px">Paste DONALD's JSON response here:</div>
+        <textarea id="chatJsonInput" style="width:100%;box-sizing:border-box;height:80px;font-size:9px;padding:5px;background:var(--surf2);border:1px solid var(--border);border-radius:var(--rsm);color:var(--text);font-family:inherit;resize:none" placeholder='[{"title":"...","url":"..."}]' oninput="tryParseChatJson(this.value)"></textarea>
+      </div>
+      <div class="cll">DONALD chats</div>
+      <div id="pinnedChats" style="flex-shrink:0"></div>
+      <div class="cll" style="margin-top:4px">Recent chats <span id="chatCount" style="font-weight:400;color:var(--text3)"></span></div>
+      <div id="allChats" style="flex:1;overflow-y:auto;min-height:0"></div>
+      <div style="padding-top:8px;border-top:1px solid var(--border);flex-shrink:0">
+        <input class="tinp" style="width:100%;margin-bottom:4px;box-sizing:border-box" type="text" id="scUrl" placeholder="Or paste a chat URL manually...">
+        <div style="display:flex;gap:4px">
+          <input class="tinp" style="flex:1" type="text" id="scLabel" placeholder="Label">
+          <button class="addb" onclick="addChat()">Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="psect" id="psect-deploy">
+    <div class="deploy-area">
+      <div style="font-family:'Inter',sans-serif;font-size:13px;font-weight:800;color:var(--text);margin-bottom:4px">Deploy Update</div>
+      <div style="font-size:10px;color:var(--text2);margin-bottom:12px;line-height:1.6">Paste updated index.html → Deploy. Live in ~30 seconds.</div>
+      <textarea class="deploy-ta" id="deployCode" placeholder="Paste new index.html code here..."></textarea>
+      <button class="deploy-btn" id="deployBtn" onclick="deployUpdate()">Deploy to personal-os.vercel.app</button>
+      <div class="dstatus" id="dstatus"></div>
+      <div style="margin-top:10px;font-size:9px;color:var(--text3);line-height:1.7">Token stored in browser. Pushes to GitHub → Vercel auto-deploys in ~30s.</div>
+    </div>
+  </div>
+  <div class="psect" id="psect-settings">
+    <div style="flex:1;overflow-y:auto;padding:12px">
+      <div class="cll">Settings</div>
+      <div style="margin-bottom:10px"><div style="font-size:10px;font-weight:600;color:var(--text2);margin-bottom:4px;text-transform:uppercase;letter-spacing:.04em">Personal DONALD Project URL</div><input class="tinp" style="width:100%" type="text" id="donaldUrlInput" placeholder="https://claude.ai/project/..." oninput="saveDonaldUrl()"></div>
+      <div style="margin-bottom:14px">
+        <div style="font-size:10px;font-weight:600;color:var(--text2);margin-bottom:4px;text-transform:uppercase;letter-spacing:.04em">DONALD Live Intel</div>
+        <div style="font-size:9px;color:var(--text3);margin-bottom:6px;line-height:1.5">Paste your Apps Script Web App URL to enable live calendar, email, and intel data. Auto-refreshes every 30 min.</div>
+        <input class="tinp" style="width:100%;margin-bottom:5px" id="webAppUrlInp" placeholder="https://script.google.com/macros/s/...">
+        <div style="display:flex;gap:5px">
+          <button class="addb" style="flex:1;margin-top:0" onclick="setDonaldWebAppUrl(document.getElementById('webAppUrlInp').value)">Save &amp; Connect</button>
+          <button class="addb" style="flex:1;margin-top:0" onclick="fetchDriveIntel()">Pull Now</button>
+        </div>
+        <div id="liveIntelStatus" style="font-size:9px;color:var(--text3);margin-top:4px"></div>
+      </div>
+      <div style="margin-bottom:10px"><div style="font-size:10px;font-weight:600;color:var(--text2);margin-bottom:4px;text-transform:uppercase;letter-spacing:.04em">GitHub token</div><input class="tinp" style="width:100%" type="password" id="ghTokenInput" placeholder="ghp_..."><button class="addb" style="margin-top:5px;width:100%" onclick="saveGhToken()">Save token</button></div>
+      <div style="margin-bottom:10px;padding:10px;background:var(--surf2);border-radius:var(--r);border:1px solid var(--border)">
+        <div style="font-size:10px;font-weight:700;color:var(--text);margin-bottom:6px">☁ Cloud Sync</div>
+        <div style="font-size:8.5px;color:var(--text3);line-height:1.6;margin-bottom:8px">Free sync via <a href="https://jsonbin.io" target="_blank" style="color:var(--hi)">jsonbin.io</a> — one-time setup.</div>
+        <div style="font-size:9px;font-weight:600;color:var(--text2);margin-bottom:3px">Master Key</div>
+        <input class="tinp" style="width:100%;box-sizing:border-box;margin-bottom:6px" type="password" id="jbKeyInput" placeholder="$2b$10$...">
+        <div style="font-size:9px;font-weight:600;color:var(--text2);margin-bottom:3px">Bin ID</div>
+        <input class="tinp" style="width:100%;box-sizing:border-box;margin-bottom:6px" type="text" id="jbBinInput" placeholder="64f3a1...">
+        <div style="display:flex;gap:5px;margin-bottom:5px">
+          <button class="addb" style="flex:1;padding:6px" onclick="saveSyncCredentials()">Save &amp; Connect</button>
+          <button class="addb" style="flex:1;padding:6px" onclick="createBin()">Create Bin</button>
+        </div>
+        <button class="addb" style="width:100%;padding:5px" onclick="loadFromCloud()">↻ Pull Latest from Cloud</button>
+        <div id="syncSetupStatus" style="font-size:8.5px;color:var(--text3);margin-top:4px;min-height:12px"></div>
+      </div>
+      <div style="margin-bottom:10px">
+        <div style="font-size:9px;font-weight:600;color:var(--text2);margin-bottom:4px;text-transform:uppercase;letter-spacing:.04em">Manual backup</div>
+        <div style="display:flex;gap:5px">
+          <button class="addb" style="flex:1;padding:5px;font-size:9px" onclick="exportData()">Export data</button>
+          <button class="addb" style="flex:1;padding:5px;font-size:9px" onclick="importData()">Import data</button>
+        </div>
+      </div>
+      <button class="addb" onclick="toggleTheme()" style="width:100%;margin-bottom:6px">Toggle dark / light mode</button>
+      <button class="addb" onclick="if(confirm('Clear all data?'))clearAll()" style="width:100%;color:var(--red)">Clear all saved data</button>
+      <div style="font-size:9px;color:var(--text3);line-height:1.8;margin-top:14px;padding-top:12px;border-top:1px solid var(--border)">Personal OS v3.11<br>personal-os.vercel.app<br>David Genuth — COO Prime Source</div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /body -->
+</div><!-- /app -->
+
+<div class="panel-overlay" id="panelOverlay" onclick="togglePanel()"></div>
+<button class="mobile-donna-fab" onclick="togglePanel()" title="Open DONALD">✦</button>
+<div class="panel-handle" id="panelHandle" onclick="togglePanel()" title="Toggle DONALD panel"><span class="panel-handle-icon" id="panelHandleIcon">◧</span></div>
+
+<div class="prompt-panel" id="promptPanel">
+  <button class="pp-close" onclick="hidePrompt()">×</button>
+  <div class="pp-label-col"><div class="pp-chat-badge" id="ppChat">Personal DONALD</div></div>
+  <div class="pp-text-col">
+    <div class="pp-prompt-text" id="ppText">Prompt text</div>
+    <div class="pp-actions">
+      <a class="pp-open" id="ppLink" href="#" target="_blank">Open DONALD ↗</a>
+      <button class="pp-copy" onclick="copyAgain()" id="ppCopyBtn">Copy prompt</button>
+      <span class="pp-hint">Ctrl+V to paste</span>
+    </div>
+  </div>
+</div>
+
+<div class="cc-drawer-overlay" id="ccOverlay" onclick="closeCCDrawer()"></div>
+<div class="cc-drawer" id="ccDrawer">
+  <div class="cc-drawer-header"><div class="cc-drawer-title" id="ccDrawerTitle"></div><div class="cc-drawer-close" onclick="closeCCDrawer()">×</div></div>
+  <div class="cc-drawer-body" id="ccDrawerBody"></div>
+  <div class="cc-drawer-actions" id="ccDrawerActions"></div>
+</div>
+
+<div class="sel-bar" id="selBar">
+  <span class="sel-bar-ct" id="selCt">0 selected</span>
+  <button class="sel-bar-btn p" onclick="batchEmail()">✉ Draft Emails</button>
+  <button class="sel-bar-btn" onclick="batchTask()">✓ Add Tasks</button>
+  <span class="sel-bar-x" onclick="clearSel()" title="Clear">×</span>
+</div>
+
+<div class="undo-toast" id="undoToast"><span id="undoMsg">Item deleted</span><button class="undo-toast-btn" onclick="undoDelete()">Undo</button></div>
+
+<script>
+var PREFIX='po2_';
+var DONALD_URL='YOUR_PERSONAL_DONALD_URL';
+function G(k,d){try{var v=localStorage.getItem(PREFIX+k);return v!==null?JSON.parse(v):d;}catch(e){return d;}}
+function S(k,v){try{localStorage.setItem(PREFIX+k,JSON.stringify(v));}catch(e){}}
+
+var tasks=G('tasks',[
+  {id:1,text:'Set up Cube ACR → Google Drive auto-backup',pri:'high',cat:'projects',done:false},
+  {id:2,text:'Set up SMS Backup & Restore → Drive',pri:'high',cat:'projects',done:false},
+  {id:3,text:'Yeshiva Dvar Torah tuition — move on BuyersEdge/Mark',pri:'high',cat:'finance',done:false},
+  {id:4,text:'Follow up with insurer after household defensive driving completions',pri:'med',cat:'finance',done:false},
+  {id:5,text:'Set up Donor Advised Fund',pri:'med',cat:'finance',done:false},
+  {id:6,text:'Wave AI voice note recovery — USB cable at home',pri:'med',cat:'projects',done:false},
+  {id:7,text:'Configure CPAP Shabbos timer (Kasa plug)',pri:'med',cat:'health',done:false},
+  {id:8,text:'Get MVR report for auto insurance',pri:'low',cat:'finance',done:false},
+  {id:9,text:'Verify if NJ defensive driving applies to Avrumy in Israel',pri:'low',cat:'finance',done:false},
+]);
+var nid=G('nid',200);
+var appts=G('appts',[]);
+var homeItems=G('homeItems',[]);
+var learningItems=G('learningItems',[]);
+var chats=G('chats',[{id:1,label:'Personal DONALD (main)',url:'YOUR_PERSONAL_DONALD_URL',mod:'personal'},{id:2,label:'Prime Source OS',url:'https://primesource-os.vercel.app',mod:'work'}]);
+var intelCache=G('intelCache',{});
+var _dismissed=G('dismissed',[]);
+var _sel=[];
+var isDark=G('dark',true);
+var panelOpen=G('panel',true);
+var panelW=G('panelW',340);
+var _deletedTask=null,_deleteTimer=null,_drawerPanelId=null,_popTarget=null;
+var currentPrompt='',currentUrl='',promptTimer=null;
+var syncEnabled=false,syncTimer=null;
+
+var AOL_COMPLETE=['Tesla','TD Auto Finance','Principal Financial','Penn Mutual','Hyundai Motor Finance','Truist','AmeriHealth','Dropbox','Microsoft','Adobe','Target','US Bank','Verizon','Robinhood','Costco','E-ZPass NJ','Veolia Water','JCP&L/FirstEnergy','Chase','Schwab','Vanguard','Zoom','YouMail','Samsung','Airbnb'];
+
+var CC_PANELS=[
+  {id:'daily',icon:'☀',label:'Daily Briefing',pri:'blue',desc:'Morning routine, top priority, calendar, email highlights.',
+   actions:[{label:'Morning briefing',prompt:'Full morning briefing for today — calendar, email highlights, CPAP status, and top priority.'},{label:'Top priority',prompt:'What is the single most important thing I should be doing right now personally?'},{label:'Evening wrap',prompt:'End of day wrap-up — what did I accomplish, what is unfinished, what do I carry into tomorrow?'}],openTab:'dashboard'},
+  {id:'finance',icon:'💰',label:'Finance',pri:'amber',desc:'$93K owed, accounts, insurance, investments, DAF setup.',
+   badgeFn:function(){return {count:1,cls:'red'};},
+   actions:[{label:'Finance status',prompt:'Full personal finance status — Prime Procurement balance, Capital One, investments, DAF, what needs to move this week.'},{label:'Collect the $93K',prompt:'What do I need to do to collect the remaining $93K from Prime Procurement?'},{label:'Insurance discount',prompt:'Auto insurance discount follow-up. I completed defensive driving April 26. Next steps?'}],openTab:'finance'},
+  {id:'health',icon:'💪',label:'Health',pri:'amber',desc:'CPAP: 27 of 30 nights needed. SightMD May 15.',
+   badgeFn:function(){return {count:27,cls:'amber'};},
+   actions:[{label:'CPAP check',prompt:'CPAP compliance check — how many nights do I have, how many remaining, what do I do tonight?'},{label:'SightMD prep',prompt:'What do I need to prepare for my SightMD appointment on May 15?'},{label:'Health overview',prompt:'Full health status — CPAP compliance, upcoming appointments, anything I should be tracking.'}],openTab:'health'},
+  {id:'family',icon:'🏠',label:'Family & Home',pri:'blue',desc:'Malky, kids, home, Shabbos, Jewish calendar.',
+   actions:[{label:'Family check-in',prompt:'Family and home briefing — what is on the calendar this week for family, Shabbos, and home?'},{label:'Jewish calendar',prompt:'What is on the Jewish calendar this week and coming month?'},{label:'Shabbos prep',prompt:'Help me prepare for Shabbos this week. What do I need to do before zman on Friday?'}],openTab:'family'},
+  {id:'projects',icon:'🚀',label:'Personal Projects',pri:'gray',desc:'FashionScan25.3 (blocked), DONALD OS v2 (active).',
+   actions:[{label:'Projects status',prompt:'Personal projects status — FashionScan, DONALD OS, and side builds. What is moving and what is blocked?'},{label:'FashionScan decision',prompt:'FashionScan25.3 — Gradle issues, overlay alignment, unresolved references. Should I continue or pause? Help me decide.'},{label:'Next build step',prompt:'What is the single most valuable personal project I should be working on right now?'}],openTab:'projects'},
+  {id:'growth',icon:'📚',label:'Growth',pri:'gray',desc:'Wispr Flow, DONALD wishlist, AI mastery.',
+   actions:[{label:'Growth check-in',prompt:'Personal growth check-in — what should I be learning and developing right now?'},{label:'DONALD wishlist',prompt:'Prioritize my DONALD improvement wishlist. What gives me the most value fastest?'},{label:'AI mastery',prompt:'What AI tools and skills should I be developing given my role as COO and personal OS builder?'}],openTab:'growth'},
+  {id:'email',icon:'✉',label:'Email',pri:'red',desc:'8 unread. Personal Gmail + family inbox.',
+   badgeFn:function(){return {count:8,cls:'red'};},
+   actions:[{label:'Scan all email',prompt:'Scan personal Gmail and family inbox. Flag anything urgent or needing a reply today.'},{label:'Draft urgent replies',prompt:'Draft replies for my top 3 most urgent personal emails in my voice — direct, warm, no dashes. Show drafts before doing anything.'},{label:'Flag overdue',prompt:'Are there personal emails sitting unread more than 3 days that need a response?'}],openTab:'email'},
+  {id:'work',icon:'💼',label:'Work Overview',pri:'blue',desc:'Prime Source pulse. Full depth in Prime Source OS.',
+   actions:[{label:'Work pulse',prompt:'Work pulse — urgent Outlook emails, meetings today or tomorrow, key Prime Source items.'},{label:'Top work priorities',prompt:'Top 3 work priorities I should push on right now at Prime Source.'},{label:'Open Prime Source OS',url:'https://primesource-os.vercel.app'}],openTab:'work'},
+  {id:'notes',icon:'📝',label:'Capture',pri:'gray',desc:'Quick thoughts, scratchpad, notes.',
+   actions:[{label:'Quick capture',prompt:'I want to capture a thought or note. Ask me what I want to remember.'},{label:'Review notes',prompt:'What notes have I captured recently that I should review?'}],openTab:null},
+  {id:'focus',icon:'⏱',label:'Focus & Time',pri:'green',desc:'Priority stack: June 8 speech prep, tax amendment deadline Jun 11, Milestone Metrics bank, MileagePlus merge, Renzo build.',
+   badgeFn:function(){var op=tasks.filter(function(t){return !t.done&&t.pri==='high'});return op.length>0?{count:op.length,cls:'red'}:null;},
+   actions:[{label:'Structure my day',prompt:'Structure my day today by priority. Pull my calendar, open tasks, and pending items. Tell me exactly what I should work on in order with time estimates.'},{label:'Best use of next 30 min',prompt:'I have 30 minutes right now. What is the single highest-leverage thing I can do?'},{label:'Weekly plan',prompt:'Build me a realistic weekly plan. What are the 3-5 most important things to accomplish this week across personal, financial, health, and work?'}],openTab:'focus'},
+];
+
+var PANEL_INTEL_KEY={daily:'donald_personal_intel_daily',finance:'donald_personal_intel_finance',health:'donald_personal_intel_health',family:'donald_personal_intel_family',projects:'donald_personal_intel_projects',growth:'donald_personal_intel_growth',email:'donald_personal_intel_email',work:'donald_personal_intel_work',notes:'donald_personal_intel_notes',focus:'donald_personal_intel_focus'};
+
+function ask(prompt,urlOverride){
+  var url=urlOverride||(G('donaldUrl','')||'YOUR_PERSONAL_DONALD_URL');
+  currentPrompt=prompt;currentUrl=url;
+  var copy=function(){window.open(url,'_blank');showPP(url,prompt);};
+  if(navigator.clipboard){navigator.clipboard.writeText(prompt).then(copy).catch(function(){fb();copy();});}else{fb();copy();}
+  function fb(){var ta=document.createElement('textarea');ta.value=prompt;ta.style.cssText='position:fixed;opacity:0';document.body.appendChild(ta);ta.focus();ta.select();try{document.execCommand('copy');}catch(e){}document.body.removeChild(ta);}
+}
+function showPP(url,prompt){
+  document.getElementById('ppText').textContent=prompt;
+  document.getElementById('ppLink').href=url;
+  document.getElementById('ppCopyBtn').textContent='Copy prompt';
+  document.getElementById('promptPanel').classList.add('show');
+  if(promptTimer)clearTimeout(promptTimer);promptTimer=setTimeout(hidePrompt,15000);
+}
+function hidePrompt(){document.getElementById('promptPanel').classList.remove('show');}
+function copyAgain(){if(navigator.clipboard)navigator.clipboard.writeText(currentPrompt).catch(function(){});document.getElementById('ppCopyBtn').textContent='Copied ✓';setTimeout(function(){document.getElementById('ppCopyBtn').textContent='Copy prompt';},2000);}
+function compose(){var t=document.getElementById('cinp').value.trim();if(!t)return;ask(t);document.getElementById('cinp').value='';}
+
+function V(n){
+  document.querySelectorAll('.view').forEach(function(v){v.classList.remove('active');});
+  document.querySelectorAll('.ntab').forEach(function(t){t.classList.remove('active');});
+  var el=document.getElementById('view-'+n);if(el)el.classList.add('active');
+  document.querySelectorAll('.ntab').forEach(function(t){if(t.onclick&&t.onclick.toString().indexOf("'"+n+"'")>-1)t.classList.add('active');});
+}
+function PT(n,btn){
+  document.querySelectorAll('.psect').forEach(function(s){s.classList.remove('active');});
+  document.querySelectorAll('.ptab').forEach(function(t){t.classList.remove('active');});
+  document.getElementById('psect-'+n).classList.add('active');btn.classList.add('active');
+  if(n==='settings')loadSettings();
+}
+function applyTheme(){if(isDark)document.body.removeAttribute('data-light');else document.body.setAttribute('data-light','');}
+function toggleTheme(){isDark=!isDark;S('dark',isDark);applyTheme();}
+function togglePanel(){
+  var isMobile=window.innerWidth<=768;
+  if(isMobile){var p=document.getElementById('panel'),ov=document.getElementById('panelOverlay');var isOpen=p.classList.contains('mobile-open');if(isOpen){p.classList.remove('mobile-open');if(ov)ov.classList.remove('show');}else{p.classList.add('mobile-open');if(ov)ov.classList.add('show');}}
+  else{panelOpen=!panelOpen;S('panel',panelOpen);applyPanel();}
+  updateHandlePos();
+}
+function applyPanel(){
+  var isMobile=window.innerWidth<=768;
+  var p=document.getElementById('panel'),d=document.getElementById('dragDiv');
+  if(isMobile){p.style.width='';if(d)d.style.display='none';}
+  else{if(panelOpen){p.style.width=panelW+'px';p.classList.remove('closed');if(d)d.style.display='';}else{p.classList.add('closed');if(d)d.style.display='none';}}
+  updateHandlePos();
+}
+function updateHandlePos(){
+  var h=document.getElementById('panelHandle');if(!h)return;
+  if(panelOpen&&window.innerWidth>768){h.style.right=panelW+'px';document.getElementById('panelHandleIcon').textContent='❯';}
+  else{h.style.right='0';document.getElementById('panelHandleIcon').textContent='◧';}
+}
+var drag=false,sx=0,sw=0;
+function startDrag(e){drag=true;sx=e.clientX;sw=panelW;document.getElementById('dragDiv').classList.add('dragging');document.addEventListener('mousemove',onDrag);document.addEventListener('mouseup',stopDrag);}
+function onDrag(e){if(!drag)return;var nw=Math.min(600,Math.max(220,sw+(sx-e.clientX)));panelW=nw;document.getElementById('panel').style.width=nw+'px';}
+function stopDrag(){drag=false;S('panelW',panelW);document.getElementById('dragDiv').classList.remove('dragging');document.removeEventListener('mousemove',onDrag);document.removeEventListener('mouseup',stopDrag);}
+
+function setDate(){
+  var d=new Date();var days=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];var mo=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  var hr=d.getHours(),mn=d.getMinutes(),ampm=hr>=12?'PM':'AM';hr=hr%12||12;
+  var el=document.getElementById('tdate');if(el)el.textContent=days[d.getDay()]+' '+mo[d.getMonth()]+' '+d.getDate()+' · '+hr+':'+(mn<10?'0':'')+mn+' '+ampm;var hdEl=document.getElementById('hebrewDate');if(hdEl&&window.getHebrewDate){hdEl.textContent=window.getHebrewDate(d);}
+  var greet=document.getElementById('dayGreeting');if(greet){var h=d.getHours();greet.textContent=h<12?'morning':h<17?'afternoon':'evening';}
+  var sub=document.getElementById('dashSubtitle');if(sub){var ds=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];var mos=['January','February','March','April','May','June','July','August','September','October','November','December'];sub.textContent=ds[d.getDay()]+', '+mos[d.getMonth()]+' '+d.getDate()+', '+d.getFullYear();}
+}
+setDate();setInterval(setDate,1000);
+// Track activity
+var _lastActivity=Date.now();
+['click','keydown','touchstart'].forEach(function(ev){document.addEventListener(ev,function(){_lastActivity=Date.now();},{passive:true});});
+// Auto-refresh intel every 25 minutes if user was active in last 30 min
+setInterval(function(){
+  try{
+    if((Date.now()-_lastActivity)<30*60*1000){
+      if(typeof injectAllIntel==='function')injectAllIntel();
+      if(typeof updateAllBadges==='function')setTimeout(updateAllBadges,500);
+    }
+  }catch(e){}
+},25*60*1000);
+
+
+function pBadge(p){return p==='high'?'<span class="badge br">High</span>':p==='med'?'<span class="badge ba">Med</span>':'<span class="badge bx">Low</span>';}
+function cBadge(c){return '<span class="badge bx">'+c+'</span>';}
+
+function taskRow(t){return '<div class="tr"><div class="cb'+(t.done?' done':'')+'" onclick="togTask('+t.id+')">'+(t.done?'✓':'')+'</div><div style="flex:1"><div class="tt'+(t.done?' done':'')+'">'+t.text+'</div><div class="tm">'+pBadge(t.pri)+cBadge(t.cat)+'</div></div><button class="xb" onclick="delTask('+t.id+')">×</button></div>';}
+function renderDashTasks(){
+  var op=tasks.filter(function(t){return !t.done}).sort(function(a,b){var o={high:0,med:1,low:2};return o[a.pri]-o[b.pri];});
+  var dn=tasks.filter(function(t){return t.done});
+  var all=op.concat(dn);
+  var el=document.getElementById('dashTaskList');if(!el)return;
+  el.innerHTML=all.slice(0,6).map(taskRow).join('');
+  var st=document.getElementById('dashTaskStats');if(st)st.textContent=op.length+' open · '+dn.length+' done';
+}
+function togTask(id){tasks=tasks.map(function(t){return t.id===id?Object.assign({},t,{done:!t.done}):t;});S('tasks',tasks);renderDashTasks();}
+function delTask(id){
+  var t=tasks.filter(function(x){return x.id===id;})[0];if(!t)return;
+  _deletedTask={task:t,index:tasks.indexOf(t)};tasks=tasks.filter(function(x){return x.id!==id;});S('tasks',tasks);renderDashTasks();
+  var toast=document.getElementById('undoToast');var msg=document.getElementById('undoMsg');
+  if(msg)msg.textContent='"'+t.text.substring(0,30)+(t.text.length>30?'…':'')+'" deleted';
+  if(toast)toast.classList.add('show');
+  if(_deleteTimer)clearTimeout(_deleteTimer);_deleteTimer=setTimeout(function(){_deletedTask=null;var to=document.getElementById('undoToast');if(to)to.classList.remove('show');},5000);
+}
+function undoDelete(){if(!_deletedTask)return;tasks.splice(_deletedTask.index,0,_deletedTask.task);_deletedTask=null;if(_deleteTimer)clearTimeout(_deleteTimer);S('tasks',tasks);renderDashTasks();var t=document.getElementById('undoToast');if(t)t.classList.remove('show');}
+function addTask(){var x=document.getElementById('dashNt').value.trim();if(!x)return;tasks.push({id:nid++,text:x,pri:document.getElementById('dashNp').value,cat:document.getElementById('dashNc').value,done:false});S('tasks',tasks);S('nid',nid);document.getElementById('dashNt').value='';renderDashTasks();}
+document.addEventListener('keydown',function(e){if(e.key==='Enter'&&document.activeElement.id==='dashNt')addTask();});
+
+function renderAppts(){var el=document.getElementById('apptList');if(!el)return;el.innerHTML=appts.map(function(a,i){return '<div class="row"><div><div class="rn" style="font-size:10px">'+a.name+'</div><div class="rs">'+a.date+'</div></div><button class="xb" onclick="delAppt('+i+')">×</button></div>';}).join('');}
+function addAppt(){var n=document.getElementById('apptInput').value.trim();if(!n)return;appts.push({name:n,date:document.getElementById('apptDate').value||'TBD'});S('appts',appts);document.getElementById('apptInput').value='';document.getElementById('apptDate').value='';renderAppts();}
+function delAppt(i){appts.splice(i,1);S('appts',appts);renderAppts();}
+
+function renderHomeItems(){var el=document.getElementById('homeItems');if(!el)return;el.innerHTML=homeItems.map(function(h,i){return '<div class="row"><div class="rn" style="font-size:10px;flex:1">'+h+'</div><button class="xb" onclick="delHomeItem('+i+')">×</button></div>';}).join('');}
+function addHomeItem(){var v=document.getElementById('homeInput').value.trim();if(!v)return;homeItems.push(v);S('homeItems',homeItems);document.getElementById('homeInput').value='';renderHomeItems();}
+function delHomeItem(i){homeItems.splice(i,1);S('homeItems',homeItems);renderHomeItems();}
+
+function renderLearning(){var el=document.getElementById('learningList');if(!el)return;el.innerHTML=learningItems.map(function(l,i){return '<div class="row"><div class="rn" style="font-size:10px;flex:1">'+l+'</div><button class="xb" onclick="delLearning('+i+')">×</button></div>';}).join('');}
+function addLearning(){var v=document.getElementById('learningInput').value.trim();if(!v)return;learningItems.push(v);S('learningItems',learningItems);document.getElementById('learningInput').value='';renderLearning();}
+function delLearning(i){learningItems.splice(i,1);S('learningItems',learningItems);renderLearning();}
+
+function addPersonalProject(){var n=prompt('Project name:');if(!n)return;var el=document.getElementById('personalProjectList');if(el)el.innerHTML+='<div class="row"><div><div class="rn">'+n+'</div><div class="rs">New project</div></div><span class="badge bx">New</span></div>';}
+
+function renderAOLMigration(){var el=document.getElementById('aolMigrationList');if(!el)return;el.innerHTML=AOL_COMPLETE.map(function(s){return '<div style="display:flex;align-items:center;justify-content:space-between;padding:3px 0"><span style="font-size:10px;color:var(--text2)">'+s+'</span><span class="badge bg" style="font-size:8px">✓</span></div>';}).join('');}
+
+function renderChats(){
+  var coreMods=['personal','work'];var pinned=chats.filter(function(c){return coreMods.indexOf(c.mod)>-1;});var rest=chats.filter(function(c){return coreMods.indexOf(c.mod)===-1;});
+  var mk=function(c){return '<a class="cli" href="'+c.url+'" target="_blank"><div class="cli-dot"></div><div style="flex:1;min-width:0"><div class="cli-title">'+c.label+'</div>'+(c.updated?'<div class="cli-mod">'+c.updated+'</div>':'')+'</div><button class="cli-del" onclick="event.preventDefault();delChat('+chats.indexOf(c)+')">×</button></a>';};
+  var p=document.getElementById('pinnedChats'),a=document.getElementById('allChats'),ct=document.getElementById('chatCount');
+  if(p)p.innerHTML=pinned.map(mk).join('');
+  if(a)a.innerHTML=rest.length?rest.map(mk).join(''):'<div style="font-size:10px;color:var(--text3);padding:4px 0">No additional chats saved.</div>';
+  if(ct)ct.textContent=rest.length?'('+rest.length+')':'';
+}
+function addChat(){var u=document.getElementById('scUrl').value.trim();if(!u)return;chats.push({id:nid++,label:document.getElementById('scLabel').value.trim()||'Chat',url:u,mod:'other'});S('chats',chats);S('nid',nid);document.getElementById('scUrl').value='';document.getElementById('scLabel').value='';renderChats();}
+function delChat(i){chats.splice(i,1);S('chats',chats);renderChats();}
+
+var _dockedCards=G('dockedCards',[]);
+function ccBadgeHtml(panel){
+  var key=PANEL_INTEL_KEY?PANEL_INTEL_KEY[panel.id]:null;
+  var liveData=key&&intelCache?intelCache[key]:null;
+  var html='';
+  if(liveData&&liveData.html){html=liveData.html;}
+  else{var domEl=document.getElementById('cp-intel-'+panel.id);if(domEl)html=domEl.innerHTML;}
+  if(html){
+    var red=(html.match(/ii-red/g)||[]).length;var amber=(html.match(/ii-amber/g)||[]).length;
+    var green=(html.match(/ii-green/g)||[]).length;var blue=(html.match(/ii-blue/g)||[]).length;
+    var out='';
+    if(red>0)out+='<span class="cp-badge red">'+red+'</span>';
+    if(amber>0)out+='<span class="cp-badge amber">'+amber+'</span>';
+    if(green>0)out+='<span class="cp-badge green">'+green+'</span>';
+    if(blue>0)out+='<span class="cp-badge blue">'+blue+'</span>';
+    if(out)return out;
+  }
+  var auto=panel.badgeFn?panel.badgeFn():null;
+  if(!auto||!auto.count)return '';
+  return '<span class="cp-badge '+(auto.cls||'gray')+'">'+auto.count+'</span>';
+}
+function updateAllBadges(){CC_PANELS.forEach(function(panel){var el=document.getElementById('cp-badge-'+panel.id);if(el)el.innerHTML=ccBadgeHtml(panel);});}
+
+function renderCC(){
+  var grid=document.getElementById('ccGrid');if(!grid)return;
+  var html='';
+  CC_PANELS.forEach(function(panel){
+    var badge=ccBadgeHtml(panel);var key=PANEL_INTEL_KEY[panel.id];var liveData=key?intelCache[key]:null;
+    var tsStr='No live intel yet';if(liveData&&liveData.updated){var d=new Date(liveData.updated);var ageMin=Math.round((new Date()-d)/60000);tsStr=ageMin<60?'Updated '+ageMin+'m ago':'Updated '+Math.round(ageMin/60)+'h ago';}
+    var pid=panel.id;
+    html+='<div class="cp pri-'+panel.pri+'" id="cp-'+pid+'">';
+    html+='<div class="cp-head" onclick="openCCDrawer(\''+pid+'\')">';
+    html+='<div class="cp-icon">'+panel.icon+'</div><div class="cp-label">'+panel.label+'</div>';
+    html+='<div class="cp-meta" id="cp-badge-'+pid+'">'+badge+'</div>';
+    html+='<button class="cp-compact-btn" onclick="event.stopPropagation();dockCard(\''+pid+'\')" title="Collapse">↑</button>';
+    html+='</div>';
+    html+='<div class="cp-body"><div id="cp-intel-'+pid+'">';
+    if(liveData&&liveData.items&&liveData.items.length){
+      liveData.items.forEach(function(item,ii){
+        var dot=item.type==='red'?'red':item.type==='amber'?'amber':item.type==='green'?'green':item.type==='blue'?'blue':'gray';
+        html+='<div class="ii-wrap" onclick="iiClick(this,\''+pid+'\','+ii+')" oncontextmenu="actPop(event,\''+pid+'\','+ii+');return false;"><span class="ii-dot '+dot+'"></span><strong>'+item.title+'</strong>'+(item.detail?' <span class="ii-detail">— '+item.detail+'</span>':'')+'</div>';
+      });
+    }else{html+='<div style="padding:8px 11px;font-size:10px;color:var(--text3)">'+panel.desc+'</div>';}
+    html+='</div></div>';
+    html+='<div class="cp-footer"><span class="cp-footer-ts">'+tsStr+'</span><div class="cp-footer-acts">';
+    html+='<button class="cp-footer-btn" onclick="event.stopPropagation();openCCDrawer(\''+pid+'\')">OPEN ↗</button>';
+    if(panel.openTab){html+='<button class="cp-footer-btn tab-btn" onclick="event.stopPropagation();V(\''+panel.openTab+'\')">WORLD ↗</button>';}
+    html+='</div></div></div>';
+  });
+  grid.innerHTML=html;
+  setTimeout(function(){applyCompactStates();injectAllIntel();},50);
+}
+
+function openCCDrawer(pid){
+  _drawerPanelId=pid;var panel=CC_PANELS.filter(function(p){return p.id===pid;})[0];if(!panel)return;
+  var key=PANEL_INTEL_KEY[pid];var liveData=key?intelCache[key]:null;
+  var title=document.getElementById('ccDrawerTitle');var body=document.getElementById('ccDrawerBody');var acts=document.getElementById('ccDrawerActions');
+  if(title)title.textContent=panel.icon+' '+panel.label;
+  var html='';
+  if(liveData&&liveData.items&&liveData.items.length){
+    if(liveData.updated){var d=new Date(liveData.updated);var ageMin=Math.round((new Date()-d)/60000);html+='<div class="cp-fresh" style="margin-bottom:10px">● Live intel · '+(ageMin<60?ageMin+'m ago':Math.round(ageMin/60)+'h ago')+'</div>';}
+    liveData.items.forEach(function(item){var dot=item.type==='red'?'red':item.type==='amber'?'amber':item.type==='green'?'green':item.type==='blue'?'blue':'gray';html+='<div class="ii-wrap"><span class="ii-dot '+dot+'"></span><strong>'+item.title+'</strong>'+(item.detail?' <span class="ii-detail">— '+item.detail+'</span>':'')+'</div>';});
+  }else{var fn=INTEL_MAP[pid];var appHtml=fn?fn():'';if(appHtml){html+='<div class="cp-fresh" style="margin-bottom:10px">○ App data · Ask DONALD to refresh for live intel</div>'+appHtml;}else{html+='<div style="padding:8px 0;font-size:10px;color:var(--text3)">'+panel.desc+'</div>';}}
+  if(body)body.innerHTML=html;
+  var actHtml='';
+  panel.actions.forEach(function(a,idx){
+    if(a.url){actHtml+='<a href="'+a.url+'" target="_blank" class="adb"><span class="adb-icon">↗</span>'+a.label+'</a>';}
+    else{actHtml+='<button class="adb" data-pidx="'+idx+'" onclick="execDrawerAction(this)"><span class="adb-icon">↗</span>'+a.label+' →</button>';}
+  });
+  if(acts)acts.innerHTML=actHtml;
+  document.getElementById('ccDrawer').classList.add('show');document.getElementById('ccOverlay').classList.add('show');document.body.style.overflow='hidden';
+}
+function execDrawerAction(btn){
+  var idx=parseInt(btn.getAttribute('data-pidx'));var panel=CC_PANELS.filter(function(p){return p.id===_drawerPanelId;})[0];if(!panel||isNaN(idx))return;
+  var a=panel.actions[idx];if(!a||!a.prompt)return;ask(a.prompt);closeCCDrawer();
+}
+function closeCCDrawer(){document.getElementById('ccDrawer').classList.remove('show');document.getElementById('ccOverlay').classList.remove('show');document.body.style.overflow='';}
+
+var INTEL_MAP={
+  daily:function(){var hi=tasks.filter(function(t){return !t.done&&t.pri==='high'});var d=new Date();var days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];var lines=['<div class="ii ii-blue">📅 <strong>'+days[d.getDay()]+', '+d.toLocaleDateString('en-US',{month:'short',day:'numeric'})+'</strong></div>'];if(hi.length){lines.push('<div class="ii-section-label">High priority today</div>');hi.slice(0,3).forEach(function(t){lines.push('<div class="ii ii-red">▸ <strong>'+t.text+'</strong></div>');});}return lines.join('');},
+  finance:function(){return '<div class="ii ii-red">💰 <strong>$93K owed</strong> — Prime Procurement balance</div><div class="ii ii-amber">📋 <strong>DAF not set up</strong> — needed for charity routing</div><div class="ii ii-amber">🚗 <strong>Auto insurance</strong> — follow up after household completions</div><div class="ii ii-green">✓ <strong>Capital One Spark</strong> — AutoPay enrolled</div>';},
+  health:function(){return '<div class="ii ii-amber">💪 <strong>CPAP: 27 nights remaining</strong> — window closes ~Jul 20</div><div class="ii ii-blue">📅 <strong>SightMD — May 15, 2026</strong></div><div class="ii ii-amber">⚡ <strong>Bluetooth on overnight</strong> — required for MyAir tracking</div>';},
+  family:function(){return '<div class="ii ii-blue">📅 <strong>Post-Shavuos week</strong> — Isru Chag Sun May 24 · normal schedule resumes</div><div class="ii ii-blue">🕯 <strong>Shabbos</strong> — Fri May 29 · candle lighting ~7:57 PM</div><div class="ii ii-amber">👤 <strong>Avrumy</strong> — in Israel, check in after Yom Tov</div><div class="ii ii-amber">👤 <strong>Leah</strong> — at Shalva, monitor settling in</div>';},
+  email:function(){return '<div class="ii ii-amber">📧 <strong>MileagePlus merge</strong> — 3 accounts to consolidate · call 1-800-421-4655</div><div class="ii ii-amber">📧 <strong>2022 charity receipts</strong> — reach out to 5 orgs before Jun 11 deadline</div><div class="ii ii-blue">📧 <strong>Milestone Metrics LLC</strong> — Chase appt Tue May 26 11am · bring EIN + formation doc</div><div class="ii ii-gray">Push Intel Update to load live email summary</div>';},
+  work:function(){return '<div class="ii ii-red">🎤 <strong>June 8 Company Event</strong> — COO procurement speech · START PREP NOW</div><div class="ii ii-amber">⚡ <strong>Renzo program</strong> — AI outreach/follow-up tool · potential revenue stream</div><div class="ii ii-amber">🏢 <strong>Vendor Catalog VCS</strong> — data accuracy audit in progress with Jane</div><div class="ii ii-blue">💼 <strong>Open Prime Source OS</strong> for full work depth and live intel</div>';}
+};
+function injectAllIntel(){CC_PANELS.forEach(function(p){injectPanelIntel(p.id);});setTimeout(updateAllBadges,200);}
+function injectPanelIntel(id){var key=PANEL_INTEL_KEY[id];if(key&&intelCache[key]&&intelCache[key].items&&intelCache[key].items.length)return;var fn=INTEL_MAP[id];if(!fn)return;var el=document.getElementById('cp-intel-'+id);if(!el)return;el.innerHTML=fn();}
+
+function updateIBStatus(){
+  var keys=Object.keys(intelCache);var dot=document.getElementById('ibDot');var txt=document.getElementById('ibStatusText');if(!dot||!txt)return;
+  if(!keys.length){dot.className='ib-dot never';txt.textContent='No live intel yet — ask DONALD to refresh';return;}
+  var latest=null;keys.forEach(function(k){var d=intelCache[k]&&intelCache[k].updated?new Date(intelCache[k].updated):null;if(d&&(!latest||d>latest))latest=d;});
+  var ageMin=latest?Math.round((new Date()-latest)/60000):null;
+  if(ageMin===null){dot.className='ib-dot never';txt.textContent='No live intel';}
+  else if(ageMin<60){dot.className='ib-dot live';txt.textContent=keys.length+' panels live · updated '+ageMin+'m ago';}
+  else{dot.className='ib-dot stale';txt.textContent=keys.length+' panels · updated '+Math.round(ageMin/60)+'h ago';}
+}
+
+function openIBModal(){document.getElementById('ibModal').classList.add('show');document.getElementById('ibPasteArea').value='';document.getElementById('ibModalStatus').textContent='';document.getElementById('ibModalStatus').className='ib-modal-status';setTimeout(function(){document.getElementById('ibPasteArea').focus();},100);}
+function closeIBModal(){document.getElementById('ibModal').classList.remove('show');}
+async function pasteAndPush(){
+  if(navigator.clipboard&&navigator.clipboard.readText){
+    navigator.clipboard.readText().then(function(text){
+      var ta=document.getElementById('ibPasteArea');
+      if(ta)ta.value=text;
+      pushIntelUpdate();
+    }).catch(function(){
+      var ta=document.getElementById('ibPasteArea');
+      if(ta)ta.focus();
+      document.execCommand('paste');
+      setTimeout(pushIntelUpdate,100);
+    });
+  }else{
+    var ta=document.getElementById('ibPasteArea');
+    if(ta){ta.focus();document.execCommand('paste');}
+    setTimeout(pushIntelUpdate,100);
+  }
+}
+function pushIntelUpdate(){
+  var raw=document.getElementById('ibPasteArea').value.trim();var st=document.getElementById('ibModalStatus');
+  if(!raw){st.textContent='Paste JSON from DONALD first.';st.className='ib-modal-status err';return;}
+  var cleaned=raw.trim();var s=cleaned.indexOf('{'),e=cleaned.lastIndexOf('}');if(s>-1&&e>s)cleaned=cleaned.slice(s,e+1);var parsed;try{parsed=JSON.parse(cleaned);}catch(e){st.textContent='Invalid JSON — make sure Claude returned the full JSON block.';st.className='ib-modal-status err';return;}
+  var entries=[];
+  if(parsed.panels&&Array.isArray(parsed.panels)){parsed.panels.forEach(function(p){if(p.key&&p.value)entries.push({key:p.key,value:p.value});});}
+  else if(parsed.key&&parsed.value){entries.push({key:parsed.key,value:parsed.value});}
+  else{st.textContent='Missing key or value.';st.className='ib-modal-status err';return;}
+  st.textContent='Pushing '+entries.length+' panel'+(entries.length>1?'s':'')+'...';
+  for(var ei=0;ei<entries.length;ei++){
+    var key=entries[ei].key;var value=entries[ei].value;
+    var intelData=typeof value==='string'?JSON.parse(value):value;
+    intelCache[key]=intelData;
+    var panelId=Object.keys(PANEL_INTEL_KEY).find(function(k){return PANEL_INTEL_KEY[k]===key;});
+    if(panelId)renderLiveIntel(panelId,intelData);
+  }
+  S('intelCache',intelCache);updateIBStatus();
+  st.textContent='✓ '+entries.length+' panel'+(entries.length>1?'s':'')+' updated';st.className='ib-modal-status ok';
+  setTimeout(closeIBModal,1800);if(syncEnabled)setTimeout(pushToCloud,1000);
+}
+function renderLiveIntel(panelId,data){
+  var el=document.getElementById('cp-intel-'+panelId);if(!el)return;
+  if(!data||!data.items||!data.items.length){el.innerHTML='';return;}
+  var html='';
+  data.items.forEach(function(item,ii){
+    var dot=item.type==='red'?'red':item.type==='amber'?'amber':item.type==='green'?'green':item.type==='blue'?'blue':'gray';
+    html+='<div class="ii-wrap" onclick="iiClick(this,\''+panelId+'\','+ii+')" oncontextmenu="actPop(event,\''+panelId+'\','+ii+');return false;"><span class="ii-dot '+dot+'"></span><strong>'+item.title+'</strong>'+(item.detail?' <span class="ii-detail">— '+item.detail+'</span>':'')+'</div>';
+  });
+  el.innerHTML=html;
+}
+
+function sendRefreshPrompt() {
+  var now = new Date();
+  var days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  var months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  var dateStr = days[now.getDay()] + ', ' + months[now.getMonth()] + ' ' + now.getDate() + ', ' + now.getFullYear();
+  var hd = window.getHebrewDate ? window.getHebrewDate(now) : '';
+  var tasks = [];
+  try { tasks = JSON.parse(localStorage.getItem('po2_tasks') || '[]'); } catch(e) {}
+  var openTasks = tasks.filter(function(t){return !t.done;}).slice(0,8).map(function(t){return '- ['+( t.priority||'med').toUpperCase()+'] '+t.text;}).join('\n');
+  // Build comprehensive context for all panels
+  var context = 'TODAY: ' + dateStr + (hd ? ' | Hebrew: ' + hd : '') + '\n\n' +
+    'DAVID\'S CURRENT SITUATION:\n' +
+    '- COO at Prime Source Expense Experts, Toms River NJ\n' +
+    '- June 8 company event — COO procurement speech (15 days away, NOT prepped)\n' +
+    '- $93K owed from GenMed via Prime Procurement\n' +
+    '- 2022 tax amendment deadline June 11 (charity receipts needed from 5 orgs)\n' +
+    '- Milestone Metrics LLC bank account — Chase appt Tue May 26 11am\n' +
+    '- CPAP compliance: 7/30 nights, window closes Jul 20\n' +
+    '- MileagePlus merge: 3 accounts to consolidate\n\n' +
+    'THIS WEEK CALENDAR:\n' +
+    '- Mon May 25: Dr. Landsman ENT 11am\n' +
+    '- Tue May 26: Chase bank (Milestone Metrics) 11am with Adam King\n' +
+    '- Fri May 29: Shabbos candle lighting 7:57 PM\n\n' +
+    'OPEN TASKS:\n' + (openTasks || '(none loaded)') + '\n\n' +
+    'Generate a DONALD personal command center briefing. For each panel below, provide 4-6 bullet items in this exact JSON format:\n' +
+    '{"daily":["item1","item2"],"finance":["item1"],"health":["item1"],"family":["item1"],"projects":["item1"],"growth":["item1"],"email":["item1"],"work":["item1"],"focus":["item1"]}\n\n' +
+    'Each item: start with PRIORITY (red=urgent, amber=important, green=done/good, blue=info). ' +
+    'Be specific to David\'s actual situation above. Daily: top priorities for today. Finance: money items. ' +
+    'Health: CPAP and medical. Family: family check-ins. Projects: DONALD OS, Renzo, FashionScan. ' +
+    'Growth: DONALD improvements. Email: actionable emails. Work: Prime Source priorities. Focus: what to do right now.';
+  var modal = document.getElementById('ibModal');
+  var promptEl = document.getElementById('ibPromptText');
+  if (promptEl) promptEl.value = context;
+  if (modal) modal.classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+
+
+function dockCard(pid){if(_dockedCards.indexOf(pid)<0)_dockedCards.push(pid);S('dockedCards',_dockedCards);var card=document.getElementById('cp-'+pid);if(card)card.classList.add('docked');renderDock();}
+function undockCard(pid){_dockedCards=_dockedCards.filter(function(id){return id!==pid;});S('dockedCards',_dockedCards);var card=document.getElementById('cp-'+pid);if(card)card.classList.remove('docked');renderDock();}
+function renderDock(){var dock=document.getElementById('ccDock');if(!dock)return;if(!_dockedCards.length){dock.innerHTML='';return;}dock.innerHTML=_dockedCards.map(function(pid){var panel=CC_PANELS.filter(function(p){return p.id===pid;})[0];if(!panel)return '';return '<div class="dock-chip" onclick="undockCard(\''+pid+'\')">'+panel.icon+' '+panel.label+' ↓</div>';}).join('');}
+function applyCompactStates(){_dockedCards.forEach(function(pid){var el=document.getElementById('cp-'+pid);if(el)el.classList.add('docked');});renderDock();}
+
+function iiClick(el,pid,ii){
+  // Toggle selection
+  if(el.classList.contains('selected')){
+    el.classList.remove('selected');
+    _sel=_sel.filter(function(s){return !(s.pid===pid&&s.ii===ii);});
+    closeActPop();
+  } else {
+    // Deselect others in same panel
+    document.querySelectorAll('.ii-wrap.selected').forEach(function(e){e.classList.remove('selected');});
+    _sel=[];
+    el.classList.add('selected');
+    var key=PANEL_INTEL_KEY[pid];var data=key?intelCache[key]:null;
+    if(data&&data.items&&data.items[ii]) _sel.push({pid:pid,ii:ii,item:data.items[ii]});
+    // Show context action popup
+    var rect=el.getBoundingClientRect();
+    var fakeEvent={clientX:Math.min(rect.left,window.innerWidth-220),clientY:Math.min(rect.bottom+4,window.innerHeight-180),stopPropagation:function(){}};
+    actPop(fakeEvent,pid,ii);
+  }
+  updateSelBar();
+}
+function updateSelBar(){var bar=document.getElementById('selBar');var ct=document.getElementById('selCt');if(!bar)return;if(_sel.length>0){bar.classList.add('show');ct.textContent=_sel.length+' item'+(_sel.length===1?'':'s')+' selected';}else{bar.classList.remove('show');}}
+function clearSel(){_sel=[];document.querySelectorAll('.ii-wrap.selected').forEach(function(e){e.classList.remove('selected');});updateSelBar();}
+function batchEmail(){if(!_sel.length)return;var items=_sel.map(function(s){return s.item;});var prompt='DONALD, draft '+items.length+' email'+(items.length>1?'s':'')+' in my voice — warm, direct, no dashes.\n\n'+items.map(function(it,n){return (n+1)+'. '+it.title+(it.detail?' — '+it.detail:'');}).join('\n')+'\n\nFor each: subject line + full email body. Show all drafts before doing anything.';ask(prompt);clearSel();}
+function batchTask(){if(!_sel.length)return;_sel.forEach(function(s){tasks.push({id:nid++,text:s.item.title,pri:s.item.type==='red'?'high':s.item.type==='amber'?'med':'low',cat:'other',done:false});});S('tasks',tasks);S('nid',nid);renderDashTasks();showToast(_sel.length+' item'+(_sel.length===1?'':'s')+' added to Priority Tasks');clearSel();}
+function actPop(e,pid,ii){
+  e.stopPropagation();closeActPop();
+  var key=PANEL_INTEL_KEY[pid];var data=key?intelCache[key]:null;
+  if(!data||!data.items||!data.items[ii])return;
+  _popTarget={pid:pid,ii:ii,item:data.items[ii]};
+  var item=data.items[ii];
+  var title=item.title||'';
+  var label=title.length>42?title.substring(0,42)+'...':title;
+  var pop=document.createElement('div');pop.className='act-pop';pop.id='actPop';
+  pop.innerHTML='<div class="act-pop-hdr">'+label+'</div>'+
+    '<div class="act-pop-item" onclick="popAct(\'ask\')">Ask DONALD about this</div>'+
+    '<div class="act-pop-item" onclick="popAct(\'email\')">Draft email / follow-up</div>'+
+    '<div class="act-pop-item" onclick="popAct(\'task\')">Add to Priority Tasks</div>'+
+    '<div class="act-pop-item" onclick="popAct(\'brief\')">Get full brief on this</div>'+
+    '<div class="act-pop-item" onclick="popAct(\'next\')">What should I do next?</div>'+
+    '<div class="act-pop-div"></div>'+
+    '<div class="act-pop-item act-pop-dim" onclick="popAct(\'dismiss\')">Dismiss</div>';
+  var x=Math.min((e.clientX||200),window.innerWidth-215);
+  var y=Math.min((e.clientY||200)+6,window.innerHeight-220);
+  pop.style.left=x+'px';pop.style.top=y+'px';
+  document.body.appendChild(pop);
+  setTimeout(function(){document.addEventListener('click',closeActPop,{once:true});},10);
+}
+
+function closeActPop(){var p=document.getElementById('actPop');if(p)p.remove();}
+function popAct(type){
+  closeActPop();
+  if(!_popTarget)return;
+  var item=_popTarget.item;
+  var pid=_popTarget.pid;
+  var ii=_popTarget.ii;
+  var title=item.title||'';
+  var detail=item.detail||'';
+  var ctx='"'+title+(detail?' — '+detail:'')+'"';
+  if(type==='ask'){
+    ask('Tell me everything I need to know about this item: '+ctx+'. What is the full context, what is at stake, and what should I do?');
+  }else if(type==='email'){
+    ask('Draft a concise, direct email or follow-up related to: '+ctx+'. Write in David\'s voice — confident, no fluff, clear ask.');
+  }else if(type==='task'){
+    var t=[];try{t=JSON.parse(localStorage.getItem('po2_tasks')||'[]');}catch(e){}
+    t.push({id:Date.now(),text:title,priority:'high',category:'urgent',done:false,created:new Date().toISOString()});
+    try{localStorage.setItem('po2_tasks',JSON.stringify(t));}catch(e){}
+    if(typeof renderDashTasks==='function')renderDashTasks();
+    if(typeof renderDashMetrics==='function')renderDashMetrics();
+    var tb=document.createElement('div');tb.textContent='Added to Priority Tasks';
+    tb.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:var(--green);color:#fff;padding:8px 16px;border-radius:20px;font-size:11px;font-weight:700;z-index:9999;pointer-events:none';
+    document.body.appendChild(tb);setTimeout(function(){tb.remove();},2000);
+  }else if(type==='brief'){
+    ask('Give me a full prep brief on: '+ctx+'. Who is involved, what is the history, what is my goal, what should I know before acting?');
+  }else if(type==='next'){
+    ask('For this item: '+ctx+' — what is the single most important next action I should take? Be specific and direct.');
+  }else if(type==='dismiss'){
+    var k=PANEL_INTEL_KEY[pid];
+    if(k&&intelCache[k]&&intelCache[k].items){
+      intelCache[k].items.splice(ii,1);
+      try{S('intelCache',intelCache);}catch(e){}
+      if(typeof renderLiveIntel==='function')renderLiveIntel(pid,intelCache[k]);
+      if(typeof renderCC==='function')renderCC();
+    }
+  }
+  _popTarget=null;
+}
+
+function dismissItem(pid,ii){var key=PANEL_INTEL_KEY[pid];if(!key||!intelCache[key]||!intelCache[key].items)return;var removed=intelCache[key].items.splice(ii,1)[0];_dismissed.push({key:key,pid:pid,ii:ii,item:removed,ts:Date.now()});S('intelCache',intelCache);S('dismissed',_dismissed);renderLiveIntel(pid,intelCache[key]);renderCC();setTimeout(injectAllIntel,50);showToast('Item dismissed');}
+
+function renderEmailQueue(){
+  var el=document.getElementById('personalEmailQueue');var badge=document.getElementById('emailQueueBadge');if(!el)return;
+  var data=intelCache['donald_personal_intel_email'];
+  if(!data||!data.items||!data.items.length){el.innerHTML='<div class="eq-empty">Push an intel update to populate email items.</div>';if(badge)badge.textContent='';return;}
+  if(badge)badge.textContent='('+data.items.length+')';
+  el.innerHTML=data.items.map(function(item,i){var dc=item.type==='red'?'red':item.type==='amber'?'amber':item.type==='green'?'green':item.type==='blue'?'blue':'gray';return '<div class="eq-item" onclick="emailQClick(this,'+i+')"><div class="eq-d '+dc+'"></div><div><div class="eq-title">'+item.title+'</div><div class="eq-detail">'+item.detail+'</div></div></div>';}).join('');
+}
+function emailQClick(el,idx){var parent=el.parentElement;if(parent)parent.querySelectorAll('.eq-item').forEach(function(e){e.classList.remove('on');});el.classList.add('on');var data=intelCache['donald_personal_intel_email'];if(!data||!data.items||!data.items[idx])return;var item=data.items[idx];var g=document.getElementById('ewGoal');var c=document.getElementById('ewContext');if(g)g.value=item.title;if(c)c.value=item.detail||'';}
+function buildPersonalEmailPrompt(){
+  var to=document.getElementById('ewTo').value.trim();var goal=document.getElementById('ewGoal').value.trim();var ctx=document.getElementById('ewContext').value.trim();var fromEl=document.getElementById('ewFrom');var fromVal=fromEl?fromEl.value:'personal';
+  if(!goal){alert('Fill in the email goal first.');return;}
+  var prompt='DONALD, draft an email for me.\n\n'+(to?'To: '+to+'\n':'')+'Goal: '+goal+(ctx?'\nContext: '+ctx:'')+'\nSend from: '+(fromVal==='family'?'davidmalky@gmail.com (family/Malky shared)':'davidlgenuth@gmail.com (personal)')+'\nTone: Professional, warm, direct. No dashes. Natural flow.\n\nSubject line + full email body in my voice. Show draft before doing anything.';
+  ask(prompt);
+}
+
+function renderWorkQueue(){var el=document.getElementById('workIntelQueue');var badge=document.getElementById('workQueueBadge');if(!el)return;var data=intelCache['donald_personal_intel_work'];if(!data||!data.items||!data.items.length){el.innerHTML='<div class="eq-empty">Push an intel update to populate work items.</div>';if(badge)badge.textContent='';return;}if(badge)badge.textContent='('+data.items.length+')';el.innerHTML=data.items.map(function(item){var dc=item.type==='red'?'red':item.type==='amber'?'amber':item.type==='green'?'green':item.type==='blue'?'blue':'gray';return '<div class="eq-item"><div class="eq-d '+dc+'"></div><div><div class="eq-title">'+item.title+'</div><div class="eq-detail">'+item.detail+'</div></div></div>';}).join('');}
+
+function pushMemoryUpdate(){
+  var typeEl=document.getElementById('memUpdateType');var textEl=document.getElementById('memUpdateText');var statusEl=document.getElementById('memUpdateStatus');
+  if(!textEl||!textEl.value.trim()){if(statusEl){statusEl.textContent='Please describe the update first.';statusEl.style.color='var(--red)';}return;}
+  var updateType=typeEl?typeEl.options[typeEl.selectedIndex].text:'Update';var updateText=textEl.value.trim();var today=new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
+  var prompt='DONALD, please remember and update your knowledge with the following personal update.\n\nType: '+updateType+'\nDate: '+today+'\nUpdate: '+updateText+'\n\nConfirm when you have noted this.';
+  var url=G('donaldUrl','')||'YOUR_PERSONAL_DONALD_URL';
+  var _open=function(){window.open(url,'_blank');if(statusEl){statusEl.textContent='✓ Opening DONALD — Ctrl+V and Send';statusEl.style.color='var(--green)';}setTimeout(function(){if(textEl)textEl.value='';if(statusEl){statusEl.textContent='';statusEl.style.color='';}},4000);};
+  if(navigator.clipboard){navigator.clipboard.writeText(prompt).then(_open).catch(function(){var ta=document.createElement('textarea');ta.value=prompt;ta.style.cssText='position:fixed;opacity:0';document.body.appendChild(ta);ta.focus();ta.select();try{document.execCommand('copy');}catch(e){}document.body.removeChild(ta);_open();});}
+  else{var ta=document.createElement('textarea');ta.value=prompt;ta.style.cssText='position:fixed;opacity:0';document.body.appendChild(ta);ta.focus();ta.select();try{document.execCommand('copy');}catch(e){}document.body.removeChild(ta);_open();}
+}
+
+async function deployUpdate(){
+  var code=document.getElementById('deployCode').value.trim();if(!code){alert('Paste new index.html code first.');return;}
+  var token=localStorage.getItem('po2_ghToken')||'';if(!token){alert('No GitHub token. Add it in Settings.');return;}
+  var btn=document.getElementById('deployBtn'),st=document.getElementById('dstatus');btn.disabled=true;btn.textContent='Deploying...';st.className='dstatus loading show';st.textContent='Pushing to GitHub...';
+  try{
+    var r1=await fetch('https://api.github.com/repos/davidmalky/personal-os/contents/index.html',{headers:{'Authorization':'token '+token,'Accept':'application/vnd.github.v3+json'}});var d1=await r1.json();
+    var r2=await fetch('https://api.github.com/repos/davidmalky/personal-os/contents/index.html',{method:'PUT',headers:{'Authorization':'token '+token,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'},body:JSON.stringify({message:'Deploy Personal OS v3.11',content:btoa(unescape(encodeURIComponent(code))),sha:d1.sha})});
+    if(r2.ok){st.className='dstatus ok show';st.textContent='Deployed. Live in ~30 seconds.';document.getElementById('deployCode').value='';}
+    else{var err=await r2.json();throw new Error(err.message||r2.status);}
+  }catch(err){st.className='dstatus err show';st.textContent='Deploy failed: '+err.message;}
+  btn.disabled=false;btn.textContent='Deploy to personal-os.vercel.app';
+}
+function saveGhToken(){var t=document.getElementById('ghTokenInput').value.trim();if(!t)return;localStorage.setItem('po2_ghToken',t);alert('Token saved.');document.getElementById('ghTokenInput').value='';}
+function saveDonaldUrl(){var u=document.getElementById('donaldUrlInput').value.trim();S('donaldUrl',u);DONALD_URL=u;var link=document.getElementById('donaldChatLink');if(link&&u)link.href=u;}
+
+function initSync(){var binId=G('jbBinId','');var apiKey=G('jbKey','');if(!binId||!apiKey){setSyncStatus('local','Local only — set up Cloud Sync in Settings','');return;}syncEnabled=true;setSyncStatus('syncing','Connecting...','');loadFromCloud();}
+function setSyncStatus(state,msg,btn){var dot=document.getElementById('syncDot');var st=document.getElementById('syncStatus');var b=document.getElementById('syncBtn');if(dot)dot.className='sync-dot '+state;if(st)st.textContent=msg;if(b)b.textContent=btn;}
+function syncNow(){if(syncEnabled)loadFromCloud();else initSync();}
+async function loadFromCloud(){
+  var binId=G('jbBinId','');var apiKey=G('jbKey','');if(!binId||!apiKey){setSyncStatus('local','Local only','');return;}setSyncStatus('syncing','Loading...','');
+  fetch('https://api.jsonbin.io/v3/b/'+binId+'/latest',{headers:{'X-Master-Key':apiKey,'X-Bin-Meta':'false'}}).then(function(r){return r.json();}).then(function(data){
+    if(data&&data.record){var d=data.record;if(d.tasks&&d.tasks.length)tasks=d.tasks;if(d.chats&&d.chats.length)chats=d.chats;if(d.intelCache)intelCache=d.intelCache;['tasks','chats','intelCache'].forEach(function(k){if(d[k])S(k,d[k]);});
+      // Restore all po2_ keys from cloud
+      Object.keys(d).filter(function(k){return k.startsWith('po2_');}).forEach(function(k){try{localStorage.setItem(k,typeof d[k]==='string'?d[k]:JSON.stringify(d[k]));}catch(e){}});renderDashTasks();renderChats();renderCC();setTimeout(injectAllIntel,100);setSyncStatus('synced','Synced · '+(new Date()).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}),'');}else{pushToCloud();}
+  }).catch(function(){setSyncStatus('offline','Load failed','Retry');});
+}
+function pushToCloud(){
+  var binId=G('jbBinId','');var apiKey=G('jbKey','');if(!binId||!apiKey)return;setSyncStatus('syncing','Saving...','');
+  var data={tasks:tasks,chats:chats,intelCache:intelCache,updated:new Date().toISOString()};
+  // Include all po2_ localStorage keys for full cross-device sync
+  var allKeys=Object.keys(localStorage).filter(function(k){return k.startsWith('po2_');});
+  allKeys.forEach(function(k){try{data[k]=JSON.parse(localStorage.getItem(k));}catch(e){data[k]=localStorage.getItem(k);}});
+  fetch('https://api.jsonbin.io/v3/b/'+binId,{method:'PUT',headers:{'Content-Type':'application/json','X-Master-Key':apiKey},body:JSON.stringify(data)}).then(function(r){return r.json();}).then(function(result){if(result.metadata||result.record){setSyncStatus('synced','Synced · '+(new Date()).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}),'');}else{setSyncStatus('offline','Save failed','Retry');}}).catch(function(){setSyncStatus('offline','Save failed','Retry');});
+}
+function saveSyncCredentials(){var key=document.getElementById('jbKeyInput').value.trim();var bin=document.getElementById('jbBinInput').value.trim();var st=document.getElementById('syncSetupStatus');if(!key){if(st)st.textContent='Paste Master Key first.';return;}S('jbKey',key);if(bin)S('jbBinId',bin);syncEnabled=true;document.getElementById('jbKeyInput').value='';if(bin){if(st)st.textContent='✓ Saved. Connecting...';loadFromCloud();}else{if(st)st.textContent='✓ Key saved. Click Create Bin.';}}
+async function createBin(){var apiKey=G('jbKey','');if(!apiKey){alert('Paste Master Key first.');return;}setSyncStatus('syncing','Creating bin...','');fetch('https://api.jsonbin.io/v3/b',{method:'POST',headers:{'Content-Type':'application/json','X-Master-Key':apiKey,'X-Bin-Name':'PersonalOS'},body:JSON.stringify({initialized:true})}).then(function(r){return r.json();}).then(function(result){if(result.metadata&&result.metadata.id){var binId=result.metadata.id;S('jbBinId',binId);var el=document.getElementById('jbBinInput');if(el)el.value=binId;syncEnabled=true;setTimeout(pushToCloud,500);showToast('Sync bin created!');}else{setSyncStatus('offline','Create failed','');}}).catch(function(){setSyncStatus('offline','Create failed','');});}
+function exportData(){var data={tasks:tasks,chats:chats,intelCache:intelCache};var json=JSON.stringify(data);if(navigator.clipboard){navigator.clipboard.writeText(json).then(function(){showToast('Data copied to clipboard');}).catch(function(){var ta=document.createElement('textarea');ta.value=json;ta.style.cssText='position:fixed;opacity:0';document.body.appendChild(ta);ta.focus();ta.select();try{document.execCommand('copy');}catch(e){}document.body.removeChild(ta);showToast('Data copied');});}}
+function importData(){var json=prompt('Paste exported data here:');if(!json||!json.trim())return;try{var d=JSON.parse(json.trim());if(d.tasks)tasks=d.tasks;if(d.chats)chats=d.chats;if(d.intelCache)intelCache=d.intelCache;['tasks','chats','intelCache'].forEach(function(k){if(d[k])S(k,d[k]);});renderDashTasks();renderChats();renderCC();setTimeout(injectAllIntel,100);showToast('Data imported');}catch(e){alert('Could not parse data.');}}
+function clearAll(){localStorage.clear();location.reload();}
+
+function loadSettings(){var du=document.getElementById('donaldUrlInput');if(du)du.value=G('donaldUrl','');var jb=document.getElementById('jbBinInput');if(jb)jb.value=G('jbBinId','');}
+function showToast(msg){var t=document.getElementById('undoToast');if(!t)return;var span=document.getElementById('undoMsg');if(span)span.textContent=msg;var ubtn=t.querySelector('.undo-toast-btn');if(ubtn)ubtn.style.display='none';t.classList.add('show');setTimeout(function(){t.classList.remove('show');if(ubtn)ubtn.style.display='';},3000);}
+function loadNotes(){var fields=['financeNotes','healthNotes','familyNotes','projectNotes','growthNotes'];fields.forEach(function(f){var el=document.getElementById(f);if(el)el.value=G(f,'');});}
+
+var _origS=S;
+S=function(k,v){_origS(k,v);if(syncEnabled){clearTimeout(syncTimer);syncTimer=setTimeout(pushToCloud,3000);}};
+
+var savedDonaldUrl=G('donaldUrl','');
+if(savedDonaldUrl){DONALD_URL=savedDonaldUrl;var link=document.getElementById('donaldChatLink');if(link)link.href=savedDonaldUrl;}
+
+
+// ── IDEAS + TO-DO CAPTURE ─────────────────────────────────────────────────
+function captureIdea(){
+  var text=document.getElementById('ideaInput').value.trim();
+  var statusEl=document.getElementById('ideaCaptureStatus');
+  if(!text){if(statusEl){statusEl.textContent='Type an idea first.';statusEl.style.color='var(--red)';}return;}
+  var today=new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
+  var prompt='DONALD, add this idea to my Ideas Log in Google Drive (document ID: 1AGcAn_THemQQvqv0Z4EJbKsTeRcVJEnXdQ4g8Inqv4I, account: googledocs_argas-topaz).\n\nDate: '+today+'\nIdea: '+text+'\n\nAdd it under the most relevant section. Confirm when done.';
+  var url=G('donaldUrl','')||'YOUR_PERSONAL_DONALD_URL';
+  var _open=function(){window.open(url,'_blank');if(statusEl){statusEl.textContent='✓ Opening DONALD — Ctrl+V and Send to save to Drive';statusEl.style.color='var(--green)';}setTimeout(function(){if(statusEl){statusEl.textContent='';statusEl.style.color='';}document.getElementById('ideaInput').value='';},5000);};
+  if(navigator.clipboard){navigator.clipboard.writeText(prompt).then(_open).catch(function(){_open();});}else{_open();}
+}
+function captureTodo(){
+  var text=document.getElementById('todoInput').value.trim();
+  var priEl=document.getElementById('todoPri');
+  var statusEl=document.getElementById('todoCaptureStatus');
+  if(!text){if(statusEl){statusEl.textContent='Type a to-do first.';statusEl.style.color='var(--red)';}return;}
+  var pri=priEl?priEl.options[priEl.selectedIndex].text:'Medium priority';
+  var today=new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
+  var prompt='DONALD, add this to-do to my To-Do Log in Google Drive (document ID: 19ORkFrJQUsyC_7g_y127CBgOnTbjxS-qskYERMItjzQ, account: googledocs_argas-topaz).\n\nDate added: '+today+'\nPriority: '+pri+'\nTo-do: '+text+'\n\nAdd it under the correct priority section. Confirm when done.';
+  var url=G('donaldUrl','')||'YOUR_PERSONAL_DONALD_URL';
+  var _open=function(){window.open(url,'_blank');if(statusEl){statusEl.textContent='✓ Opening DONALD — Ctrl+V and Send to save to Drive';statusEl.style.color='var(--green)';}setTimeout(function(){if(statusEl){statusEl.textContent='';statusEl.style.color='';}document.getElementById('todoInput').value='';},5000);};
+  if(navigator.clipboard){navigator.clipboard.writeText(prompt).then(_open).catch(function(){_open();});}else{_open();}
+}
+// ── LOAD RECENT CHATS ─────────────────────────────────────────────────────
+function loadRecentChats(){
+  var statusEl=document.getElementById('chatLoadStatus');
+  var pasteArea=document.getElementById('chatPasteArea');
+  var prompt='Please use your recent_chats tool to fetch my 50 most recent conversations. Return ONLY a JSON array with no explanation, no markdown, no code fences. Format exactly:\n[{"title":"Chat title here","url":"https://claude.ai/chat/CHAT-ID","updated":"2026-05-12"}]\n\nReturn the raw JSON array only.';
+  var url=G('donaldUrl','')||'YOUR_PERSONAL_DONALD_URL';
+  var _open=function(){if(pasteArea)pasteArea.style.display='block';if(statusEl){statusEl.textContent="✓ Paste DONALD's JSON response in the box above";statusEl.style.color='var(--green)';}window.open(url,'_blank');};
+  if(navigator.clipboard){navigator.clipboard.writeText(prompt).then(_open).catch(function(){_open();});}else{_open();}
+}
+function tryParseChatJson(val){
+  var statusEl=document.getElementById('chatLoadStatus');
+  if(!val||!val.trim())return;
+  try{
+    var raw=val.trim().replace(/^```[a-z]*\n?/i,'').replace(/```+$/,'').trim();
+    var arr=null;
+    try{arr=JSON.parse(raw);}catch(e){var s=raw.indexOf('['),en=raw.lastIndexOf(']');if(s>-1&&en>s){try{arr=JSON.parse(raw.slice(s,en+1));}catch(e2){}}}
+    if(!arr||!Array.isArray(arr)||!arr.length){if(statusEl){statusEl.textContent='No chats found — paste the full JSON response.';statusEl.style.color='var(--red)';}return;}
+    var existing=chats.map(function(c){return c.url;});var added=0;
+    arr.forEach(function(item){if(!item.url)return;if(existing.indexOf(item.url)===-1){chats.push({label:item.title||'Untitled',url:item.url,mod:'recent',updated:item.updated||''});added++;}});
+    S('chats',chats);renderChats();
+    var pasteArea=document.getElementById('chatPasteArea');if(pasteArea)pasteArea.style.display='none';
+    if(statusEl){statusEl.textContent='✓ Loaded '+added+' new chats';statusEl.style.color='var(--green)';}
+    setTimeout(function(){if(statusEl)statusEl.textContent='';},4000);
+  }catch(e){if(statusEl){statusEl.textContent="Could not parse — paste DONALD's full response.";statusEl.style.color='var(--red)';}}
+}
+
+
+function oneClickRefresh(){
+  var btn=document.getElementById('oneClickBtn');
+  var apiKey=localStorage.getItem('po2_claudeApiKey')||'';
+  if(!apiKey){
+    apiKey=window.prompt?window.prompt('Paste your Claude API key (sk-ant-api03-...):'):'';
+    if(!apiKey)return;
+    localStorage.setItem('po2_claudeApiKey',apiKey);
+  }
+  if(btn){btn.textContent='Refreshing...';btn.disabled=true;}
+  var today=new Date();
+  var isoNow=today.toISOString();
+  var ks=['donald_personal_intel_daily','donald_personal_intel_finance','donald_personal_intel_health','donald_personal_intel_family','donald_personal_intel_projects','donald_personal_intel_growth','donald_personal_intel_email','donald_personal_intel_work','donald_personal_intel_notes','donald_personal_intel_focus'];
+  var pt=ks.map(function(k){return '{"key":"'+k+'","value":{"updated":"'+isoNow+'","items":[]}}';}).join(',');
+  var msg='You are DONALD, David Genuth personal AI Chief of Staff. Today is '+dateStr+' at '+timeStr+' Eastern.\n\nDo the following to generate accurate intel:\n1. Check Google Calendar (davidlgenuth@gmail.com) for today and next 7 days including Hebrew calendar\n2. Scan Gmail (davidlgenuth@gmail.com) and (davidmalky@gmail.com) for urgent unread items\n3. Scan Outlook (DGenuth@PrimeSourceX.com) for work items\n4. Search past conversations for: Prime Procurement, LLC, Vanguard, DAF, tuition, CPAP, SightMD, family members, agents, Personal OS, Salesforce, William, AmeriHealth\n5. Read DONALD Master Context in Google Drive (document ID: 11yJghORj9P4xnszfNeWCe3sl74Dq1bSLC1TVWcbmQ2w)\n\nGenerate intel for all 10 panels. Be specific — use real names, amounts, dates from actual data.\n\nCRITICAL: Return raw JSON only. No markdown. No code fences. No backticks. No explanation. Start response with { and end with }:\n{"panels":['+pt+']}\n\nRules: type is red/amber/green/blue/gray. Min 3 items per panel, max 8. Include chatLink for active conversations. Prioritize urgency.'
+  fetch('https://donald-proxy.davidlgenuth.workers.dev',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({model:'claude-sonnet-4-5',max_tokens:4000,messages:[{role:'user',content:msg}]})
+  }).then(function(r){return r.json();}).then(function(d){
+    if(d.error){alert('API error: '+d.error.message);if(btn){btn.textContent='One-Click Refresh (~10c)';btn.disabled=false;}return;}
+    var txt=(d.content&&d.content[0]&&d.content[0].text)||'';
+    try{
+      var s=txt.indexOf('{'),e=txt.lastIndexOf('}');
+      var parsed=JSON.parse(txt.slice(s,e+1));
+      if(parsed.panels){
+        parsed.panels.forEach(function(p){
+          if(!p.key||!p.value)return;
+          intelCache[p.key]=p.value;
+          var pid=Object.keys(PANEL_INTEL_KEY).find(function(k){return PANEL_INTEL_KEY[k]===p.key;});
+          if(pid)renderLiveIntel(pid,p.value);
+        });
+        S('intelCache',intelCache);
+        updateIBStatus();
+        renderCC();
+        if(syncEnabled)setTimeout(pushToCloud,500);
+        alert('Done! All panels updated.');
+      }
+    }catch(e2){alert('Parse error: '+e2.message);}
+    if(btn){btn.textContent='One-Click Refresh (~10c)';btn.disabled=false;}
+  }).catch(function(e3){alert('Network error: '+e3.message);if(btn){btn.textContent='One-Click Refresh (~10c)';btn.disabled=false;}});
+}
+
+applyTheme();applyPanel();setDate();var fn=document.getElementById('financeNotes');if(fn)fn.value=G('financeNotes')||'';
+renderDashTasks();renderChats();renderCC();
+setTimeout(injectAllIntel,100);
+setTimeout(updateIBStatus,200);
+setTimeout(function(){renderEmailQueue();renderWorkQueue();},400);
+renderAppts();renderHomeItems();renderLearning();renderAOLMigration();loadNotes();
+initSync();
+
+setTimeout(function(){
+  Object.keys(intelCache).forEach(function(key){var pid=Object.keys(PANEL_INTEL_KEY).find(function(k){return PANEL_INTEL_KEY[k]===key;});if(pid&&intelCache[key])renderLiveIntel(pid,intelCache[key]);});
+  updateIBStatus();
+},300);
+
+document.addEventListener('click',function(e){var drawer=document.getElementById('ccDrawer');if(drawer&&drawer.classList.contains('show')){var ov=document.getElementById('ccOverlay');if(ov&&ov.contains(e.target))closeCCDrawer();}});
+document.addEventListener('click',function(e){var modal=document.getElementById('ibModal');if(modal&&e.target===modal)closeIBModal();});
+
+(function(){
+  var panel=null,startY=0,currentY=0,isDragging=false;
+  function getPanel(){return document.getElementById('panel');}
+  document.addEventListener('touchstart',function(e){var p=getPanel();if(!p||window.innerWidth>768)return;if(!p.classList.contains('mobile-open'))return;startY=e.touches[0].clientY;isDragging=true;p.style.transition='none';},{passive:true});
+  document.addEventListener('touchmove',function(e){if(!isDragging||window.innerWidth>768)return;var p=getPanel();if(!p)return;currentY=e.touches[0].clientY;var delta=currentY-startY;if(delta>0){p.style.transform='translateY('+delta+'px)';}},{passive:true});
+  document.addEventListener('touchend',function(){if(!isDragging||window.innerWidth>768)return;var p=getPanel();if(!p)return;isDragging=false;p.style.transition='';var delta=currentY-startY;if(delta>80){p.style.transform='';p.classList.remove('mobile-open');var ov=document.getElementById('panelOverlay');if(ov)ov.classList.remove('show');}else{p.style.transform='';}});
+})();
+</script>
+
+<!-- DONALD CHAT WIDGET -->
+<div class="donald-fab">
+  <div class="donald-chat" id="donaldChatBox">
+    <div class="dc-head">
+      <div class="dc-title"><span>D</span>ONALD Chat</div>
+      <div class="dc-head-right">
+        <button class="dc-clear" onclick="clearDonaldChat()">Clear</button>
+        <div class="dc-close" onclick="closeDonaldChat()">✕</div>
+      </div>
+    </div>
+    <div class="dc-msgs" id="dcMsgs"></div>
+    <div class="dc-hint">Powered by Anthropic API</div>
+    <div class="dc-inp-row">
+      <input class="dc-inp" id="dcInp" placeholder="Ask DONALD anything..." onkeydown="dcKeyDown(event)">
+      <button class="dc-send" id="dcSendBtn" onclick="sendDcMsg()">Send</button>
+    </div>
+  </div>
+  <button class="donald-fab-btn" onclick="toggleDonaldChat()">
+    <div class="fab-dot"></div>Ask DONALD
+  </button>
+</div>
+
+</body>
+</html>
