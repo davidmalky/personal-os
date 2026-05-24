@@ -478,217 +478,216 @@ function renderHebrewDate() {
 (function() {
   
 
+
 // ============================================================
-// v3.0 UNIVERSAL INTERACTIVE DATA STORE
+// v3.0 UNIVERSAL INTERACTIVE DATA STORE - fixed global scope
 // ============================================================
 
-// Default data for each store - seeded on first load
-var STORE_DEFAULTS = {
+window.STORE_DEFAULTS = {
   pending: [
-    {id:'p1', text:'Cube ACR \u2192 Drive auto-backup', sub:'Call recordings pipeline active \u2014 transcripts going to Drive', status:'info', source:'system'},
-    {id:'p2', text:'SMS Backup \u2192 Drive', sub:'Wave AI recordings \u2014 upload valuable ones to Drive manually', status:'info', source:'system'},
-    {id:'p3', text:'Yeshiva tuition \u2014 on hold', sub:'Waiting on BuyersEdge platform, accountant, and Mark', status:'hold', source:'system'},
-    {id:'p4', text:'Wave AI voice notes', sub:'USB cable at home to recover \u2014 or upload manually to Drive', status:'pending', source:'system'},
-    {id:'p5', text:'Handicap placard', sub:'Reapply Aug/Sep 2026 with new prescription', status:'info', source:'system'},
-    {id:'p6', text:'Kia $40 refund', sub:'MVC refund \u2014 mail in', status:'pending', source:'system'},
-    {id:'p7', text:'MileagePlus merge', sub:'3 accounts: XV915448, YH388442, + 1 more \u2014 call 1-800-421-4655', status:'urgent', source:'system'},
-    {id:'p8', text:'2022 tax amendment', sub:'June 11 deadline \u2014 reach out to 5 orgs for receipts', status:'urgent', source:'system'},
-    {id:'p9', text:'Milestone Metrics bank account', sub:'Chase appt Tue May 26 11am \u2014 bring EIN + formation doc', status:'urgent', source:'system'}
+    {id:'p1', text:'Cube ACR \u2192 Drive auto-backup', sub:'Call pipeline active \u2014 transcripts going to Drive', status:'info'},
+    {id:'p2', text:'Wave AI voice notes', sub:'Upload valuable recordings to Drive manually', status:'pending'},
+    {id:'p3', text:'Yeshiva tuition \u2014 on hold', sub:'Waiting on BuyersEdge platform and Mark', status:'hold'},
+    {id:'p4', text:'MileagePlus merge \u2014 3 accounts', sub:'Call 1-800-421-4655 \u00b7 XV915448, YH388442, + 1 by SSN', status:'urgent'},
+    {id:'p5', text:'2022 tax amendment', sub:'June 11 deadline \u2014 reach out to 5 orgs for receipts', status:'urgent'},
+    {id:'p6', text:'Milestone Metrics bank account', sub:'Chase appt Tue May 26 11am \u2014 bring EIN + formation doc', status:'urgent'},
+    {id:'p7', text:'Handicap placard', sub:'Reapply Aug/Sep 2026 with new prescription', status:'info'},
+    {id:'p8', text:'Kia $40 refund', sub:'MVC refund \u2014 mail in form', status:'pending'}
   ],
   finance: [
-    {id:'f1', text:'Prime Procurement \u2014 GenMed balance', sub:'$93K remaining of $193K', status:'urgent', val:'~$93K', source:'system'},
-    {id:'f2', text:'Capital One Spark', sub:'AutoPay enrolled \u2014 Malky authorized user', status:'done', val:'AutoPay \u2713', source:'system'},
-    {id:'f3', text:'Donor Advised Fund', sub:'Not set up \u2014 needed for charity routing', status:'pending', val:'Not set up', source:'system'},
-    {id:'f4', text:'Auto insurance discount', sub:'David done, Malky + Esty still pending defensive driving', status:'pending', val:'Follow up', source:'system'},
-    {id:'f5', text:'IRS installment agreement', sub:'$439/month auto-debit \u2014 balance ~$32K', status:'info', val:'$439/mo', source:'system'},
-    {id:'f6', text:'AmeriHealth', sub:'$1,974.82/mo \u2014 AutoPay via Chase checking 3529', status:'done', val:'AutoPay \u2713', source:'system'}
+    {id:'f1', text:'Prime Procurement \u2014 GenMed balance', sub:'$93K remaining of $193K total', status:'urgent', val:'~$93K'},
+    {id:'f2', text:'Capital One Spark', sub:'AutoPay enrolled \u2014 Malky authorized user', status:'done', val:'AutoPay \u2713'},
+    {id:'f3', text:'Donor Advised Fund', sub:'Not set up \u2014 needed for charity routing and tax strategy', status:'pending', val:'Not set up'},
+    {id:'f4', text:'Auto insurance discount', sub:'David done \u2014 Malky and Esty still need to complete', status:'pending', val:'Follow up'},
+    {id:'f5', text:'IRS installment agreement', sub:'$439/month auto-debit \u2014 balance ~$32K', status:'info', val:'$439/mo'},
+    {id:'f6', text:'AmeriHealth', sub:'$1,974.82/mo \u2014 AutoPay via Chase checking 3529', status:'done', val:'AutoPay \u2713'}
   ],
   health: [
-    {id:'h1', text:'CPAP compliance', sub:'7 / 30 nights \u2014 window closes ~Jul 20, 2026', status:'pending', val:'7/30', source:'system'},
-    {id:'h2', text:'Tapezza Treatment 3', sub:'Call Option Care 973-597-0414 \u2014 schedule before Jun 1', status:'urgent', source:'system'},
-    {id:'h3', text:'Dr. Landsman ENT', sub:'Mon May 25 11am', status:'info', source:'system'},
-    {id:'h4', text:'Kasa Smart Plug \u2014 CPAP timer', sub:'Plugged in and running on auto start/stop', status:'done', source:'system'}
-  ],
-  defensive: [
-    {id:'d1', text:'David', sub:'Completed Apr 26 \u2014 SAVEFIVE code used', status:'done', source:'system'},
-    {id:'d2', text:'Malky', sub:'Course link sent \u2014 not yet completed', status:'pending', source:'system'},
-    {id:'d3', text:'Esty', sub:'Course link sent \u2014 not yet completed', status:'pending', source:'system'},
-    {id:'d4', text:'Avrumy', sub:'In Israel \u2014 verify if NJ course applies on return', status:'hold', source:'system'}
+    {id:'h1', text:'CPAP compliance', sub:'7 of 30 nights \u2014 window closes Jul 20, 2026', status:'pending', val:'7/30'},
+    {id:'h2', text:'Tapezza Treatment 3', sub:'Call Option Care 973-597-0414 \u2014 schedule before Jun 1', status:'urgent'},
+    {id:'h3', text:'Dr. Landsman ENT', sub:'Mon May 25 11am', status:'info'},
+    {id:'h4', text:'Kasa Smart Plug \u2014 CPAP timer', sub:'Plugged in and running on auto start/stop', status:'done'}
   ],
   projects: [
-    {id:'pr1', text:'Personal DONALD OS', sub:'v2.14 live at personal-os-phi-gray.vercel.app', status:'info', source:'system'},
-    {id:'pr2', text:'Renzo \u2014 AI outreach tool', sub:'AI-powered follow-up program \u2014 potential revenue stream', status:'pending', source:'system'},
-    {id:'pr3', text:'FashionScan25.3', sub:'AR + AI wardrobe app \u2014 Gradle issues blocking progress', status:'hold', source:'system'},
-    {id:'pr4', text:'Vendor Catalog Scheduler', sub:'Work \u2014 data accuracy audit in progress with Jane', status:'info', source:'system'}
+    {id:'pr1', text:'Personal DONALD OS', sub:'v3.3 live at personal-os-phi-gray.vercel.app', status:'info'},
+    {id:'pr2', text:'Renzo \u2014 AI outreach tool', sub:'AI-powered follow-up program \u2014 potential revenue stream', status:'pending'},
+    {id:'pr3', text:'FashionScan25.3', sub:'AR + AI wardrobe app \u2014 Gradle issues blocking progress', status:'hold'}
   ],
   email: [
-    {id:'em1', text:'MileagePlus merge — 3 accounts', sub:'Call 1-800-421-4655 · XV915448 YH388442 plus 1 more', status:'urgent', source:'system'},
-    {id:'em2', text:'2022 charity receipts — 5 orgs', sub:'Reach out before June 11 deadline', status:'urgent', source:'system'},
-    {id:'em3', text:'Israel Steinberg — 2022 amendment status', sub:'Has it been filed yet?', status:'pending', source:'system'}
+    {id:'em1', text:'MileagePlus merge \u2014 3 accounts', sub:'Call 1-800-421-4655 \u00b7 XV915448 YH388442 plus 1 more', status:'urgent'},
+    {id:'em2', text:'2022 charity receipts \u2014 5 orgs', sub:'Reach out for receipts before June 11 deadline', status:'urgent'},
+    {id:'em3', text:'Israel Steinberg \u2014 2022 amendment', sub:'Has it been filed yet? Confirm status.', status:'pending'}
   ],
   work: [
-    {id:'w1', text:'June 8 event — COO speech prep', sub:'Procurement presentation — 15 days away', status:'urgent', source:'system'},
-    {id:'w2', text:'Culligan — redlined contract', sub:'Thomas Caputo — no response in 3+ weeks', status:'urgent', source:'system'},
-    {id:'w3', text:'Mobotics — DocuSign pending', sub:'Yehuda + Mark need to sign · sent Apr 30', status:'pending', source:'system'},
-    {id:'w4', text:'Salesforce — 4 dev items', sub:'Ownership change matching rule parent-child dormant opps', status:'info', source:'system'}
+    {id:'w1', text:'June 8 event \u2014 COO speech prep', sub:'Procurement presentation \u2014 15 days away', status:'urgent'},
+    {id:'w2', text:'Culligan \u2014 redlined contract', sub:'Thomas Caputo \u2014 no response in 3+ weeks', status:'urgent'},
+    {id:'w3', text:'Mobotics \u2014 DocuSign pending', sub:'Yehuda + Mark need to sign \u00b7 sent Apr 30', status:'pending'},
+    {id:'w4', text:'Salesforce \u2014 4 dev items', sub:'Ownership change, matching rule, parent-child, dormant opps', status:'info'}
   ],
   growth: [
-    {id:'g1', text:'Evening Summary', sub:'Daily wrap automation from DONALD', status:'pending', source:'system'},
-    {id:'g2', text:'Weekly Report', sub:'Sunday weekly report from DONALD', status:'pending', source:'system'},
-    {id:'g3', text:'Wispr Flow custom vocabulary', sub:'Hebrew/Yiddish/business terms', status:'pending', source:'system'},
-    {id:'g4', text:'Salesforce metrics in command center', sub:'Pull pipeline data into dashboard', status:'pending', source:'system'},
-    {id:'g5', text:'Email to DONALD setup', sub:'Route important emails into DONALD context', status:'pending', source:'system'},
-    {id:'g6', text:'Claude Code', sub:'Build AI agents and automations', status:'info', source:'system'}
+    {id:'g1', text:'Auto-refresh intel every 30 min', sub:'So panels never need manual refresh', status:'pending'},
+    {id:'g2', text:'Per-panel embedded chat', sub:'Each CC card gets its own chat input', status:'pending'},
+    {id:'g3', text:'Evening Summary automation', sub:'Daily wrap from DONALD each evening', status:'pending'},
+    {id:'g4', text:'Salesforce metrics in dashboard', sub:'Pull pipeline data into command center', status:'pending'},
+    {id:'g5', text:'Wispr Flow custom vocabulary', sub:'Hebrew, Yiddish, business terms', status:'pending'},
+    {id:'g6', text:'Drive cleanup', sub:'Delete stale duplicate files identified earlier', status:'pending'}
+  ],
+  defensive: [
+    {id:'d1', text:'David', sub:'Completed Apr 26 \u2014 SAVEFIVE code used', status:'done'},
+    {id:'d2', text:'Malky', sub:'Course link sent \u2014 not yet completed', status:'pending'},
+    {id:'d3', text:'Esty', sub:'Course link sent \u2014 not yet completed', status:'pending'},
+    {id:'d4', text:'Avrumy', sub:'In Israel \u2014 verify if NJ course applies on return', status:'hold'}
   ]
 };
 
-// Load or seed a store
 function loadStore(name) {
   try {
     var raw = localStorage.getItem('po2_store_' + name);
     if (raw) return JSON.parse(raw);
-  } catch(_) {}
-  // Seed from defaults
-  var defaults = STORE_DEFAULTS[name] || [];
-  saveStore(name, defaults);
-  return defaults;
+  } catch(e) {}
+  var defs = window.STORE_DEFAULTS[name] || [];
+  window.saveStore(name, defs);
+  return defs;
 }
 
-function saveStore(name, items) {
-  try {
-    localStorage.setItem('po2_store_' + name, JSON.stringify(items));
-  } catch(_) {}
-}
+window.saveStore = function(name, items) {
+  try { localStorage.setItem('po2_store_' + name, JSON.stringify(items)); } catch(e) {}
+};
 
-function dismissStoreItem(name, id) {
+window.dismissStoreItem = function(name, id) {
   var items = loadStore(name);
   var item = items.find(function(i){ return i.id === id; });
   if (!item) return;
-  // Soft delete: move to deleted bin
   var deleted = loadStore(name + '_deleted');
   item._deletedAt = new Date().toISOString();
   deleted.push(item);
-  saveStore(name + '_deleted', deleted);
-  // Remove from active
-  items = items.filter(function(i){ return i.id !== id; });
-  saveStore(name, items);
-  renderStore(name);
-  try { renderDeletedSection(name, name + 'DeletedEl'); } catch(_) {}
-  try { pushToCloud(); } catch(_) {}
-}
+  window.saveStore(name + '_deleted', deleted);
+  window.saveStore(name, items.filter(function(i){ return i.id !== id; }));
+  window.renderStore(name);
+  window.renderDeletedSection(name, name + 'DeletedEl');
+  try { pushToCloud(); } catch(e) {}
+};
 
-function restoreStoreItem(name, id) {
+window.restoreStoreItem = function(name, id) {
   var deleted = loadStore(name + '_deleted');
   var item = deleted.find(function(i){ return i.id === id; });
   if (!item) return;
   delete item._deletedAt;
   var items = loadStore(name);
-  items.unshift(item); // restore to top
-  saveStore(name, items);
-  deleted = deleted.filter(function(i){ return i.id !== id; });
-  saveStore(name + '_deleted', deleted);
-  renderStore(name);
-  try { renderDeletedSection(name, name + 'DeletedEl'); } catch(_) {}
-  try { pushToCloud(); } catch(_) {}
-}
+  items.unshift(item);
+  window.saveStore(name, items);
+  window.saveStore(name + '_deleted', deleted.filter(function(i){ return i.id !== id; }));
+  window.renderStore(name);
+  window.renderDeletedSection(name, name + 'DeletedEl');
+  try { pushToCloud(); } catch(e) {}
+};
 
-function renderDeletedStore(name, containerId) {
-  var el = document.getElementById(containerId);
-  if (!el) return;
-  var deleted = loadStore(name + '_deleted');
-  if (!deleted.length) { el.innerHTML = '<div style="font-size:10px;color:var(--text3);font-style:italic;padding:4px 0">No deleted items</div>'; return; }
-  el.innerHTML = deleted.map(function(item) {
-    return '<div class="iitem" style="opacity:.65">' +
-      '<div class="iitem-body"><div class="iitem-text" style="text-decoration:line-through">' + item.text + '</div>' +
-      (item.sub ? '<div class="iitem-sub">' + item.sub + '</div>' : '') + '</div>' +
-      '<div class="iitem-actions"><button class="ibadge info" onclick="restoreStoreItem(\'' + name + '\',\'' + item.id + '\')" style="font-size:8px">Restore</button></div>' +
-      '</div>';
-  }).join('');
-}
-
-function cycleStatus(name, id) {
+window.cycleStatus = function(name, id) {
   var items = loadStore(name);
-  var cycle = ['pending','done','hold','urgent','info'];
   var item = items.find(function(i){ return i.id === id; });
   if (!item) return;
-  var idx = cycle.indexOf(item.status);
-  item.status = cycle[(idx + 1) % cycle.length];
+  var cycle = ['pending','done','hold','urgent','info'];
+  item.status = cycle[(cycle.indexOf(item.status) + 1) % cycle.length];
   item.updated = new Date().toISOString();
-  saveStore(name, items);
-  renderStore(name);
-  try { pushToCloud(); } catch(_) {}
-}
+  window.saveStore(name, items);
+  window.renderStore(name);
+  try { pushToCloud(); } catch(e) {}
+};
 
-function addStoreItem(name, text, sub, status) {
-  if (!text || !text.trim()) return;
-  var items = loadStore(name);
-  var id = name + '_' + Date.now();
-  items.push({id:id, text:text.trim(), sub:sub||'', status:status||'pending', source:'user', updated:new Date().toISOString()});
-  saveStore(name, items);
-  renderStore(name);
-  try { pushToCloud(); } catch(_) {}
-}
-
-function editStoreItem(name, id) {
+window.editStoreItem = function(name, id) {
   var items = loadStore(name);
   var item = items.find(function(i){ return i.id === id; });
   if (!item) return;
   var newText = prompt('Edit item:', item.text);
   if (newText === null) return;
   if (newText.trim()) item.text = newText.trim();
-  var newSub = prompt('Edit note (leave blank to keep):', item.sub);
+  var newSub = prompt('Edit note (blank to keep):', item.sub || '');
   if (newSub !== null) item.sub = newSub;
   item.updated = new Date().toISOString();
-  saveStore(name, items);
-  renderStore(name);
-}
+  window.saveStore(name, items);
+  window.renderStore(name);
+};
 
-function renderStore(name, containerId) {
-  var elId = containerId || (name + 'StoreEl');
-  var el = document.getElementById(elId);
+window.addStoreItem = function(name, text, sub, status) {
+  if (!text || !text.trim()) return;
+  var items = loadStore(name);
+  items.push({id: name+'_'+Date.now(), text:text.trim(), sub:sub||'', status:status||'pending', source:'user', updated:new Date().toISOString()});
+  window.saveStore(name, items);
+  window.renderStore(name);
+  try { pushToCloud(); } catch(e) {}
+};
+
+window.renderStore = function(name, containerId) {
+  var el = document.getElementById(containerId || (name + 'StoreEl'));
   if (!el) return;
   var items = loadStore(name);
-  if (!items.length) {
-    el.innerHTML = '<div style="font-size:10px;color:var(--text3);font-style:italic;padding:6px 0">All clear</div>';
-    return;
-  }
+  var labels = {pending:'Pending',done:'Done',hold:'Hold',urgent:'Urgent',info:'Info'};
+  if (!items.length) { el.innerHTML = '<div style="font-size:10px;color:var(--text3);font-style:italic;padding:6px 0">All clear \u2014 tap + Add to add items</div>'; return; }
+  // Use data-attributes to avoid onclick escaping issues
   el.innerHTML = items.map(function(item) {
-    var statusLabels = {pending:'Pending',done:'Done',hold:'Hold',urgent:'Urgent',info:'Info'};
-    return '<div class="iitem">' +
+    return '<div class="iitem" data-store="'+name+'" data-id="'+item.id+'">' +
       '<div class="iitem-body">' +
-        '<div class="iitem-text">' + item.text + '</div>' +
-        (item.sub ? '<div class="iitem-sub">' + item.sub + '</div>' : '') +
+        '<div class="iitem-text">'+item.text+'</div>' +
+        (item.sub ? '<div class="iitem-sub">'+item.sub+'</div>' : '') +
       '</div>' +
       '<div class="iitem-actions">' +
-        (item.val ? '<span style="font-size:9px;color:var(--text2);margin-right:3px">' + item.val + '</span>' : '') +
-        '<button class="ibadge ' + (item.status||'pending') + '" onclick="cycleStatus(\'' + name + '\',\'' + item.id + '\')" title="Tap to change status">' + (statusLabels[item.status]||item.status) + '</button>' +
-        '<button class="iitem-edit" onclick="editStoreItem(\'' + name + '\',\'' + item.id + '\')" title="Edit">✎</button>' +
-        '<button class="idismiss" onclick="dismissStoreItem(\'' + name + '\',\'' + item.id + '\')" title="Dismiss">×</button>' +
+        (item.val ? '<span style="font-size:9px;color:var(--text2);margin-right:3px">'+item.val+'</span>' : '') +
+        '<button class="ibadge '+(item.status||'pending')+'" data-action="cycle" title="Tap to cycle status">'+(labels[item.status]||item.status)+'</button>' +
+        '<button class="iitem-edit" data-action="edit" title="Edit">\u270e</button>' +
+        '<button class="idismiss" data-action="dismiss" title="Dismiss">\u00d7</button>' +
       '</div>' +
     '</div>';
   }).join('');
-}
+};
 
+// Single event listener on document handles ALL store interactions
+document.addEventListener('click', function(e) {
+  var btn = e.target.closest('[data-action]');
+  if (!btn) return;
+  var row = btn.closest('[data-store]');
+  if (!row) return;
+  var name = row.getAttribute('data-store');
+  var id = row.getAttribute('data-id');
+  var action = btn.getAttribute('data-action');
+  if (action === 'cycle') window.cycleStatus(name, id);
+  else if (action === 'edit') window.editStoreItem(name, id);
+  else if (action === 'dismiss') window.dismissStoreItem(name, id);
+  else if (action === 'restore') window.restoreStoreItem(name, id);
+});
 
-function renderDeletedSection(name, containerId) {
+window.renderDeletedSection = function(name, containerId) {
   var el = document.getElementById(containerId);
   if (!el) return;
   var deleted = loadStore(name + '_deleted');
   if (!deleted.length) { el.innerHTML = ''; return; }
-  el.innerHTML = '<div style="margin-top:8px;padding-top:6px;border-top:1px solid var(--border)">' +
-    '<div style="font-size:9px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.04em;cursor:pointer;margin-bottom:4px" onclick="this.nextSibling.style.display=this.nextSibling.style.display===\'none\'?\'block\':\'none\'">🗑 Deleted (' + deleted.length + ') — tap to expand</div>' +
-    '<div style="display:none">' + deleted.map(function(item) {
-      return '<div class="iitem" style="opacity:.55">' +
-        '<div class="iitem-body"><div class="iitem-text" style="text-decoration:line-through;font-size:9px">' + item.text + '</div></div>' +
-        '<div class="iitem-actions"><button class="ibadge info" onclick="restoreStoreItem(\'' + name + '\',\'' + item.id + '\')" style="font-size:7px;padding:1px 4px">Restore</button></div>' +
+  el.innerHTML = '<details style="margin-top:8px;padding-top:6px;border-top:1px solid var(--border)">' +
+    '<summary style="font-size:9px;color:var(--text3);cursor:pointer;font-weight:600;text-transform:uppercase;letter-spacing:.04em">\uD83D\uDDD1 Deleted ('+deleted.length+')</summary>' +
+    deleted.map(function(item) {
+      return '<div class="iitem" style="opacity:.55" data-store="'+name+'_deleted" data-id="'+item.id+'">' +
+        '<div class="iitem-body"><div class="iitem-text" style="text-decoration:line-through;font-size:9px">'+item.text+'</div></div>' +
+        '<div class="iitem-actions"><button class="ibadge info" data-action="restore" style="font-size:7px">Restore</button></div>' +
         '</div>';
-    }).join('') + '</div></div>';
-}
+    }).join('') + '</details>';
+};
+
+// Handle restore from deleted section
+document.addEventListener('click', function(e) {
+  var btn = e.target.closest('[data-action="restore"]');
+  if (!btn) return;
+  var row = btn.closest('[data-store]');
+  if (!row) return;
+  var store = row.getAttribute('data-store'); // e.g. "pending_deleted"
+  var realName = store.replace('_deleted','');
+  var id = row.getAttribute('data-id');
+  window.restoreStoreItem(realName, id);
+});
 
 function renderAddRow(name, placeholder) {
-  return '<div class="iadd-row">' +
-    '<input class="iadd-inp" id="iadd_' + name + '" placeholder="' + (placeholder||'Add item...') + '" onkeydown="if(event.key===\'Enter\'){addStoreItem(\'' + name + '\',this.value);this.value=\'\';}">' +
-    '<button class="iadd-btn" onclick="var i=document.getElementById(\'iadd_' + name + '\');addStoreItem(\'' + name + '\',i.value);i.value=\'\'">+ Add</button>' +
+  return '<div class="iadd-row" style="margin-top:8px">' +
+    '<input class="iadd-inp" placeholder="'+(placeholder||'Add item...')+'" ' +
+    'onkeydown="if(event.key===\'Enter\'&&this.value.trim()){window.addStoreItem(\''+name+'\',this.value);this.value=\'\';}">' +
+    '<button class="iadd-btn" onclick="var i=this.previousSibling;if(i.value.trim()){window.addStoreItem(\''+name+'\',i.value);i.value=\'\';}">' +
+    '+ Add</button>' +
   '</div>';
 }
 
