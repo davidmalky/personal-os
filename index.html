@@ -804,31 +804,52 @@ var _liveIntel = null;
 var DONALD_INTEL_FILE_ID = '137MUmEXKnGgkNRKjaOUsSxbTf5ir9VVx';
 
 function fetchDriveIntel() {
-  // Use Google Drive API via fetch with the user's OAuth token
-  // The Cloudflare Worker will proxy this to the Drive API
-  fetch('https://donald-proxy.davidlgenuth.workers.dev', {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({
-      model: 'claude-sonnet-4-5',
-      max_tokens: 100,
-      system: 'Return ONLY the exact string "DRIVE_FETCH_REQUEST" and nothing else.',
-      messages: [{role:'user', content: 'DRIVE_FILE_ID:' + DONALD_INTEL_FILE_ID}]
-    })
-  })
-  .then(function(r){ return r.json(); })
-  .then(function(data) {
-    // Worker returns drive file content
-    try {
-      var text = data.driveContent || (data.content && data.content[0] ? data.content[0].text : '');
-      if (text && text.includes('"updated"')) {
-        _liveIntel = JSON.parse(text);
-        applyLiveIntel(_liveIntel);
-      }
-    } catch(e) { /* fall through to cached data */ }
-  })
-  .catch(function() { /* use local data */ });
+  // Try to get the Apps Script web app URL from settings
+  var webAppUrl = localStorage.getItem('po2_donaldWebAppUrl') || '';
+  
+  if (webAppUrl) {
+    // Fetch from Apps Script web app (no auth needed if deployed as "anyone")
+    fetch(webAppUrl + '?t=' + Date.now())
+      .then(function(r){ return r.json(); })
+      .then(function(intel) {
+        if (intel && intel.updated) {
+          _liveIntel = intel;
+          applyLiveIntel(intel);
+          localStorage.setItem('po2_liveIntelCache', JSON.stringify(intel));
+          localStorage.setItem('po2_liveIntelTime', Date.now().toString());
+        }
+      })
+      .catch(function() {
+        // Try cached intel
+        tryLoadCachedIntel();
+      });
+  } else {
+    // No web app URL configured — try cached
+    tryLoadCachedIntel();
+  }
 }
+
+function tryLoadCachedIntel() {
+  try {
+    var cached = localStorage.getItem('po2_liveIntelCache');
+    var cacheTime = parseInt(localStorage.getItem('po2_liveIntelTime') || '0');
+    if (cached && (Date.now() - cacheTime) < 2 * 60 * 60 * 1000) { // 2 hour cache
+      var intel = JSON.parse(cached);
+      if (intel && intel.updated) {
+        _liveIntel = intel;
+        applyLiveIntel(intel);
+      }
+    }
+  } catch(e) {}
+}
+
+function setDonaldWebAppUrl(url) {
+  if (!url || !url.startsWith('https://')) { alert('Invalid URL'); return; }
+  localStorage.setItem('po2_donaldWebAppUrl', url);
+  alert('Web App URL saved. Refreshing intel...');
+  fetchDriveIntel();
+}
+
 
 function applyLiveIntel(intel) {
   if (!intel) return;
@@ -931,6 +952,11 @@ function v26init() {
     try { loadJewishCal(); } catch(e) {}
     setTimeout(updateAllBadges,600);
     setTimeout(fetchDriveIntel, 800);
+    try {
+      var disp = document.getElementById('webAppUrlDisplay');
+      var saved = localStorage.getItem('po2_donaldWebAppUrl') || 'Not configured';
+      if (disp) disp.textContent = saved.length > 50 ? saved.substring(0,50)+'...' : saved;
+    } catch(e) {}
     try { renderFocusToday(); } catch(e) {}
     try { updateWorkCountdowns(); } catch(e) {}
     // Interactive stores — Dashboard
