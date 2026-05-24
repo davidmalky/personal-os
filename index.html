@@ -900,94 +900,108 @@ function setDonaldWebAppUrl(url) {
 function applyLiveIntel(intel) {
   if (!intel) return;
   
-  // Update Hebrew date
+  // Hebrew date
   if (intel.hebrew_date) {
-    var hdEl = document.getElementById('hebrewDate');
-    if (hdEl) hdEl.textContent = intel.hebrew_date;
-    var hdCard = document.getElementById('hebrewDateCard');
-    if (hdCard) hdCard.textContent = intel.hebrew_date;
-    var calLbl = document.getElementById('calDateLabel');
-    if (calLbl) calLbl.textContent = intel.hebrew_date;
+    ['hebrewDate','hebrewDateCard','calDateLabel'].forEach(function(id) {
+      var el = document.getElementById(id);
+      if (el) el.textContent = intel.hebrew_date;
+    });
   }
   
-  // Update calendar
-  if (intel.today) {
+  // Calendar — today
+  if (intel.today && intel.today.events) {
     var todayEl = document.getElementById('calTodayItems');
-    if (todayEl && intel.today.events) {
+    if (todayEl) {
       if (!intel.today.events.length) {
         todayEl.innerHTML = '<div style="font-size:10px;color:var(--text3);padding:6px 0">No scheduled events today</div>';
       } else {
         todayEl.innerHTML = intel.today.events.map(function(ev) {
           var color = ev.type==='jewish'?'var(--red)':ev.type==='medical'?'var(--amber)':'var(--text)';
-          return '<div class="row"><div><div class="rn" style="font-size:10px;color:'+color+'">'+ev.title+'</div>'+
-            '<div class="rs">'+ev.time+(ev.note?' · '+ev.note.substring(0,60):'')+'</div></div></div>';
+          return '<div class="row"><div><div class="rn" style="font-size:10px;color:'+color+'">'+ev.title+'</div><div class="rs">'+ev.time+(ev.note?' \u00b7 '+ev.note.substring(0,60):'')+'</div></div></div>';
         }).join('');
       }
     }
   }
   
+  // Calendar — this week
   if (intel.week && intel.week.length) {
     var weekEl = document.getElementById('calWeekItems');
     if (weekEl) {
-      weekEl.innerHTML = intel.week.slice(0,6).map(function(ev) {
+      weekEl.innerHTML = intel.week.slice(0,7).map(function(ev) {
         var color = ev.type==='jewish'?'var(--hi)':ev.type==='medical'?'var(--amber)':'var(--text)';
-        return '<div class="row"><div><div class="rn" style="font-size:10px;color:'+color+'">'+ev.title+'</div>'+
-          '<div class="rs">'+ev.date+(ev.time?' · '+ev.time:'')+'</div></div></div>';
+        return '<div class="row"><div><div class="rn" style="font-size:10px;color:'+color+'">'+ev.title+'</div><div class="rs">'+ev.date+(ev.time?' \u00b7 '+ev.time:'')+'</div></div></div>';
       }).join('');
     }
   }
   
-  // Update intel panels from Drive data
+  // CC Panels — this is the critical part
   if (intel.panels) {
+    var now = new Date().toISOString();
     Object.keys(intel.panels).forEach(function(panelId) {
       var html = intel.panels[panelId];
       if (!html) return;
-      // Update the intel cache so CC panels show this data
+      
+      // Update intel cache with fresh timestamp
+      if (!intelCache) intelCache = {};
       if (!intelCache[panelId]) intelCache[panelId] = {};
       intelCache[panelId].html = html;
-      intelCache[panelId].updated = intel.updated;
-      // Convert HTML items to structured items for renderLiveIntel
+      intelCache[panelId].updated = now; // <-- CRITICAL: fresh timestamp
+      
+      // Parse items from HTML for click interactions
       var items = [];
-      var matches = html.match(/<div class="ii ii-(\w+)"><strong>([^<]+)<\/strong>\s*(?:—\s*)?([^<]*)<\/div>/g) || [];
-      matches.forEach(function(m) {
-        var parts = m.match(/<div class="ii ii-(\w+)"><strong>([^<]+)<\/strong>\s*(?:—\s*)?([^<]*)<\/div>/);
-        if (parts) items.push({type:parts[1], title:parts[2], detail:parts[3].trim()});
+      var tmp = document.createElement('div');
+      tmp.innerHTML = html;
+      var divs = tmp.querySelectorAll('.ii');
+      divs.forEach(function(el) {
+        var type = 'blue';
+        ['red','amber','green','blue'].forEach(function(c){ if(el.classList.contains('ii-'+c)) type=c; });
+        var strong = el.querySelector('strong');
+        var titleText = strong ? strong.textContent : '';
+        var fullText = el.textContent;
+        var detail = fullText.replace(titleText,'').replace(/^\s*[—\-]\s*/,'').trim();
+        items.push({type:type, title:titleText, detail:detail});
       });
       intelCache[panelId].items = items;
-      // Render to DOM
-      var el = document.getElementById('cp-intel-'+panelId);
-      if (el) el.innerHTML = html;
+      
+      // Update the DOM element directly
+      var domEl = document.getElementById('cp-intel-'+panelId);
+      if (domEl) domEl.innerHTML = html;
     });
+    
+    // Save updated cache to localStorage
     try { S('intelCache', intelCache); } catch(e) {}
+    
+    // Re-render CC cards so timestamps show correctly
     try { renderCC(); } catch(e) {}
-    try { updateAllBadges(); } catch(e) {}
+    setTimeout(function(){ try { updateAllBadges(); } catch(e) {} }, 300);
   }
   
-  // Update metrics
-  if (intel.metrics) {
-    try { renderDashMetrics(intel.metrics); } catch(e) {}
-  }
-  
-  // Email panel store
+  // Email store — populate from live email highlights
   if (intel.email_highlights && intel.email_highlights.length) {
-    var emailItems = intel.email_highlights.map(function(h, i) {
+    var liveEmails = intel.email_highlights.map(function(h,i){
       return {
-        id: 'live_email_'+i,
+        id: 'live_'+i,
         text: h.subject,
-        sub: 'From: ' + h.from + ' · ' + h.date,
+        sub: 'From: '+h.from+' \u00b7 '+h.date,
         status: h.unread ? 'pending' : 'info',
         source: 'live'
       };
     });
-    // Merge with existing email store
     var existing = loadStore('email').filter(function(i){ return i.source !== 'live'; });
-    window.saveStore('email', emailItems.concat(existing));
-    window.renderStore('email', 'emailStoreEl');
+    window.saveStore('email', liveEmails.concat(existing).slice(0,12));
+    window.renderStore('email','emailStoreEl');
   }
   
-  // Show last updated time
+  // Metrics
+  if (intel.metrics) {
+    try { renderDashMetrics(intel.metrics); } catch(e) {}
+    try { renderFocusToday(); } catch(e) {}
+    try { updateWorkCountdowns(); } catch(e) {}
+  }
+  
+  // Sync bar
   var syncEl = document.querySelector('.sync-bar');
-  if (syncEl && intel.updated_et) syncEl.textContent = '● Synced · ' + intel.updated_et;
+  if (syncEl && intel.updated_et) syncEl.textContent = '\u25CF Synced \u00b7 ' + intel.updated_et;
 }
 
 function v26init() {
@@ -997,6 +1011,18 @@ function v26init() {
     try { renderCalendarFromWorker(); } catch(e) {}
     try { loadJewishCal(); } catch(e) {}
     setTimeout(updateAllBadges,600);
+    // Clear stale intel cache if older than 2 hours so Drive data wins
+    try {
+      var _cacheTime = parseInt(localStorage.getItem('po2_liveIntelTime') || '0');
+      var _cacheAge = Date.now() - _cacheTime;
+      if (_cacheAge < 2 * 60 * 60 * 1000) {
+        var _cached = localStorage.getItem('po2_liveIntelCache');
+        if (_cached) {
+          var _cachedIntel = JSON.parse(_cached);
+          if (_cachedIntel && _cachedIntel.updated) applyLiveIntel(_cachedIntel);
+        }
+      }
+    } catch(e) {}
     try { var _su=localStorage.getItem('po2_donaldWebAppUrl');if(_su){var _wi=document.getElementById('webAppUrlInp');if(_wi)_wi.value=_su;var _ls=document.getElementById('liveIntelStatus');if(_ls)_ls.textContent='Connected ✓';setTimeout(fetchDriveIntel,1000);} } catch(e) {}
     setTimeout(fetchDriveIntel, 800);
     try {
