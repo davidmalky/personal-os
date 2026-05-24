@@ -492,11 +492,36 @@ function renderCalendarFromWorker() {
   .catch(function(e){ console.warn('Calendar fetch error:', e); });
 }
 
+
+function loadJewishCal() {
+  var el = document.getElementById('jewishCalItems');
+  var hdCard = document.getElementById('hebrewDateCard');
+  if (hdCard && window.getHebrewDate) { try { hdCard.textContent = window.getHebrewDate(new Date()); } catch(_) {} }
+  if (!el) return;
+  var url = 'https://www.hebcal.com/hebcal?v=1&cfg=json&maj=on&min=on&mod=on&nx=on&year=now&month=x&ss=on&mf=on&c=on&geo=pos&latitude=39.9534&longitude=-74.1978&tzid=America/New_York&b=18&M=on&lg=en&s=on';
+  fetch(url).then(function(r){return r.json();}).then(function(data){
+    if(!data.items||!data.items.length){el.innerHTML='<div style="font-size:10px;color:var(--text3)">No events found</div>';return;}
+    var now=new Date();now.setHours(0,0,0,0);
+    var upcoming=data.items.filter(function(item){return new Date(item.date)>=now;}).slice(0,10);
+    el.innerHTML=upcoming.map(function(item){
+      var d=new Date(item.date);
+      var isYT=item.category==='holiday';
+      var isCL=item.category==='candles'||item.category==='havdalah';
+      var color=isYT?'var(--red)':isCL?'var(--hi)':'var(--text)';
+      var ds=d.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
+      return '<div class="row" style="padding:3px 0"><div><div class="rn" style="font-size:10px;color:'+color+'">'+item.title+'</div><div class="rs">'+ds+'</div></div></div>';
+    }).join('');
+  }).catch(function(){
+    el.innerHTML='<div style="font-size:10px;color:var(--text3)">Tap refresh to load · requires internet</div>';
+  });
+}
+
 function v26init() {
     try { renderDashMetrics(); } catch(e) { console.warn('renderDashMetrics:', e); }
     try { renderAgentsPanel(); } catch(e) { console.warn('renderAgentsPanel:', e); }
     try { renderHebrewDate(); } catch(e) { console.warn('renderHebrewDate:', e); }
     try { renderCalendarFromWorker(); } catch(e) { console.warn('renderCalendar:', e); }
+    try { loadJewishCal(); } catch(e) { console.warn('loadJewishCal:', e); }
   }
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', v26init);
@@ -615,7 +640,7 @@ function v26init() {
   <div class="dash-grid">
     <div class="dash-col">
       <div class="card" style="margin-bottom:0">
-        <div class="ct">Today <span style="font-size:9px;color:var(--red);font-weight:600;text-transform:none;letter-spacing:0" id="calDateLabel">מ״ט בעומר · ה׳ סיון תשפ״ו</span></div>
+        <div class="ct">Today <span style="font-size:9px;color:var(--red);font-weight:600;text-transform:none;letter-spacing:0" id="calDateLabel"></span></div>
         <div id="calTodayItems">
           <div class="row"><div><div class="rn">Chase — Alex Jacinto</div><div class="rs">1:30 PM · Prime Procurement banking setup</div></div><span class="badge bx">Today</span></div>
           <div class="row" style="margin-top:4px"><div><div class="rn" style="color:var(--red)">🕯 הדלקת נרות — שבועות</div><div class="rs">7:53 PM · Yom Tov begins tonight</div></div><span class="badge br">Tonight</span></div>
@@ -731,7 +756,6 @@ function v26init() {
       <div class="row"><span class="rn">Truist</span><span class="badge bg">✓</span></div>
       <div class="row"><span class="rn">TD Auto Finance</span><span class="badge bg">✓</span></div>
       <div class="row"><span class="rn">Hyundai Motor Finance</span><span class="badge bg">✓</span></div>
-      <div class="row"><span class="rn">Coinbase</span><span class="badge bx">Skipped — no access</span></div>
       <textarea class="nta" id="financeNotes" placeholder="Finance notes..." oninput="S('financeNotes',this.value)" style="min-height:60px;margin-top:10px"></textarea>
     </div>
   </div>
@@ -793,10 +817,8 @@ function v26init() {
   </div>
   <div class="g2">
     <div class="card">
-      <div class="ct">Jewish calendar</div>
-      <div class="row"><div><div class="rn">Lag B'Omer</div><div class="rs">Sunday May 17 — haircut allowed after</div></div><span class="badge bp">Sun</span></div>
-      <div class="row"><div><div class="rn">Shabbos candle lighting</div><div class="rs">Friday ~7:45 PM · Toms River</div></div><span class="badge bx">Fri</span></div>
-      <div class="row"><div><div class="rn">Sefira</div><div class="rs">Day 33 — Shavuos in 2 days</div></div><span class="badge bp">Active</span></div>
+      <div class="ct">Jewish calendar <span id="hebrewDateCard" style="font-size:9px;color:var(--red);font-weight:400;text-transform:none;letter-spacing:0;direction:rtl;font-family:Arial,sans-serif"></span></div>
+      <div id="jewishCalItems"><div style="font-size:10px;color:var(--text3);font-style:italic">Loading...</div></div>
       <button class="adb" onclick="ask('What is on the Jewish calendar this week and coming month that I should know about?')"><span class="adb-icon">✡</span>Jewish calendar this week</button>
       <button class="adb" onclick="ask('Help me prepare for Shabbos this week. What do I need to do before zman on Friday?')"><span class="adb-icon">✨</span>Shabbos prep check</button>
     </div>
@@ -806,7 +828,7 @@ function v26init() {
       <div class="row"><div><div class="rn">Avrumy</div><div class="rs">In Israel</div></div><span class="badge bx">Israel</span></div>
       <div class="row"><div><div class="rn">Esty (Raizy/Rose)</div><div class="rs">Shidduch open</div></div><span class="badge bp">Home</span></div>
       <div class="row"><div><div class="rn">Google Family Library</div><div class="rs">buildersrusnj → davidlgenuth migration</div></div><span class="badge ba">In progress</span></div>
-      <button class="adb" onclick="ask('Any important family items coming up that I should be thinking about or preparing for?')"><span class="adb-icon">👨‍👩‍👧</span>Family check-in</button>
+      <button class="adb" onclick="ask('Family check-in: For each family member (Malky, Rose/Raizy, Leah, Avrumy, Nathan), give me one specific thing I should reach out about or do for them this week. Be concrete, not generic.')"><span class="adb-icon">👨‍👩‍👧</span>Family check-in</button>
     </div>
   </div>
   <div class="g2">
@@ -1301,8 +1323,8 @@ function stopDrag(){drag=false;S('panelW',panelW);document.getElementById('dragD
 function setDate(){
   var d=new Date();var days=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];var mo=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   var hr=d.getHours(),mn=d.getMinutes(),ampm=hr>=12?'PM':'AM';hr=hr%12||12;
-  var el=document.getElementById('tdate');if(el)el.textContent=days[d.getDay()]+' '+mo[d.getMonth()]+' '+d.getDate()+' · '+hr+':'+(mn<10?'0':'')+mn+' '+ampm;var hdEl=document.getElementById('hebrewDate');if(hdEl&&window.getHebrewDate){hdEl.textContent=window.getHebrewDate(d);}
-  var greet=document.getElementById('dayGreeting');if(greet){var h=d.getHours();greet.textContent=h<12?'morning':h<17?'afternoon':'evening';}
+  var el=document.getElementById('tdate');if(el)el.textContent=days[d.getDay()]+' '+mo[d.getMonth()]+' '+d.getDate()+' · '+hr+':'+(mn<10?'0':'')+mn+' '+ampm;var hdEl=document.getElementById('hebrewDate');if(hdEl){try{var _hd=window.getHebrewDate?window.getHebrewDate(d):'';if(_hd)hdEl.textContent=_hd;}catch(_e){}}
+  var calLbl=document.getElementById('calDateLabel');if(calLbl&&window.getHebrewDate){try{calLbl.textContent=window.getHebrewDate(d);}catch(_){}}var greet=document.getElementById('dayGreeting');if(greet){var h=d.getHours();greet.textContent=h<12?'morning':h<17?'afternoon':'evening';}
   var sub=document.getElementById('dashSubtitle');if(sub){var ds=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];var mos=['January','February','March','April','May','June','July','August','September','October','November','December'];sub.textContent=ds[d.getDay()]+', '+mos[d.getMonth()]+' '+d.getDate()+', '+d.getFullYear();}
 }
 setDate();setInterval(setDate,1000);
