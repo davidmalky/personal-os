@@ -953,6 +953,7 @@ function v26init() {
     try { renderCalendarFromWorker(); } catch(e) {}
     try { loadJewishCal(); } catch(e) {}
     setTimeout(updateAllBadges,600);
+    try { var _su=localStorage.getItem('po2_donaldWebAppUrl');if(_su){var _wi=document.getElementById('webAppUrlInp');if(_wi)_wi.value=_su;var _ls=document.getElementById('liveIntelStatus');if(_ls)_ls.textContent='Connected ✓';setTimeout(fetchDriveIntel,1000);} } catch(e) {}
     setTimeout(fetchDriveIntel, 800);
     try {
       var disp = document.getElementById('webAppUrlDisplay');
@@ -1500,6 +1501,16 @@ function v26init() {
     <div style="flex:1;overflow-y:auto;padding:12px">
       <div class="cll">Settings</div>
       <div style="margin-bottom:10px"><div style="font-size:10px;font-weight:600;color:var(--text2);margin-bottom:4px;text-transform:uppercase;letter-spacing:.04em">Personal DONALD Project URL</div><input class="tinp" style="width:100%" type="text" id="donaldUrlInput" placeholder="https://claude.ai/project/..." oninput="saveDonaldUrl()"></div>
+      <div style="margin-bottom:14px">
+        <div style="font-size:10px;font-weight:600;color:var(--text2);margin-bottom:4px;text-transform:uppercase;letter-spacing:.04em">DONALD Live Intel</div>
+        <div style="font-size:9px;color:var(--text3);margin-bottom:6px;line-height:1.5">Paste your Apps Script Web App URL to enable live calendar, email, and intel data. Auto-refreshes every 30 min.</div>
+        <input class="tinp" style="width:100%;margin-bottom:5px" id="webAppUrlInp" placeholder="https://script.google.com/macros/s/...">
+        <div style="display:flex;gap:5px">
+          <button class="addb" style="flex:1;margin-top:0" onclick="setDonaldWebAppUrl(document.getElementById('webAppUrlInp').value)">Save &amp; Connect</button>
+          <button class="addb" style="flex:1;margin-top:0" onclick="fetchDriveIntel()">Pull Now</button>
+        </div>
+        <div id="liveIntelStatus" style="font-size:9px;color:var(--text3);margin-top:4px"></div>
+      </div>
       <div style="margin-bottom:10px"><div style="font-size:10px;font-weight:600;color:var(--text2);margin-bottom:4px;text-transform:uppercase;letter-spacing:.04em">GitHub token</div><input class="tinp" style="width:100%" type="password" id="ghTokenInput" placeholder="ghp_..."><button class="addb" style="margin-top:5px;width:100%" onclick="saveGhToken()">Save token</button></div>
       <div style="margin-bottom:10px;padding:10px;background:var(--surf2);border-radius:var(--r);border:1px solid var(--border)">
         <div style="font-size:10px;font-weight:700;color:var(--text);margin-bottom:6px">☁ Cloud Sync</div>
@@ -1524,7 +1535,7 @@ function v26init() {
       </div>
       <button class="addb" onclick="toggleTheme()" style="width:100%;margin-bottom:6px">Toggle dark / light mode</button>
       <button class="addb" onclick="if(confirm('Clear all data?'))clearAll()" style="width:100%;color:var(--red)">Clear all saved data</button>
-      <div style="font-size:9px;color:var(--text3);line-height:1.8;margin-top:14px;padding-top:12px;border-top:1px solid var(--border)">Personal OS v3.7<br>personal-os.vercel.app<br>David Genuth — COO Prime Source</div>
+      <div style="font-size:9px;color:var(--text3);line-height:1.8;margin-top:14px;padding-top:12px;border-top:1px solid var(--border)">Personal OS v3.8<br>personal-os.vercel.app<br>David Genuth — COO Prime Source</div>
     </div>
   </div>
 </div>
