@@ -807,34 +807,60 @@ var DONALD_INTEL_FILE_ID = '137MUmEXKnGgkNRKjaOUsSxbTf5ir9VVx';
 
 function fetchDriveIntel() {
   var status = document.getElementById('liveIntelStatus');
-  if (status) { status.textContent = 'Fetching live intel...'; status.style.color = 'var(--amber)'; }
   
-  // Call Cloudflare Worker /intel endpoint — proxies Apps Script, no CORS issues
-  fetch('https://donald-proxy.davidlgenuth.workers.dev/intel?t=' + Date.now())
-    .then(function(r) {
-      if (!r.ok) throw new Error('Worker /intel: ' + r.status);
-      return r.json();
-    })
-    .then(function(intel) {
-      if (!intel || !intel.updated) throw new Error('No intel data in response');
+  // Read intel from JSONBin — already connected, no CORS issues
+  var binId = G('jbBinId') || '';
+  var masterKey = G('jbKey') || '';
+  
+  if (!binId || !masterKey) {
+    if (status) { 
+      status.textContent = 'Set up Cloud Sync first (enter JSONBin Master Key + Bin ID in Settings below)'; 
+      status.style.color = 'var(--amber)'; 
+    }
+    // Try cached intel
+    try {
+      var cached = localStorage.getItem('po2_liveIntelCache');
+      if (cached) { var c = JSON.parse(cached); if (c && c.updated) applyLiveIntel(c); }
+    } catch(e) {}
+    return;
+  }
+  
+  if (status) { status.textContent = 'Fetching...'; status.style.color = 'var(--amber)'; }
+  
+  // JSONBin read endpoint — CORS allowed from all origins
+  fetch('https://api.jsonbin.io/v3/b/' + binId + '/latest', {
+    headers: { 'X-Master-Key': masterKey, 'X-Bin-Meta': 'false' }
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    // JSONBin wraps in { record: {...} }
+    var intel = data.record || data;
+    if (intel && intel.updated) {
       _liveIntel = intel;
       applyLiveIntel(intel);
-      try {
-        localStorage.setItem('po2_liveIntelCache', JSON.stringify(intel));
-        localStorage.setItem('po2_liveIntelTime', Date.now().toString());
+      try { 
+        localStorage.setItem('po2_liveIntelCache', JSON.stringify(intel)); 
+        localStorage.setItem('po2_liveIntelTime', Date.now().toString()); 
       } catch(e) {}
-      if (status) { status.textContent = 'Connected \u2713 ' + (intel.updated_et || intel.updated); status.style.color = 'var(--green)'; }
+      if (status) { 
+        status.textContent = 'Connected \u2713 ' + (intel.updated_et || intel.updated); 
+        status.style.color = 'var(--green)'; 
+      }
       var syncEl = document.querySelector('.sync-bar');
       if (syncEl && intel.updated_et) syncEl.textContent = '\u25CF Live \u00b7 ' + intel.updated_et;
-    })
-    .catch(function(err) {
-      if (status) { status.textContent = 'Worker not yet updated \u2014 update Cloudflare Worker first'; status.style.color = 'var(--red)'; }
-      // Fall back to cached intel
-      try {
-        var cached = localStorage.getItem('po2_liveIntelCache');
-        if (cached) { var intel = JSON.parse(cached); if (intel && intel.updated) { applyLiveIntel(intel); if(status) { status.textContent += ' (using cached data)'; } } }
-      } catch(e) {}
-    });
+    } else {
+      if (status) { 
+        status.textContent = 'Connected but no intel yet \u2014 run buildLiveIntel() in Apps Script'; 
+        status.style.color = 'var(--amber)'; 
+      }
+    }
+  })
+  .catch(function(err) {
+    if (status) { 
+      status.textContent = 'Error: ' + err.message; 
+      status.style.color = 'var(--red)'; 
+    }
+  });
 }function fetchDriveIntel() {
   var status = document.getElementById('liveIntelStatus');
   // Try Google Drive API directly using existing browser session
