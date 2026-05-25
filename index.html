@@ -929,50 +929,6 @@ function fetchDriveIntel() {
       status.style.color = 'var(--red)'; 
     }
   });
-}function fetchDriveIntel() {
-  var status = document.getElementById('liveIntelStatus');
-  // Try Google Drive API directly using existing browser session
-  // This works because user is logged into Google in this browser
-  var driveUrl = 'https://www.googleapis.com/drive/v3/files/137MUmEXKnGgkNRKjaOUsSxbTf5ir9VVx?alt=media';
-  
-  fetch(driveUrl, { credentials: 'include' })
-    .then(function(r) {
-      if (!r.ok) throw new Error('Drive API: ' + r.status);
-      return r.json();
-    })
-    .then(function(intel) {
-      if (intel && intel.updated) {
-        _liveIntel = intel;
-        applyLiveIntel(intel);
-        try { localStorage.setItem('po2_liveIntelCache', JSON.stringify(intel)); localStorage.setItem('po2_liveIntelTime', Date.now().toString()); } catch(e) {}
-        if (status) { status.textContent = 'Connected \u2713 ' + (intel.updated_et || ''); status.style.color = 'var(--green)'; }
-        var syncEl = document.querySelector('.sync-bar');
-        if (syncEl && intel.updated_et) syncEl.textContent = '\u25CF Synced \u00b7 ' + intel.updated_et;
-        return;
-      }
-      throw new Error('No intel data');
-    })
-    .catch(function() {
-      // Fall back to Apps Script web app URL if set
-      var webAppUrl = localStorage.getItem('po2_donaldWebAppUrl') || '';
-      if (webAppUrl) {
-        fetch(webAppUrl + '?t=' + Date.now())
-          .then(function(r) { return r.json(); })
-          .then(function(intel) {
-            if (intel && intel.updated) {
-              _liveIntel = intel;
-              applyLiveIntel(intel);
-              try { localStorage.setItem('po2_liveIntelCache', JSON.stringify(intel)); localStorage.setItem('po2_liveIntelTime', Date.now().toString()); } catch(e) {}
-              if (status) { status.textContent = 'Connected \u2713 ' + (intel.updated_et || ''); status.style.color = 'var(--green)'; }
-              var syncEl = document.querySelector('.sync-bar');
-              if (syncEl && intel.updated_et) syncEl.textContent = '\u25CF Synced \u00b7 ' + intel.updated_et;
-            }
-          })
-          .catch(function() { tryLoadCachedIntel(); });
-      } else {
-        tryLoadCachedIntel();
-      }
-    });
 }
 
 function tryLoadCachedIntel() {
