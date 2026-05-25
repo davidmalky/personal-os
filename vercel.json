@@ -1,1 +1,1 @@
-{"version": 2, "rewrites": [{"source": "/(.*)", "destination": "/index2.html"}], "headers": [{"source": "/(.*)", "headers": [{"key": "Cache-Control", "value": "no-store, no-cache, must-revalidate"}]}]}
+{"version":2}
