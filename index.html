@@ -805,7 +805,7 @@ function renderFocusToday() {
 var _liveIntel = null;
 var DONALD_INTEL_FILE_ID = '137MUmEXKnGgkNRKjaOUsSxbTf5ir9VVx';
 
-function fetchDriveIntel() {
+window.fetchDriveIntel = function() {
   var status = document.getElementById('liveIntelStatus');
   if (status) { status.textContent = 'Fetching...'; status.style.color = 'var(--amber)'; }
   // Call Worker /intel route which proxies the Apps Script (no CORS issues)
@@ -2152,7 +2152,7 @@ function setSyncStatus(state,msg,btn){var dot=document.getElementById('syncDot')
 function syncNow(){if(syncEnabled)loadFromCloud();else initSync();}
 async function loadFromCloud(){
   var binId=G('jbBinId','');var apiKey=G('jbKey','');if(!binId||!apiKey){setSyncStatus('local','Local only','');return;}setSyncStatus('syncing','Loading...','');
-  fetch('https://api.jsonbin.io/v3/b/'+binId+'/latest',{headers:{'X-Master-Key':apiKey,'X-Bin-Meta':'false'}}).then(function(r){return r.json();}).then(function(data){
+  fetch('https://donald-proxy.davidlgenuth.workers.dev/jsonbin?bin='+binId+'&key='+encodeURIComponent(apiKey)).then(function(r){return r.json();}).then(function(data){
     if(data&&data.record){var d=data.record;if(d.tasks&&d.tasks.length)tasks=d.tasks;if(d.chats&&d.chats.length)chats=d.chats;if(d.intelCache)intelCache=d.intelCache;['tasks','chats','intelCache'].forEach(function(k){if(d[k])S(k,d[k]);});
       // Restore all po2_ keys from cloud
       Object.keys(d).filter(function(k){return k.startsWith('po2_');}).forEach(function(k){try{localStorage.setItem(k,typeof d[k]==='string'?d[k]:JSON.stringify(d[k]));}catch(e){}});renderDashTasks();renderChats();renderCC();setTimeout(injectAllIntel,100);setSyncStatus('synced','Synced · '+(new Date()).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}),'');}else{pushToCloud();}
@@ -2164,7 +2164,7 @@ function pushToCloud(){
   // Include all po2_ localStorage keys for full cross-device sync
   var allKeys=Object.keys(localStorage).filter(function(k){return k.startsWith('po2_');});
   allKeys.forEach(function(k){try{data[k]=JSON.parse(localStorage.getItem(k));}catch(e){data[k]=localStorage.getItem(k);}});
-  fetch('https://api.jsonbin.io/v3/b/'+binId,{method:'PUT',headers:{'Content-Type':'application/json','X-Master-Key':apiKey},body:JSON.stringify(data)}).then(function(r){return r.json();}).then(function(result){if(result.metadata||result.record){setSyncStatus('synced','Synced · '+(new Date()).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}),'');}else{setSyncStatus('offline','Save failed','Retry');}}).catch(function(){setSyncStatus('offline','Save failed','Retry');});
+  fetch('https://donald-proxy.davidlgenuth.workers.dev/jsonbin?bin='+binId+'&key='+encodeURIComponent(apiKey),{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)}).then(function(r){return r.json();}).then(function(result){if(result.metadata||result.record){setSyncStatus('synced','Synced · '+(new Date()).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}),'');}else{setSyncStatus('offline','Save failed','Retry');}}).catch(function(){setSyncStatus('offline','Save failed','Retry');});
 }
 function saveSyncCredentials(){var key=document.getElementById('jbKeyInput').value.trim();var bin=document.getElementById('jbBinInput').value.trim();var st=document.getElementById('syncSetupStatus');if(!key){if(st)st.textContent='Paste Master Key first.';return;}S('jbKey',key);if(bin)S('jbBinId',bin);syncEnabled=true;document.getElementById('jbKeyInput').value='';if(bin){if(st)st.textContent='✓ Saved. Connecting...';loadFromCloud();}else{if(st)st.textContent='✓ Key saved. Click Create Bin.';}}
 async function createBin(){var apiKey=G('jbKey','');if(!apiKey){alert('Paste Master Key first.');return;}setSyncStatus('syncing','Creating bin...','');fetch('https://api.jsonbin.io/v3/b',{method:'POST',headers:{'Content-Type':'application/json','X-Master-Key':apiKey,'X-Bin-Name':'PersonalOS'},body:JSON.stringify({initialized:true})}).then(function(r){return r.json();}).then(function(result){if(result.metadata&&result.metadata.id){var binId=result.metadata.id;S('jbBinId',binId);var el=document.getElementById('jbBinInput');if(el)el.value=binId;syncEnabled=true;setTimeout(pushToCloud,500);showToast('Sync bin created!');}else{setSyncStatus('offline','Create failed','');}}).catch(function(){setSyncStatus('offline','Create failed','');});}
