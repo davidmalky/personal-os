@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"><!-- DONALD v3.15 build 1779683717 -->
+<meta charset="UTF-8"><!-- DONALD v3.16 build 1779687721 1779683717 -->
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -807,44 +807,38 @@ var DONALD_INTEL_FILE_ID = '137MUmEXKnGgkNRKjaOUsSxbTf5ir9VVx';
 
 function fetchDriveIntel() {
   var status = document.getElementById('liveIntelStatus');
-  var masterKey = localStorage.getItem('po2_jbKey') || G('jbKey') || '';
-  var binId = localStorage.getItem('po2_jbBinId') || G('jbBinId') || '6a02c186adc21f119a894914';
-  
+  var masterKey = G('jbKey') || '';
+  var binId = G('jbBinId') || '6a02c186adc21f119a894914';
+
   if (!masterKey) {
-    if (status) { status.textContent = 'Enter JSONBin Master Key in Cloud Sync below first'; status.style.color = 'var(--amber)'; }
+    if (status) { status.textContent = 'Enter Master Key in Cloud Sync below'; status.style.color = 'var(--amber)'; }
+    try { var c=localStorage.getItem('po2_liveIntelCache'); if(c){var ci=JSON.parse(c);if(ci&&ci.updated)applyLiveIntel(ci);} } catch(e) {}
     return;
   }
-  
-  if (status) { status.textContent = 'Fetching from JSONBin...'; status.style.color = 'var(--amber)'; }
-  
+
+  if (status) { status.textContent = 'Fetching...'; status.style.color = 'var(--amber)'; }
+
   fetch('https://api.jsonbin.io/v3/b/' + binId + '/latest', {
     method: 'GET',
     headers: { 'X-Master-Key': masterKey, 'X-Bin-Meta': 'false' }
   })
   .then(function(r) {
-    if (!r.ok) throw new Error('JSONBin HTTP ' + r.status);
+    if (!r.ok) throw new Error('JSONBin ' + r.status);
     return r.json();
   })
   .then(function(data) {
     var intel = data.record || data;
-    if (!intel || !intel.updated) throw new Error('No intel data in bin');
+    if (!intel || !intel.updated) throw new Error('No intel data');
     _liveIntel = intel;
     applyLiveIntel(intel);
-    try {
-      localStorage.setItem('po2_liveIntelCache', JSON.stringify(intel));
-      localStorage.setItem('po2_liveIntelTime', Date.now().toString());
-    } catch(e) {}
-    if (status) { status.textContent = 'Connected \u2713 ' + (intel.updated_et || intel.updated); status.style.color = 'var(--green)'; }
+    try { localStorage.setItem('po2_liveIntelCache', JSON.stringify(intel)); localStorage.setItem('po2_liveIntelTime', Date.now().toString()); } catch(e) {}
+    if (status) { status.textContent = 'Connected ✓ ' + (intel.updated_et || ''); status.style.color = 'var(--green)'; }
     var syncEl = document.querySelector('.sync-bar');
-    if (syncEl && intel.updated_et) syncEl.textContent = '\u25CF Live \u00b7 ' + intel.updated_et;
+    if (syncEl && intel.updated_et) syncEl.textContent = '● Live · ' + intel.updated_et;
   })
   .catch(function(err) {
     if (status) { status.textContent = 'Error: ' + err.message; status.style.color = 'var(--red)'; }
-    // Fall back to cached
-    try {
-      var cached = localStorage.getItem('po2_liveIntelCache');
-      if (cached) { var c = JSON.parse(cached); if (c && c.updated) applyLiveIntel(c); }
-    } catch(e) {}
+    try { var c=localStorage.getItem('po2_liveIntelCache'); if(c){var ci=JSON.parse(c);if(ci&&ci.updated)applyLiveIntel(ci);} } catch(e) {}
   });
 }function fetchDriveIntel() {
   var status = document.getElementById('liveIntelStatus');
@@ -1746,7 +1740,7 @@ function v26init() {
       </div>
       <button class="addb" onclick="toggleTheme()" style="width:100%;margin-bottom:6px">Toggle dark / light mode</button>
       <button class="addb" onclick="if(confirm('Clear all data?'))clearAll()" style="width:100%;color:var(--red)">Clear all saved data</button>
-      <div style="font-size:9px;color:var(--text3);line-height:1.8;margin-top:14px;padding-top:12px;border-top:1px solid var(--border)">Personal OS v3.11<br>personal-os.vercel.app<br>David Genuth — COO Prime Source</div>
+      <div style="font-size:9px;color:var(--text3);line-height:1.8;margin-top:14px;padding-top:12px;border-top:1px solid var(--border)">Personal OS v3.16<br>personal-os.vercel.app<br>David Genuth — COO Prime Source</div>
     </div>
   </div>
 </div>
@@ -2295,7 +2289,7 @@ async function deployUpdate(){
   var btn=document.getElementById('deployBtn'),st=document.getElementById('dstatus');btn.disabled=true;btn.textContent='Deploying...';st.className='dstatus loading show';st.textContent='Pushing to GitHub...';
   try{
     var r1=await fetch('https://api.github.com/repos/davidmalky/personal-os/contents/index.html',{headers:{'Authorization':'token '+token,'Accept':'application/vnd.github.v3+json'}});var d1=await r1.json();
-    var r2=await fetch('https://api.github.com/repos/davidmalky/personal-os/contents/index.html',{method:'PUT',headers:{'Authorization':'token '+token,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'},body:JSON.stringify({message:'Deploy Personal OS v3.11',content:btoa(unescape(encodeURIComponent(code))),sha:d1.sha})});
+    var r2=await fetch('https://api.github.com/repos/davidmalky/personal-os/contents/index.html',{method:'PUT',headers:{'Authorization':'token '+token,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'},body:JSON.stringify({message:'Deploy Personal OS v3.16',content:btoa(unescape(encodeURIComponent(code))),sha:d1.sha})});
     if(r2.ok){st.className='dstatus ok show';st.textContent='Deployed. Live in ~30 seconds.';document.getElementById('deployCode').value='';}
     else{var err=await r2.json();throw new Error(err.message||r2.status);}
   }catch(err){st.className='dstatus err show';st.textContent='Deploy failed: '+err.message;}
