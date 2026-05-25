@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"><!-- DONALD v3.16 build 1779687721 1779683717 -->
+<meta charset="UTF-8">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -807,72 +807,28 @@ var DONALD_INTEL_FILE_ID = '137MUmEXKnGgkNRKjaOUsSxbTf5ir9VVx';
 
 function fetchDriveIntel() {
   var status = document.getElementById('liveIntelStatus');
-  
-  // Try cached intel first (from last successful fetch)
-  try {
-    var cached = localStorage.getItem('po2_liveIntelCache');
-    var cacheTime = parseInt(localStorage.getItem('po2_liveIntelTime') || '0');
-    if (cached && (Date.now() - cacheTime) < 60 * 60 * 1000) {
-      var c = JSON.parse(cached);
-      if (c && c.updated) {
-        applyLiveIntel(c);
-        if (status) { status.textContent = 'Using cached intel from ' + (c.updated_et || ''); status.style.color = 'var(--text3)'; }
-        return;
-      }
-    }
-  } catch(e) {}
-  
-  if (status) { status.textContent = 'Generating fresh intel...'; status.style.color = 'var(--amber)'; }
-  
-  // Generate fresh intel via Claude through the Worker
-  var now = new Date();
-  var prompt = 'Generate a DONALD personal command center intel update for David Genuth. ' +
-    'Today is ' + now.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'}) + '. ' +
-    'Return ONLY a JSON object with this exact structure, no markdown:\n' +
-    '{"updated_et":"' + now.toLocaleString('en-US',{timeZone:'America/New_York'}) + ' ET",' +
-    '"hebrew_date":"' + (window.getHebrewDate ? window.getHebrewDate(now) : '') + '",' +
-    '"panels":{' +
-    '"daily":"<div class=\'ii ii-red\'><strong>June 8 COO speech</strong> — 15 days, zero prep done</div><div class=\'ii ii-amber\'><strong>Tax amendment</strong> — June 11 deadline, follow up with 5 orgs</div><div class=\'ii ii-amber\'><strong>Milestone Metrics bank</strong> — Chase appt Tue May 26 11am</div>",' +
-    '"finance":"<div class=\'ii ii-red\'><strong>$93K owed GenMed</strong> — collect Prime Procurement balance</div><div class=\'ii ii-amber\'><strong>DAF not set up</strong> — needed for 2026 tax strategy</div><div class=\'ii ii-green\'><strong>AmeriHealth AutoPay</strong> — $1,974.82/mo via Chase 3529</div>",' +
-    '"health":"<div class=\'ii ii-amber\'><strong>CPAP 7/30 nights</strong> — use machine every night, window closes Jul 20</div><div class=\'ii ii-red\'><strong>Tapezza Treatment 3</strong> — call Option Care 973-597-0414</div>",' +
-    '"work":"<div class=\'ii ii-red\'><strong>June 8 speech — 15 days</strong> — COO procurement, not started</div><div class=\'ii ii-red\'><strong>Culligan redlined contract</strong> — Thomas Caputo, 3+ weeks no response</div><div class=\'ii ii-amber\'><strong>Mobotics DocuSign</strong> — Yehuda + Mark pending</div>",' +
-    '"email":"<div class=\'ii ii-amber\'><strong>MileagePlus merge</strong> — 3 accounts, call 1-800-421-4655</div><div class=\'ii ii-amber\'><strong>2022 charity receipts</strong> — follow up with 5 orgs, Jun 11 deadline</div>",' +
-    '"family":"<div class=\'ii ii-blue\'><strong>Shabbos</strong> — Fri May 29 candle lighting 7:57 PM</div><div class=\'ii ii-amber\'><strong>Avrumy</strong> — in Israel, check in</div><div class=\'ii ii-amber\'><strong>Leah</strong> — at Shalva, monitor settling in</div>",' +
-    '"projects":"<div class=\'ii ii-blue\'><strong>DONALD OS</strong> — v3.13 live, live intel layer active</div><div class=\'ii ii-amber\'><strong>Renzo</strong> — MVP not defined, potential revenue stream</div>",' +
-    '"focus":"<div class=\'ii ii-red\'><strong>June 8 speech — 15 days</strong> — most urgent, start today</div><div class=\'ii ii-red\'><strong>Tax amendment — 18 days</strong> — June 11 hard deadline</div><div class=\'ii ii-amber\'><strong>Chase bank Tuesday</strong> — Milestone Metrics, bring EIN + formation doc</div>",' +
-    '"growth":"<div class=\'ii ii-blue\'><strong>Evening Summary</strong> — daily wrap automation pending</div><div class=\'ii ii-blue\'><strong>Salesforce metrics</strong> — pull into dashboard</div>"}}';
-  
-  // Use the intel directly (pre-built, no Worker call needed for this)
-  try {
-    var intel = JSON.parse(prompt.substring(prompt.indexOf('{'), prompt.lastIndexOf('}')+1));
-    // Actually just use the pre-built intel object directly
-  } catch(e) {}
-  
-  // Build intel directly from known state — no network call needed
-  var intel = {
-    updated: now.toISOString(),
-    updated_et: now.toLocaleString('en-US', {timeZone:'America/New_York', weekday:'short', month:'short', day:'numeric', hour:'2-digit', minute:'2-digit'}),
-    hebrew_date: window.getHebrewDate ? window.getHebrewDate(now) : '',
-    panels: {
-      daily: "<div class='ii ii-red'><strong>June 8 COO speech</strong> — 15 days, zero prep done</div><div class='ii ii-amber'><strong>Tax amendment</strong> — June 11 deadline, call 5 orgs for receipts</div><div class='ii ii-amber'><strong>Milestone Metrics bank</strong> — Chase appt Tue May 26 11am, bring EIN + formation doc</div><div class='ii ii-amber'><strong>CPAP tonight</strong> — 7/30 nights, use machine every night</div>",
-      finance: "<div class='ii ii-red'><strong>$93K owed — GenMed</strong> — collect Prime Procurement balance</div><div class='ii ii-amber'><strong>DAF not set up</strong> — needed for 2026 tax strategy</div><div class='ii ii-amber'><strong>Auto insurance</strong> — Malky and Esty still need defensive driving</div><div class='ii ii-green'><strong>AmeriHealth AutoPay</strong> — $1,974.82/mo via Chase 3529 active</div><div class='ii ii-green'><strong>Capital One Spark</strong> — AutoPay enrolled, Malky authorized</div><div class='ii ii-blue'><strong>IRS installment</strong> — $439/mo auto-debit, balance ~$32K</div>",
-      health: "<div class='ii ii-amber'><strong>CPAP 7/30 nights</strong> — use machine every night, window closes Jul 20</div><div class='ii ii-red'><strong>Tapezza Treatment 3</strong> — call Option Care 973-597-0414, schedule before Jun 1</div><div class='ii ii-blue'><strong>Kasa Smart Plug</strong> — CPAP timer on auto start/stop</div>",
-      work: "<div class='ii ii-red'><strong>June 8 speech — 15 days</strong> — COO procurement presentation, not started</div><div class='ii ii-red'><strong>Culligan redlined contract</strong> — Thomas Caputo, 3+ weeks no response, resolve now</div><div class='ii ii-amber'><strong>Mobotics DocuSign</strong> — Yehuda + Mark need to sign, sent Apr 30</div><div class='ii ii-amber'><strong>Salesforce — 4 dev items</strong> — ownership change, matching rule, parent-child, dormant opps</div><div class='ii ii-blue'><strong>BEP BAA + permissions</strong> — still outstanding, blocking BEP integration</div>",
-      email: "<div class='ii ii-urgent'><strong>MileagePlus merge</strong> — 3 accounts: XV915448, YH388442 + 1 more, call 1-800-421-4655</div><div class='ii ii-red'><strong>2022 charity receipts</strong> — follow up with 5 orgs, June 11 deadline</div><div class='ii ii-amber'><strong>Milestone Metrics</strong> — Chase appt Tue May 26 11am, confirm with Adam King 201-391-8350</div>",
-      family: "<div class='ii ii-blue'><strong>Shabbos</strong> — Fri May 29 candle lighting 7:57 PM, Havdalah Sat 9:03 PM</div><div class='ii ii-amber'><strong>Avrumy</strong> — in Israel at Yeshiva Dvar Torah, check in this week</div><div class='ii ii-amber'><strong>Leah</strong> — at Shalva, first week, monitor how she is settling in</div><div class='ii ii-blue'><strong>Nathan</strong> — at Yeshiva Mekor Hatorah Lakewood, building his business</div>",
-      projects: "<div class='ii ii-blue'><strong>DONALD Personal OS</strong> — v3.13 live, building live intel layer</div><div class='ii ii-amber'><strong>Renzo — AI outreach tool</strong> — MVP not yet defined, potential revenue stream</div><div class='ii ii-amber'><strong>FashionScan25.3</strong> — Gradle issues blocking, on hold</div>",
-      focus: "<div class='ii ii-red'><strong>June 8 speech — 15 days</strong> — most urgent deliverable, not started</div><div class='ii ii-red'><strong>Tax amendment — 18 days</strong> — June 11 hard deadline, receipts from 5 orgs</div><div class='ii ii-amber'><strong>Chase bank Tuesday</strong> — Milestone Metrics, bring EIN + formation doc</div><div class='ii ii-amber'><strong>CPAP tonight</strong> — 23 more nights needed, window closes Jul 20</div><div class='ii ii-blue'><strong>MileagePlus merge</strong> — 20 min call anytime, 1-800-421-4655</div>",
-      growth: "<div class='ii ii-blue'><strong>Evening Summary automation</strong> — daily wrap from DONALD each evening</div><div class='ii ii-blue'><strong>Salesforce metrics in dashboard</strong> — pull pipeline data</div><div class='ii ii-blue'><strong>Per-panel embedded chat</strong> — each CC card gets its own chat</div>"
-    },
-    metrics: { tax_days: 18, event_days: 15, cpap_nights: 7, cpap_target: 30, pp_balance: 93000 }
-  };
-  
-  _liveIntel = intel;
-  applyLiveIntel(intel);
-  try { localStorage.setItem('po2_liveIntelCache', JSON.stringify(intel)); localStorage.setItem('po2_liveIntelTime', Date.now().toString()); } catch(e) {}
-  if (status) { status.textContent = 'Connected \u2713 ' + intel.updated_et; status.style.color = 'var(--green)'; }
-  var syncEl = document.querySelector('.sync-bar');
-  if (syncEl) syncEl.textContent = '\u25CF Live \u00b7 ' + intel.updated_et;
+  var masterKey = G('jbKey') || '';
+  var binId = G('jbBinId') || '6a02c186adc21f119a894914';
+  if (!masterKey) { if(status){status.textContent='Enter Master Key in Cloud Sync';status.style.color='var(--amber)';} return; }
+  if (status) { status.textContent = 'Fetching...'; status.style.color = 'var(--amber)'; }
+  fetch('https://api.jsonbin.io/v3/b/' + binId + '/latest', {
+    method: 'GET', headers: { 'X-Master-Key': masterKey, 'X-Bin-Meta': 'false' }
+  })
+  .then(function(r) { if(!r.ok) throw new Error('JSONBin '+r.status); return r.json(); })
+  .then(function(data) {
+    var intel = data.record || data;
+    if (!intel || !intel.updated) throw new Error('No intel data');
+    _liveIntel = intel;
+    applyLiveIntel(intel);
+    try { localStorage.setItem('po2_liveIntelCache',JSON.stringify(intel)); localStorage.setItem('po2_liveIntelTime',Date.now().toString()); } catch(e) {}
+    if (status) { status.textContent = 'Connected \u2713 '+(intel.updated_et||''); status.style.color = 'var(--green)'; }
+    var syncEl = document.querySelector('.sync-bar');
+    if (syncEl && intel.updated_et) syncEl.textContent = '\u25CF Live \u00b7 '+intel.updated_et;
+  })
+  .catch(function(err) {
+    if (status) { status.textContent = 'Error: '+err.message; status.style.color = 'var(--red)'; }
+    try { var c=localStorage.getItem('po2_liveIntelCache'); if(c){var ci=JSON.parse(c);if(ci&&ci.updated)applyLiveIntel(ci);} } catch(e) {}
+  });
 }
 
 function tryLoadCachedIntel() {
@@ -891,9 +847,33 @@ function tryLoadCachedIntel() {
 
 function setDonaldWebAppUrl(url) {
   var status = document.getElementById('liveIntelStatus');
-  if (url && url.trim()) localStorage.setItem('po2_donaldWebAppUrl', url.trim());
-  if (status) { status.textContent = 'Connecting...'; status.style.color = 'var(--amber)'; }
-  fetchDriveIntel();
+  if (!url || !url.startsWith('https://')) {
+    if (status) { status.textContent = 'Error: enter a valid https:// URL'; status.style.color = 'var(--red)'; }
+    return;
+  }
+  localStorage.setItem('po2_donaldWebAppUrl', url.trim());
+  if (status) { status.textContent = 'Saved. Pulling live data...'; status.style.color = 'var(--amber)'; }
+  // Test the URL
+  fetch(url.trim() + '?t=' + Date.now())
+    .then(function(r) {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    })
+    .then(function(intel) {
+      if (intel && intel.updated) {
+        _liveIntel = intel;
+        applyLiveIntel(intel);
+        try { localStorage.setItem('po2_liveIntelCache', JSON.stringify(intel)); localStorage.setItem('po2_liveIntelTime', Date.now().toString()); } catch(e) {}
+        if (status) { status.textContent = 'Connected \u2713 Last updated: ' + (intel.updated_et || intel.updated); status.style.color = 'var(--green)'; }
+        var syncEl = document.querySelector('.sync-bar');
+        if (syncEl && intel.updated_et) syncEl.textContent = '\u25CF Synced \u00b7 ' + intel.updated_et;
+      } else {
+        if (status) { status.textContent = 'Connected but no intel data found. Run buildLiveIntel() in Apps Script first.'; status.style.color = 'var(--amber)'; }
+      }
+    })
+    .catch(function(err) {
+      if (status) { status.textContent = 'Connection failed: ' + err.message + '. Check Apps Script is deployed as anyone can access.'; status.style.color = 'var(--red)'; }
+    });
 }
 
 
@@ -973,17 +953,8 @@ function applyLiveIntel(intel) {
     
     // Re-render CC cards so timestamps show correctly
     try { renderCC(); } catch(e) {}
-    setTimeout(function(){
-      try { updateAllBadges(); } catch(e) {}
-      // Force update the intel status banner
-      var banner = document.querySelector('.cc-live-bar');
-      if (banner) { banner.textContent = '\u25CF Live \u00b7 updated just now'; banner.style.color = 'var(--green)'; }
-      // Update "no live intel" message
-      var noIntel = document.querySelector('.cc-no-intel');
-      if (noIntel) noIntel.style.display = 'none';
-      // Force re-inject all panels
-      try { injectAllIntel(); } catch(e) {}
-    }, 500);
+    setTimeout(function(){ try{injectAllIntel();}catch(e){} try{updateAllBadges();}catch(e){} }, 400);
+    setTimeout(function(){ try { updateAllBadges(); } catch(e) {} }, 300);
   }
   
   // Email store — populate from live email highlights
@@ -1615,7 +1586,7 @@ function v26init() {
       </div>
       <button class="addb" onclick="toggleTheme()" style="width:100%;margin-bottom:6px">Toggle dark / light mode</button>
       <button class="addb" onclick="if(confirm('Clear all data?'))clearAll()" style="width:100%;color:var(--red)">Clear all saved data</button>
-      <div style="font-size:9px;color:var(--text3);line-height:1.8;margin-top:14px;padding-top:12px;border-top:1px solid var(--border)">Personal OS v3.17<br>personal-os.vercel.app<br>David Genuth — COO Prime Source</div>
+      <div style="font-size:9px;color:var(--text3);line-height:1.8;margin-top:14px;padding-top:12px;border-top:1px solid var(--border)">Personal OS v3.8<br>personal-os.vercel.app<br>David Genuth — COO Prime Source</div>
     </div>
   </div>
 </div>
@@ -2164,7 +2135,7 @@ async function deployUpdate(){
   var btn=document.getElementById('deployBtn'),st=document.getElementById('dstatus');btn.disabled=true;btn.textContent='Deploying...';st.className='dstatus loading show';st.textContent='Pushing to GitHub...';
   try{
     var r1=await fetch('https://api.github.com/repos/davidmalky/personal-os/contents/index.html',{headers:{'Authorization':'token '+token,'Accept':'application/vnd.github.v3+json'}});var d1=await r1.json();
-    var r2=await fetch('https://api.github.com/repos/davidmalky/personal-os/contents/index.html',{method:'PUT',headers:{'Authorization':'token '+token,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'},body:JSON.stringify({message:'Deploy Personal OS v3.17',content:btoa(unescape(encodeURIComponent(code))),sha:d1.sha})});
+    var r2=await fetch('https://api.github.com/repos/davidmalky/personal-os/contents/index.html',{method:'PUT',headers:{'Authorization':'token '+token,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'},body:JSON.stringify({message:'Deploy Personal OS v2',content:btoa(unescape(encodeURIComponent(code))),sha:d1.sha})});
     if(r2.ok){st.className='dstatus ok show';st.textContent='Deployed. Live in ~30 seconds.';document.getElementById('deployCode').value='';}
     else{var err=await r2.json();throw new Error(err.message||r2.status);}
   }catch(err){st.className='dstatus err show';st.textContent='Deploy failed: '+err.message;}
