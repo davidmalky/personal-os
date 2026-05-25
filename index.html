@@ -807,23 +807,15 @@ var DONALD_INTEL_FILE_ID = '137MUmEXKnGgkNRKjaOUsSxbTf5ir9VVx';
 
 function fetchDriveIntel() {
   var status = document.getElementById('liveIntelStatus');
-  var masterKey = G('jbKey') || '';
-  var binId = G('jbBinId') || '6a02c186adc21f119a894914';
-  if (!masterKey) {
-    if (status) { status.textContent = 'Enter Master Key in Cloud Sync below'; status.style.color = 'var(--amber)'; }
-    return;
-  }
   if (status) { status.textContent = 'Fetching...'; status.style.color = 'var(--amber)'; }
-  // Route through Cloudflare Worker to avoid CORS restrictions on JSONBin
-  var workerUrl = 'https://donald-proxy.davidlgenuth.workers.dev/jsonbin?bin=' + binId + '&key=' + encodeURIComponent(masterKey);
-  fetch(workerUrl)
+  // Call Worker /intel route which proxies the Apps Script (no CORS issues)
+  fetch('https://donald-proxy.davidlgenuth.workers.dev/intel?t=' + Date.now())
     .then(function(r) {
-      if (!r.ok) throw new Error('Worker/JSONBin ' + r.status);
+      if (!r.ok) throw new Error('Worker /intel ' + r.status);
       return r.json();
     })
-    .then(function(data) {
-      var intel = data.record || data;
-      if (!intel || !intel.updated) throw new Error('No intel in bin');
+    .then(function(intel) {
+      if (!intel || !intel.updated) throw new Error('No intel data');
       _liveIntel = intel;
       applyLiveIntel(intel);
       try { localStorage.setItem('po2_liveIntelCache', JSON.stringify(intel)); localStorage.setItem('po2_liveIntelTime', Date.now().toString()); } catch(e) {}
@@ -832,9 +824,8 @@ function fetchDriveIntel() {
       if (syncEl && intel.updated_et) syncEl.textContent = '\u25CF Live \u00b7 ' + intel.updated_et;
     })
     .catch(function(err) {
-      if (status) { status.textContent = 'Error: ' + err.message; status.style.color = 'var(--red)'; }
-      // Fall back to cached intel
-      try { var c = localStorage.getItem('po2_liveIntelCache'); if(c){var ci=JSON.parse(c);if(ci&&ci.updated)applyLiveIntel(ci);} } catch(e) {}
+      if (status) { status.textContent = 'Error: ' + err.message + ' \u2014 check Worker has /intel route'; status.style.color = 'var(--red)'; }
+      try { var c=localStorage.getItem('po2_liveIntelCache'); if(c){var ci=JSON.parse(c);if(ci&&ci.updated)applyLiveIntel(ci);} } catch(e) {}
     });
 }
 
