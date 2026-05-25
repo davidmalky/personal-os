@@ -923,9 +923,14 @@ function applyLiveIntel(intel) {
       
       // Update intel cache with fresh timestamp
       if (!intelCache) intelCache = {};
+      // Write to BOTH short key and full cache key so injectPanelIntel finds it
+      var fullKey = 'donald_personal_intel_' + panelId;
       if (!intelCache[panelId]) intelCache[panelId] = {};
       intelCache[panelId].html = html;
-      intelCache[panelId].updated = now; // <-- CRITICAL: fresh timestamp
+      intelCache[panelId].updated = now;
+      if (!intelCache[fullKey]) intelCache[fullKey] = {};
+      intelCache[fullKey].html = html;
+      intelCache[fullKey].updated = now; // <-- CRITICAL: fresh timestamp
       
       // Parse items from HTML for click interactions
       var items = [];
