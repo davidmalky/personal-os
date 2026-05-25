@@ -807,41 +807,6 @@ var DONALD_INTEL_FILE_ID = '137MUmEXKnGgkNRKjaOUsSxbTf5ir9VVx';
 
 function fetchDriveIntel() {
   var status = document.getElementById('liveIntelStatus');
-  var masterKey = G('jbKey') || '';
-  var binId = G('jbBinId') || '6a02c186adc21f119a894914';
-
-  if (!masterKey) {
-    if (status) { status.textContent = 'Enter Master Key in Cloud Sync below'; status.style.color = 'var(--amber)'; }
-    try { var c=localStorage.getItem('po2_liveIntelCache'); if(c){var ci=JSON.parse(c);if(ci&&ci.updated)applyLiveIntel(ci);} } catch(e) {}
-    return;
-  }
-
-  if (status) { status.textContent = 'Fetching...'; status.style.color = 'var(--amber)'; }
-
-  fetch('https://api.jsonbin.io/v3/b/' + binId + '/latest', {
-    method: 'GET',
-    headers: { 'X-Master-Key': masterKey, 'X-Bin-Meta': 'false' }
-  })
-  .then(function(r) {
-    if (!r.ok) throw new Error('JSONBin ' + r.status);
-    return r.json();
-  })
-  .then(function(data) {
-    var intel = data.record || data;
-    if (!intel || !intel.updated) throw new Error('No intel data');
-    _liveIntel = intel;
-    applyLiveIntel(intel);
-    try { localStorage.setItem('po2_liveIntelCache', JSON.stringify(intel)); localStorage.setItem('po2_liveIntelTime', Date.now().toString()); } catch(e) {}
-    if (status) { status.textContent = 'Connected ✓ ' + (intel.updated_et || ''); status.style.color = 'var(--green)'; }
-    var syncEl = document.querySelector('.sync-bar');
-    if (syncEl && intel.updated_et) syncEl.textContent = '● Live · ' + intel.updated_et;
-  })
-  .catch(function(err) {
-    if (status) { status.textContent = 'Error: ' + err.message; status.style.color = 'var(--red)'; }
-    try { var c=localStorage.getItem('po2_liveIntelCache'); if(c){var ci=JSON.parse(c);if(ci&&ci.updated)applyLiveIntel(ci);} } catch(e) {}
-  });
-}function fetchDriveIntel() {
-  var status = document.getElementById('liveIntelStatus');
   
   // Try cached intel first (from last successful fetch)
   try {
