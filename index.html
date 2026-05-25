@@ -873,62 +873,6 @@ function fetchDriveIntel() {
   if (status) { status.textContent = 'Connected \u2713 ' + intel.updated_et; status.style.color = 'var(--green)'; }
   var syncEl = document.querySelector('.sync-bar');
   if (syncEl) syncEl.textContent = '\u25CF Live \u00b7 ' + intel.updated_et;
-}function fetchDriveIntel() {
-  var status = document.getElementById('liveIntelStatus');
-  
-  // Read intel from JSONBin — already connected, no CORS issues
-  var binId = G('jbBinId') || '';
-  var masterKey = G('jbKey') || '';
-  
-  if (!binId || !masterKey) {
-    if (status) { 
-      status.textContent = 'Set up Cloud Sync first (enter JSONBin Master Key + Bin ID in Settings below)'; 
-      status.style.color = 'var(--amber)'; 
-    }
-    // Try cached intel
-    try {
-      var cached = localStorage.getItem('po2_liveIntelCache');
-      if (cached) { var c = JSON.parse(cached); if (c && c.updated) applyLiveIntel(c); }
-    } catch(e) {}
-    return;
-  }
-  
-  if (status) { status.textContent = 'Fetching...'; status.style.color = 'var(--amber)'; }
-  
-  // JSONBin read endpoint — CORS allowed from all origins
-  fetch('https://api.jsonbin.io/v3/b/' + binId + '/latest', {
-    headers: { 'X-Master-Key': masterKey, 'X-Bin-Meta': 'false' }
-  })
-  .then(function(r) { return r.json(); })
-  .then(function(data) {
-    // JSONBin wraps in { record: {...} }
-    var intel = data.record || data;
-    if (intel && intel.updated) {
-      _liveIntel = intel;
-      applyLiveIntel(intel);
-      try { 
-        localStorage.setItem('po2_liveIntelCache', JSON.stringify(intel)); 
-        localStorage.setItem('po2_liveIntelTime', Date.now().toString()); 
-      } catch(e) {}
-      if (status) { 
-        status.textContent = 'Connected \u2713 ' + (intel.updated_et || intel.updated); 
-        status.style.color = 'var(--green)'; 
-      }
-      var syncEl = document.querySelector('.sync-bar');
-      if (syncEl && intel.updated_et) syncEl.textContent = '\u25CF Live \u00b7 ' + intel.updated_et;
-    } else {
-      if (status) { 
-        status.textContent = 'Connected but no intel yet \u2014 run buildLiveIntel() in Apps Script'; 
-        status.style.color = 'var(--amber)'; 
-      }
-    }
-  })
-  .catch(function(err) {
-    if (status) { 
-      status.textContent = 'Error: ' + err.message; 
-      status.style.color = 'var(--red)'; 
-    }
-  });
 }
 
 function tryLoadCachedIntel() {
@@ -1029,7 +973,17 @@ function applyLiveIntel(intel) {
     
     // Re-render CC cards so timestamps show correctly
     try { renderCC(); } catch(e) {}
-    setTimeout(function(){ try { updateAllBadges(); } catch(e) {} }, 300);
+    setTimeout(function(){
+      try { updateAllBadges(); } catch(e) {}
+      // Force update the intel status banner
+      var banner = document.querySelector('.cc-live-bar');
+      if (banner) { banner.textContent = '\u25CF Live \u00b7 updated just now'; banner.style.color = 'var(--green)'; }
+      // Update "no live intel" message
+      var noIntel = document.querySelector('.cc-no-intel');
+      if (noIntel) noIntel.style.display = 'none';
+      // Force re-inject all panels
+      try { injectAllIntel(); } catch(e) {}
+    }, 500);
   }
   
   // Email store — populate from live email highlights
@@ -1661,7 +1615,7 @@ function v26init() {
       </div>
       <button class="addb" onclick="toggleTheme()" style="width:100%;margin-bottom:6px">Toggle dark / light mode</button>
       <button class="addb" onclick="if(confirm('Clear all data?'))clearAll()" style="width:100%;color:var(--red)">Clear all saved data</button>
-      <div style="font-size:9px;color:var(--text3);line-height:1.8;margin-top:14px;padding-top:12px;border-top:1px solid var(--border)">Personal OS v3.16<br>personal-os.vercel.app<br>David Genuth — COO Prime Source</div>
+      <div style="font-size:9px;color:var(--text3);line-height:1.8;margin-top:14px;padding-top:12px;border-top:1px solid var(--border)">Personal OS v3.17<br>personal-os.vercel.app<br>David Genuth — COO Prime Source</div>
     </div>
   </div>
 </div>
@@ -2210,7 +2164,7 @@ async function deployUpdate(){
   var btn=document.getElementById('deployBtn'),st=document.getElementById('dstatus');btn.disabled=true;btn.textContent='Deploying...';st.className='dstatus loading show';st.textContent='Pushing to GitHub...';
   try{
     var r1=await fetch('https://api.github.com/repos/davidmalky/personal-os/contents/index.html',{headers:{'Authorization':'token '+token,'Accept':'application/vnd.github.v3+json'}});var d1=await r1.json();
-    var r2=await fetch('https://api.github.com/repos/davidmalky/personal-os/contents/index.html',{method:'PUT',headers:{'Authorization':'token '+token,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'},body:JSON.stringify({message:'Deploy Personal OS v3.16',content:btoa(unescape(encodeURIComponent(code))),sha:d1.sha})});
+    var r2=await fetch('https://api.github.com/repos/davidmalky/personal-os/contents/index.html',{method:'PUT',headers:{'Authorization':'token '+token,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'},body:JSON.stringify({message:'Deploy Personal OS v3.17',content:btoa(unescape(encodeURIComponent(code))),sha:d1.sha})});
     if(r2.ok){st.className='dstatus ok show';st.textContent='Deployed. Live in ~30 seconds.';document.getElementById('deployCode').value='';}
     else{var err=await r2.json();throw new Error(err.message||r2.status);}
   }catch(err){st.className='dstatus err show';st.textContent='Deploy failed: '+err.message;}
