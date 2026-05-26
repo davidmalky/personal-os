@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
+<meta charset="UTF-8"><!-- v3.22 ts=1779778810 -->
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -904,6 +904,14 @@ function applyLiveIntel(intel) {
       if (!intelCache[panelId]) intelCache[panelId] = {};
       intelCache[panelId].html = html;
       intelCache[panelId].updated = now;
+      // Also write to full key so injectPanelIntel finds it either way
+      var fk='donald_personal_intel_'+panelId;
+      if(!intelCache[fk])intelCache[fk]={};
+      intelCache[fk].html=html;
+      intelCache[fk].updated=now;
+      // Write directly to DOM immediately — don't wait for inject
+      var de=document.getElementById('cp-intel-'+panelId);
+      if(de)de.innerHTML=html;
       if (!intelCache[fullKey]) intelCache[fullKey] = {};
       intelCache[fullKey].html = html;
       intelCache[fullKey].updated = now; // <-- CRITICAL: fresh timestamp
@@ -1596,7 +1604,7 @@ function v26init() {
       </div>
       <button class="addb" onclick="toggleTheme()" style="width:100%;margin-bottom:6px">Toggle dark / light mode</button>
       <button class="addb" onclick="if(confirm('Clear all data?'))clearAll()" style="width:100%;color:var(--red)">Clear all saved data</button>
-      <div style="font-size:9px;color:var(--text3);line-height:1.8;margin-top:14px;padding-top:12px;border-top:1px solid var(--border)">Personal OS v3.21<br>personal-os.vercel.app<br>David Genuth — COO Prime Source</div>
+      <div style="font-size:9px;color:var(--text3);line-height:1.8;margin-top:14px;padding-top:12px;border-top:1px solid var(--border)">Personal OS v3.22<br>personal-os.vercel.app<br>David Genuth — COO Prime Source</div>
     </div>
   </div>
 </div>
@@ -1916,7 +1924,19 @@ var INTEL_MAP={
   work:function(){return '<div class="ii ii-red">🎤 <strong>June 8 Company Event</strong> — COO procurement speech · START PREP NOW</div><div class="ii ii-amber">⚡ <strong>Renzo program</strong> — AI outreach/follow-up tool · potential revenue stream</div><div class="ii ii-amber">🏢 <strong>Vendor Catalog VCS</strong> — data accuracy audit in progress with Jane</div><div class="ii ii-blue">💼 <strong>Open Prime Source OS</strong> for full work depth and live intel</div>';}
 };
 function injectAllIntel(){CC_PANELS.forEach(function(p){injectPanelIntel(p.id);});setTimeout(updateAllBadges,200);}
-function injectPanelIntel(id){var key=PANEL_INTEL_KEY[id];if(key&&intelCache[key]&&intelCache[key].items&&intelCache[key].items.length)return;var fn=INTEL_MAP[id];if(!fn)return;var el=document.getElementById('cp-intel-'+id);if(!el)return;el.innerHTML=fn();}
+function injectPanelIntel(id){
+  var el=document.getElementById('cp-intel-'+id);
+  if(!el)return;
+  // Try full cache key first (from Refresh Intel)
+  var fullKey=PANEL_INTEL_KEY[id];
+  var d=intelCache[fullKey];
+  // Also try short key (from applyLiveIntel / Pull Now)
+  if(!d||!d.html) d=intelCache[id];
+  if(d&&d.html){el.innerHTML=d.html;return;}
+  // Fall back to static INTEL_MAP
+  var fn=INTEL_MAP[id];
+  if(fn)el.innerHTML=fn();
+}
 
 function updateIBStatus(){
   var keys=Object.keys(intelCache);var dot=document.getElementById('ibDot');var txt=document.getElementById('ibStatusText');if(!dot||!txt)return;
@@ -2145,7 +2165,7 @@ async function deployUpdate(){
   var btn=document.getElementById('deployBtn'),st=document.getElementById('dstatus');btn.disabled=true;btn.textContent='Deploying...';st.className='dstatus loading show';st.textContent='Pushing to GitHub...';
   try{
     var r1=await fetch('https://api.github.com/repos/davidmalky/personal-os/contents/index.html',{headers:{'Authorization':'token '+token,'Accept':'application/vnd.github.v3+json'}});var d1=await r1.json();
-    var r2=await fetch('https://api.github.com/repos/davidmalky/personal-os/contents/index.html',{method:'PUT',headers:{'Authorization':'token '+token,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'},body:JSON.stringify({message:'Deploy Personal OS v3.21',content:btoa(unescape(encodeURIComponent(code))),sha:d1.sha})});
+    var r2=await fetch('https://api.github.com/repos/davidmalky/personal-os/contents/index.html',{method:'PUT',headers:{'Authorization':'token '+token,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'},body:JSON.stringify({message:'Deploy Personal OS v3.22',content:btoa(unescape(encodeURIComponent(code))),sha:d1.sha})});
     if(r2.ok){st.className='dstatus ok show';st.textContent='Deployed. Live in ~30 seconds.';document.getElementById('deployCode').value='';}
     else{var err=await r2.json();throw new Error(err.message||r2.status);}
   }catch(err){st.className='dstatus err show';st.textContent='Deploy failed: '+err.message;}
