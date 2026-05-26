@@ -1898,11 +1898,12 @@ function renderCC(){
 
 function openCCDrawer(pid){
   _drawerPanelId=pid;var panel=CC_PANELS.filter(function(p){return p.id===pid;})[0];if(!panel)return;
-  var key=PANEL_INTEL_KEY[pid];var liveData=key?intelCache[key]:null;
+  var key=PANEL_INTEL_KEY[pid];var liveData=(key?intelCache[key]:null)||intelCache[pid]||null;
   var title=document.getElementById('ccDrawerTitle');var body=document.getElementById('ccDrawerBody');var acts=document.getElementById('ccDrawerActions');
   if(title)title.textContent=panel.icon+' '+panel.label;
   var html='';
-  if(liveData&&liveData.items&&liveData.items.length){
+  if(liveData&&liveData.html){html=liveData.html;}
+  else if(liveData&&liveData.items&&liveData.items.length){
     if(liveData.updated){var d=new Date(liveData.updated);var ageMin=Math.round((new Date()-d)/60000);html+='<div class="cp-fresh" style="margin-bottom:10px">● Live intel · '+(ageMin<60?ageMin+'m ago':Math.round(ageMin/60)+'h ago')+'</div>';}
     liveData.items.forEach(function(item){var dot=item.type==='red'?'red':item.type==='amber'?'amber':item.type==='green'?'green':item.type==='blue'?'blue':'gray';html+='<div class="ii-wrap"><span class="ii-dot '+dot+'"></span><strong>'+item.title+'</strong>'+(item.detail?' <span class="ii-detail">— '+item.detail+'</span>':'')+'</div>';});
   }else{var fn=INTEL_MAP[pid];var appHtml=fn?fn():'';if(appHtml){html+='<div class="cp-fresh" style="margin-bottom:10px">○ App data · Ask DONALD to refresh for live intel</div>'+appHtml;}else{html+='<div style="padding:8px 0;font-size:10px;color:var(--text3)">'+panel.desc+'</div>';}}
