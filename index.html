@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"><!-- v3.22 ts=1779778810 -->
+<meta charset="UTF-8"><!-- v3.23 ts=1779781189 -->
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -1364,7 +1364,12 @@ function v26init() {
       <div id="projectsDeletedEl"></div>
     </div>
     <div class="card">
-      <div class="ct">Renzo — AI Outreach Tool</div>
+      <div class="ct">Active work projects</div>
+      <div class="row"><div><div class="rn" style="font-size:10px;color:var(--red)">June 8 company event speech</div><div class="rs">COO procurement presentation — 13 days, not started</div></div><span class="badge br">Urgent</span></div>
+      <div class="row"><div><div class="rn" style="font-size:10px;color:var(--red)">Culligan contract</div><div class="rs">Thomas Caputo — redlined, stalled 3+ weeks</div></div><span class="badge br">Stalled</span></div>
+      <div class="row"><div><div class="rn" style="font-size:10px;color:var(--amber)">Mobotics DocuSign</div><div class="rs">Yehuda + Mark need to sign — sent Apr 30</div></div><span class="badge ba">Pending</span></div>
+      <div class="row"><div><div class="rn" style="font-size:10px;color:var(--amber)">BEP BAA + permissions</div><div class="rs">Still outstanding — blocking BEP integration</div></div><span class="badge ba">Pending</span></div>
+      <div class="ct" style="margin-top:10px">Renzo — AI Outreach Tool</div>
       <div class="row"><div class="rn" style="font-size:10px">Status</div><span class="badge ba">In development</span></div>
       <div class="row"><div class="rn" style="font-size:10px">Goal</div><span class="badge bx">Sellable SaaS product</span></div>
       <button class="adb" onclick="ask('Define MVP for Renzo — AI outreach and follow-up tool. Core features, target customer, version 1 scope.')">Define Renzo MVP</button>
@@ -1604,7 +1609,7 @@ function v26init() {
       </div>
       <button class="addb" onclick="toggleTheme()" style="width:100%;margin-bottom:6px">Toggle dark / light mode</button>
       <button class="addb" onclick="if(confirm('Clear all data?'))clearAll()" style="width:100%;color:var(--red)">Clear all saved data</button>
-      <div style="font-size:9px;color:var(--text3);line-height:1.8;margin-top:14px;padding-top:12px;border-top:1px solid var(--border)">Personal OS v3.22<br>personal-os.vercel.app<br>David Genuth — COO Prime Source</div>
+      <div style="font-size:9px;color:var(--text3);line-height:1.8;margin-top:14px;padding-top:12px;border-top:1px solid var(--border)">Personal OS v3.23<br>personal-os.vercel.app<br>David Genuth — COO Prime Source</div>
     </div>
   </div>
 </div>
@@ -2165,7 +2170,7 @@ async function deployUpdate(){
   var btn=document.getElementById('deployBtn'),st=document.getElementById('dstatus');btn.disabled=true;btn.textContent='Deploying...';st.className='dstatus loading show';st.textContent='Pushing to GitHub...';
   try{
     var r1=await fetch('https://api.github.com/repos/davidmalky/personal-os/contents/index.html',{headers:{'Authorization':'token '+token,'Accept':'application/vnd.github.v3+json'}});var d1=await r1.json();
-    var r2=await fetch('https://api.github.com/repos/davidmalky/personal-os/contents/index.html',{method:'PUT',headers:{'Authorization':'token '+token,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'},body:JSON.stringify({message:'Deploy Personal OS v3.22',content:btoa(unescape(encodeURIComponent(code))),sha:d1.sha})});
+    var r2=await fetch('https://api.github.com/repos/davidmalky/personal-os/contents/index.html',{method:'PUT',headers:{'Authorization':'token '+token,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'},body:JSON.stringify({message:'Deploy Personal OS v3.23',content:btoa(unescape(encodeURIComponent(code))),sha:d1.sha})});
     if(r2.ok){st.className='dstatus ok show';st.textContent='Deployed. Live in ~30 seconds.';document.getElementById('deployCode').value='';}
     else{var err=await r2.json();throw new Error(err.message||r2.status);}
   }catch(err){st.className='dstatus err show';st.textContent='Deploy failed: '+err.message;}
