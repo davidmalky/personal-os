@@ -991,6 +991,7 @@ window.fetchDriveIntel = function() {
       if (status) { status.textContent = 'Connected \u2713 ' + (intel.updated_et || ''); status.style.color = 'var(--green)'; }
       var syncEl = document.querySelector('.sync-bar');
       if (syncEl && intel.updated_et) syncEl.textContent = '\u25CF Live \u00b7 ' + intel.updated_et;
+  try{updateIBStatus();}catch(e){}
     })
     .catch(function(err) {
       if (status) { status.textContent = 'Error: ' + err.message; status.style.color = 'var(--red)'; }
@@ -1435,10 +1436,10 @@ function v26init() {
     <div class="world-actions"><button class="cc-btn" onclick="window.open('https://claude.ai/chat/fc096dae-272e-4c62-a2eb-59d4ec255a62','_blank')">Open Work DONALD</button></div>
   </div>
   <div class="metrics">
-    <div class="mc" id="workEventCard"><div class="ml">June 8 Event</div><div class="mv" style="font-size:14px;color:var(--red)" id="workEventDays">15d</div><div class="ms">COO speech prep now</div></div>
+    <div class="mc" id="workEventCard" style="cursor:pointer" onclick="ask('June 8 company event: give me a full prep brief for the COO procurement speech. Structure, key talking points, and a strong opening line.')"><div class="ml">June 8 Event</div><div class="mv" style="font-size:14px;color:var(--red)" id="workEventDays">15d</div><div class="ms">Tap to prep speech</div></div>
     <div class="mc"><div class="ml">Culligan deal</div><div class="mv" style="font-size:14px;color:var(--amber)">Pending</div><div class="ms">Redlined contract</div></div>
     <div class="mc"><div class="ml">Mobotics</div><div class="mv" style="font-size:14px;color:var(--amber)">DocuSign</div><div class="ms">Yehuda + Mark pending</div></div>
-    <div class="mc"><div class="ml">Salesforce</div><div class="mv" style="font-size:14px;color:var(--green)">Active</div><div class="ms">4 dev items open</div></div>
+    <div class="mc"><div class="ml">Salesforce</div><div class="mv" style="font-size:14px;color:var(--amber)">4 items</div><div class="ms" style="cursor:pointer" onclick="ask('Salesforce open items: ownership change, matching rule, parent-child, dormant opps. Give me a status and what needs my attention.')">Tap for status</div></div>
   </div>
   <div class="g2">
     <div class="card">
