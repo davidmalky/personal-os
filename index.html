@@ -1605,7 +1605,7 @@ function v26init() {
       </div>
       <button class="addb" onclick="toggleTheme()" style="width:100%;margin-bottom:6px">Toggle dark / light mode</button>
       <button class="addb" onclick="if(confirm('Clear all data?'))clearAll()" style="width:100%;color:var(--red)">Clear all saved data</button>
-      <div style="font-size:9px;color:var(--text3);line-height:1.8;margin-top:14px;padding-top:12px;border-top:1px solid var(--border)">Personal OS v3.25<br>personal-os.vercel.app<br>David Genuth — COO Prime Source</div>
+      <div style="font-size:9px;color:var(--text3);line-height:1.8;margin-top:14px;padding-top:12px;border-top:1px solid var(--border)">Personal OS v3.26<br>personal-os.vercel.app<br>David Genuth — COO Prime Source</div>
     </div>
   </div>
 </div>
@@ -2031,11 +2031,23 @@ function sendRefreshPrompt() {
     'Be specific to David\'s actual situation above. Daily: top priorities for today. Finance: money items. ' +
     'Health: CPAP and medical. Family: family check-ins. Projects: DONALD OS, Renzo, FashionScan. ' +
     'Growth: DONALD improvements. Email: actionable emails. Work: Prime Source priorities. Focus: what to do right now.';
-  var modal = document.getElementById('ibModal');
-  var promptEl = document.getElementById('ibPromptText');
-  if (promptEl) promptEl.value = context;
-  if (modal) modal.classList.add('show');
-  document.body.style.overflow = 'hidden';
+  // Open Personal DONALD chat with the prompt pre-loaded
+  var donaldUrl = G('donaldUrl','') || 'https://claude.ai/chat/fc096dae-272e-4c62-a2eb-59d4ec255a62';
+  // Copy prompt to clipboard so user can paste into DONALD
+  try {
+    navigator.clipboard.writeText(context).then(function() {
+      // Show a brief toast notification
+      var toast = document.createElement('div');
+      toast.textContent = '\u2713 Prompt copied — opening DONALD chat';
+      toast.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:var(--hi);color:#fff;padding:10px 20px;border-radius:20px;font-size:11px;font-weight:700;z-index:9999;pointer-events:none;white-space:nowrap';
+      document.body.appendChild(toast);
+      setTimeout(function(){toast.remove();},3000);
+    });
+  } catch(e) {}
+  // Also store in localStorage as fallback
+  try { localStorage.setItem('po2_refreshPrompt', context); } catch(e) {}
+  // Open DONALD chat in new tab
+  window.open(donaldUrl, '_blank');
 }
 
 
@@ -2167,7 +2179,7 @@ async function deployUpdate(){
   var btn=document.getElementById('deployBtn'),st=document.getElementById('dstatus');btn.disabled=true;btn.textContent='Deploying...';st.className='dstatus loading show';st.textContent='Pushing to GitHub...';
   try{
     var r1=await fetch('https://api.github.com/repos/davidmalky/personal-os/contents/index.html',{headers:{'Authorization':'token '+token,'Accept':'application/vnd.github.v3+json'}});var d1=await r1.json();
-    var r2=await fetch('https://api.github.com/repos/davidmalky/personal-os/contents/index.html',{method:'PUT',headers:{'Authorization':'token '+token,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'},body:JSON.stringify({message:'Deploy Personal OS v3.25',content:btoa(unescape(encodeURIComponent(code))),sha:d1.sha})});
+    var r2=await fetch('https://api.github.com/repos/davidmalky/personal-os/contents/index.html',{method:'PUT',headers:{'Authorization':'token '+token,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'},body:JSON.stringify({message:'Deploy Personal OS v3.26',content:btoa(unescape(encodeURIComponent(code))),sha:d1.sha})});
     if(r2.ok){st.className='dstatus ok show';st.textContent='Deployed. Live in ~30 seconds.';document.getElementById('deployCode').value='';}
     else{var err=await r2.json();throw new Error(err.message||r2.status);}
   }catch(err){st.className='dstatus err show';st.textContent='Deploy failed: '+err.message;}
