@@ -1316,9 +1316,9 @@ function v26init() {
   <div class="g2">
     <div class="card">
       <div class="ct">Jewish calendar</div>
-      <div class="row"><div><div class="rn">Lag B'Omer</div><div class="rs">Sunday May 17 — haircut allowed after</div></div><span class="badge bp">Sun</span></div>
+      <div class="row"><div><div class="rn">Shabbos</div><div class="rs">Candle lighting Fri May 29 — 7:59 PM · Havdalah Sat 9:06 PM</div></div><span class="badge bp">Fri</span></div>
       <div class="row"><div><div class="rn">Shabbos candle lighting</div><div class="rs">Friday ~7:45 PM · Toms River</div></div><span class="badge bx">Fri</span></div>
-      <div class="row"><div><div class="rn">Sefira</div><div class="rs">Day 33 — Shavuos in 2 days</div></div><span class="badge bp">Active</span></div>
+      <div class="row"><div><div class="rn">Parashat Nasso</div><div class="rs">Fri May 29</div></div><span class="badge bp">Fri</span></div><div class="rs">Day 33 — Shavuos in 2 days</div></div><span class="badge bp">Active</span></div>
       <button class="adb" onclick="ask('What is on the Jewish calendar this week and coming month that I should know about?')"><span class="adb-icon">✡</span>Jewish calendar this week</button>
       <button class="adb" onclick="ask('Help me prepare for Shabbos this week. What do I need to do before zman on Friday?')"><span class="adb-icon">✨</span>Shabbos prep check</button>
     </div>
@@ -1610,7 +1610,7 @@ function v26init() {
       </div>
       <button class="addb" onclick="toggleTheme()" style="width:100%;margin-bottom:6px">Toggle dark / light mode</button>
       <button class="addb" onclick="if(confirm('Clear all data?'))clearAll()" style="width:100%;color:var(--red)">Clear all saved data</button>
-      <div style="font-size:9px;color:var(--text3);line-height:1.8;margin-top:14px;padding-top:12px;border-top:1px solid var(--border)">Personal OS v3.23<br>personal-os.vercel.app<br>David Genuth — COO Prime Source</div>
+      <div style="font-size:9px;color:var(--text3);line-height:1.8;margin-top:14px;padding-top:12px;border-top:1px solid var(--border)">Personal OS v3.24<br>personal-os.vercel.app<br>David Genuth — COO Prime Source</div>
     </div>
   </div>
 </div>
@@ -2171,7 +2171,7 @@ async function deployUpdate(){
   var btn=document.getElementById('deployBtn'),st=document.getElementById('dstatus');btn.disabled=true;btn.textContent='Deploying...';st.className='dstatus loading show';st.textContent='Pushing to GitHub...';
   try{
     var r1=await fetch('https://api.github.com/repos/davidmalky/personal-os/contents/index.html',{headers:{'Authorization':'token '+token,'Accept':'application/vnd.github.v3+json'}});var d1=await r1.json();
-    var r2=await fetch('https://api.github.com/repos/davidmalky/personal-os/contents/index.html',{method:'PUT',headers:{'Authorization':'token '+token,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'},body:JSON.stringify({message:'Deploy Personal OS v3.23',content:btoa(unescape(encodeURIComponent(code))),sha:d1.sha})});
+    var r2=await fetch('https://api.github.com/repos/davidmalky/personal-os/contents/index.html',{method:'PUT',headers:{'Authorization':'token '+token,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'},body:JSON.stringify({message:'Deploy Personal OS v3.24',content:btoa(unescape(encodeURIComponent(code))),sha:d1.sha})});
     if(r2.ok){st.className='dstatus ok show';st.textContent='Deployed. Live in ~30 seconds.';document.getElementById('deployCode').value='';}
     else{var err=await r2.json();throw new Error(err.message||r2.status);}
   }catch(err){st.className='dstatus err show';st.textContent='Deploy failed: '+err.message;}
