@@ -109,8 +109,8 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .ii-dot.red{background:var(--red)}.ii-dot.amber{background:var(--amber)}.ii-dot.green{background:var(--green)}.ii-dot.blue{background:#4a9eff}.ii-dot.gray{background:var(--surf4)}
 .ii-wrap strong{font-weight:600;color:var(--text)}.ii-detail{color:var(--text3)}
 .ii-section-label{font-size:8px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin:6px 0 3px;padding-left:2px}
-.ii{font-size:10px;line-height:1.5;padding:4px 6px;border-radius:var(--rsm);margin-bottom:3px;border-left:2px solid transparent}.ii strong{font-weight:600}
-.ii-red{background:rgba(239,68,68,.08);border-left-color:var(--red);color:var(--text)}.ii-amber{background:rgba(245,158,11,.08);border-left-color:var(--amber);color:var(--text)}.ii-green{background:rgba(16,185,129,.08);border-left-color:var(--green);color:var(--text)}.ii-blue{background:rgba(74,158,255,.08);border-left-color:#4a9eff;color:var(--text)}.ii-gray{background:var(--surf2);border-left-color:var(--surf4);color:var(--text2)}
+.ii{font-size:11px;line-height:1.6;padding:3px 0 3px 14px;position:relative;margin-bottom:2px}.ii::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);width:6px;height:6px;border-radius:50%}.ii strong{font-weight:600}
+.ii-red::before{background:var(--red)}.ii-amber::before{background:var(--amber)}.ii-green::before{background:var(--green)}.ii-blue::before{background:var(--hi)}.ii-red{color:var(--text)}.ii-amber{color:var(--text)}.ii-green{color:var(--text)}.ii-blue{color:var(--text)}.ii-gray{color:var(--text2)}
 .cp-fresh{font-size:8px;color:var(--text3);margin-bottom:4px;font-style:italic}
 .ib-bar{display:flex;align-items:center;justify-content:space-between;padding:7px 10px;margin-bottom:8px;flex-shrink:0;background:var(--surf2);border:1px solid var(--border);border-radius:var(--r);gap:8px}
 .ib-status{font-size:9px;color:var(--text3);flex:1;display:flex;align-items:center;gap:6px}
@@ -972,6 +972,7 @@ function applyLiveIntel(intel) {
   // Sync bar
   var syncEl = document.querySelector('.sync-bar');
   if (syncEl && intel.updated_et) syncEl.textContent = '\u25CF Synced \u00b7 ' + intel.updated_et;
+  try { updateIBStatus(); } catch(e) {}
 }
 
 
@@ -1025,6 +1026,7 @@ function v26init() {
     } catch(e) {}
     try { var _su=localStorage.getItem('po2_donaldWebAppUrl');if(_su){var _wi=document.getElementById('webAppUrlInp');if(_wi)_wi.value=_su;var _ls=document.getElementById('liveIntelStatus');if(_ls)_ls.textContent='Connected ✓';setTimeout(fetchDriveIntel,1000);} } catch(e) {}
     setTimeout(fetchDriveIntel, 800);
+    setInterval(function() { if (typeof window.fetchDriveIntel === 'function') { window.fetchDriveIntel(); } }, 30 * 60 * 1000);
     try {
       var disp = document.getElementById('webAppUrlDisplay');
       var saved = localStorage.getItem('po2_donaldWebAppUrl') || 'Not configured';
@@ -1357,6 +1359,13 @@ function v26init() {
     <div><div class="world-title"><em>Projects</em> World</div><div class="world-subtitle">Personal builds and side ventures</div></div>
     <div class="world-actions"><button class="cc-btn" onclick="ask('Personal projects status: DONALD OS, Renzo, FashionScan25.3. What is moving and what needs attention?')">Projects Brief</button></div>
   </div>
+  <div class="card" style="margin-bottom:10px">
+    <div class="ct">Active Work Projects</div>
+    <div class="row"><div><div class="rn" style="color:var(--red)">June 8 company event speech</div><div class="rs">COO procurement presentation — prep not started</div></div><span class="badge br">Urgent</span></div>
+    <div class="row"><div><div class="rn" style="color:var(--red)">Culligan contract</div><div class="rs">Thomas Caputo — redlined, stalled 3+ weeks</div></div><span class="badge br">Stalled</span></div>
+    <div class="row"><div><div class="rn" style="color:var(--amber)">Mobotics DocuSign</div><div class="rs">Yehuda + Mark need to sign — sent Apr 30</div></div><span class="badge ba">Pending</span></div>
+    <div class="row"><div><div class="rn" style="color:var(--amber)">BEP BAA + permissions</div><div class="rs">Still outstanding — blocking BEP integration</div></div><span class="badge ba">Pending</span></div>
+  </div>
   <div class="g2">
     <div class="card">
       <div class="ct">Active projects</div>
@@ -1462,6 +1471,10 @@ function v26init() {
   <div class="g2">
     <div class="card">
       <div class="ct">Today's priorities</div>
+      <div class="row"><div><div class="rn" style="font-size:10px;color:var(--red)">Call Cathy re CPAP compliance result</div><div class="rs">Health Innovations · 732-897-7373</div></div><span class="badge br">Today</span></div>
+      <div class="row"><div><div class="rn" style="font-size:10px;color:var(--red)">Call United MileagePlus merge</div><div class="rs">1-800-421-4655 · accounts XV915448 + YH388442</div></div><span class="badge br">Today</span></div>
+      <div class="row"><div><div class="rn" style="font-size:10px;color:var(--amber)">Salesforce progress meeting</div><div class="rs">Today 2:00 PM Microsoft Teams</div></div><span class="badge ba">2:00 PM</span></div>
+      <div class="row"><div><div class="rn" style="font-size:10px;color:var(--amber)">Court hearing prep</div><div class="rs">Avi Adler · Friday Jun 26 10:30 AM · Ocean County Courthouse</div></div><span class="badge ba">Fri</span></div>
       <div id="focusTodayEl" style="margin-bottom:8px"></div>
       <div style="padding-top:6px;border-top:1px solid var(--border);margin-top:4px">
         <button class="adb" onclick="ask('Top 3 priorities for today — be specific, tell me exactly what to do and in what order.')">Get today's top 3 ↗</button>
@@ -1471,11 +1484,11 @@ function v26init() {
     </div>
     <div class="card">
       <div class="ct">Upcoming deadlines</div>
-      <div class="row"><div><div class="rn" style="font-size:10px;color:var(--red)">2022 tax amendment</div><div class="rs">June 11 — 18 days</div></div><span class="badge br">Urgent</span></div>
-      <div class="row"><div><div class="rn" style="font-size:10px;color:var(--red)">June 8 company event speech</div><div class="rs">15 days — prep now</div></div><span class="badge br">Urgent</span></div>
-      <div class="row"><div><div class="rn" style="font-size:10px;color:var(--amber)">Milestone Metrics bank</div><div class="rs">Chase appt Tue May 26 11am</div></div><span class="badge ba">Tuesday</span></div>
-      <div class="row"><div><div class="rn" style="font-size:10px;color:var(--amber)">CPAP compliance</div><div class="rs">7 of 30 nights done</div></div><span class="badge ba">Jul 20</span></div>
-      <div class="row"><div><div class="rn" style="font-size:10px">MileagePlus merge</div><div class="rs">Call 1-800-421-4655</div></div><span class="badge bx">Pending</span></div>
+      <div class="row"><div><div class="rn" style="font-size:10px;color:var(--amber)">Jun 24: Ushy/Mark/David catch up</div><div class="rs">3:00 PM Microsoft Teams</div></div><span class="badge ba">Jun 24</span></div>
+      <div class="row"><div><div class="rn" style="font-size:10px;color:var(--red)">Jun 26: Court hearing</div><div class="rs">10:30 AM Ocean County Courthouse Toms River</div></div><span class="badge br">Jun 26</span></div>
+      <div class="row"><div><div class="rn" style="font-size:10px">Jun 26: Candle lighting</div><div class="rs">8:11 PM</div></div><span class="badge bx">Jun 26</span></div>
+      <div class="row"><div><div class="rn" style="font-size:10px">Dec 31: Solo 401k establish</div><div class="rs">Max $70K — establish before year end</div></div><span class="badge bx">Dec 31</span></div>
+      <div class="row"><div><div class="rn" style="font-size:10px">Dec 31: Malky REPS hours</div><div class="rs">Must be logged all year</div></div><span class="badge bx">Dec 31</span></div>
       <textarea class="nta" id="focusNotes" placeholder="Focus notes..." oninput="S('focusNotes',this.value)" style="min-height:80px;margin-top:8px"></textarea>
     </div>
   </div>
@@ -1895,7 +1908,10 @@ function openCCDrawer(pid){
   _drawerPanelId=pid;var panel=CC_PANELS.filter(function(p){return p.id===pid;})[0];if(!panel)return;
   var key=PANEL_INTEL_KEY[pid];var liveData=(key?intelCache[key]:null)||intelCache[pid]||null;
   var title=document.getElementById('ccDrawerTitle');var body=document.getElementById('ccDrawerBody');var acts=document.getElementById('ccDrawerActions');
-  if(title)title.textContent=panel.icon+' '+panel.label;
+  if(title){
+    var badgeHtml=ccBadgeHtml(panel);
+    title.innerHTML=panel.icon+' '+panel.label+(badgeHtml?'<span style="margin-left:8px;display:inline-flex;gap:3px">'+badgeHtml+'</span>':'');
+  }
   var html='';
   if(liveData&&liveData.html){html=liveData.html;}
   else if(liveData&&liveData.items&&liveData.items.length){
@@ -1944,10 +1960,12 @@ function updateIBStatus(){
   var keys=Object.keys(intelCache);var dot=document.getElementById('ibDot');var txt=document.getElementById('ibStatusText');if(!dot||!txt)return;
   if(!keys.length){dot.className='ib-dot never';txt.textContent='No live intel yet — ask DONALD to refresh';return;}
   var latest=null;keys.forEach(function(k){var d=intelCache[k]&&intelCache[k].updated?new Date(intelCache[k].updated):null;if(d&&(!latest||d>latest))latest=d;});
+  var KNOWN_PANELS=['daily','finance','health','family','projects','growth','email','work','focus','notes'];
+  var liveCount=KNOWN_PANELS.filter(function(id){return intelCache[id]&&intelCache[id].html;}).length;
   var ageMin=latest?Math.round((new Date()-latest)/60000):null;
   if(ageMin===null){dot.className='ib-dot never';txt.textContent='No live intel';}
-  else if(ageMin<60){dot.className='ib-dot live';txt.textContent=keys.length+' panels live · updated '+ageMin+'m ago';}
-  else{dot.className='ib-dot stale';txt.textContent=keys.length+' panels · updated '+Math.round(ageMin/60)+'h ago';}
+  else if(ageMin<60){dot.className='ib-dot live';txt.textContent=liveCount+' panels live · updated '+(ageMin===0?'just now':ageMin+'m ago');}
+  else{dot.className='ib-dot stale';txt.textContent=liveCount+' panels · updated '+Math.round(ageMin/60)+'h ago';}
 }
 
 function openIBModal(){document.getElementById('ibModal').classList.add('show');document.getElementById('ibPasteArea').value='';document.getElementById('ibModalStatus').textContent='';document.getElementById('ibModalStatus').className='ib-modal-status';setTimeout(function(){document.getElementById('ibPasteArea').focus();},100);}
