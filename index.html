@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"><!-- v3.25 ts=1779785103 --><!-- v3.22 ts=1779778810 -->
+<meta charset="UTF-8"><!-- v3.28 stale-snapshot refresh --><!-- v3.25 ts=1779785103 --><!-- v3.22 ts=1779778810 -->
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -377,7 +377,7 @@ function buildDonaldContext() {
     'WHO YOU ARE SERVING:\n' +
     'David Genuth, 43, COO at Prime Source Expense Experts (national consulting for post-acute care facilities), Toms River NJ.\n' +
     'Observant/Hasidic. Shabbos starts tonight ' + (now.getDay()===5 ? 'at candle lighting' : 'Friday at candle lighting') + '.\n' +
-    'Key priorities: $93K owed from GenMed (Prime Procurement), 2022 tax amendment deadline June 11, Milestone Metrics LLC bank account needs to be opened, CPAP compliance (7/30 nights), MileagePlus merge.\n\n' +
+    'Key priorities: $93K owed from GenMed (Prime Procurement), Milestone Metrics LLC bank account, MileagePlus merge. Do not treat the June 8 speech, June 11 tax deadline, Jul 20 CPAP window, or June court dates as current unless live intel says they are still open.\n\n' +
     'OPEN TASKS RIGHT NOW:\n' + (taskLines || 'No open tasks loaded') + '\n\n' +
     'LIVE INTEL FROM COMMAND CENTER:\n' + (intelLines || 'No intel loaded — user needs to run Refresh Intel') + '\n\n' +
     'YOUR OPERATING RULES:\n' +
@@ -434,17 +434,18 @@ function renderDashMetrics(liveMetrics) {
   var urgent = tasks.filter(function(t){ return !t.done && t.priority === 'high'; }).length;
   var now = new Date();
   var taxDeadline = new Date('2026-06-11T23:59:00-04:00');
-  if (liveMetrics && liveMetrics.tax_days) taxDays = liveMetrics.tax_days; var eventDeadline = new Date('2026-06-08T00:00:00-04:00'); var eventDays = Math.max(0, Math.ceil((eventDeadline - now) / 86400000));
-  var taxDays = Math.max(0, Math.ceil((taxDeadline - now) / 86400000));
-  var taxColor = taxDays <= 7 ? 'var(--red)' : taxDays <= 14 ? 'var(--amber)' : 'var(--teal)';
-  var taxBg = taxDays <= 14 ? 'background:var(--rbg);border-color:rgba(224,48,48,.25)' : '';
+  var taxDays = Math.ceil((taxDeadline - now) / 86400000);
+  if (liveMetrics && typeof liveMetrics.tax_days === 'number') taxDays = liveMetrics.tax_days;
+  var taxPassed = taxDays <= 0;
+  var taxColor = taxPassed ? 'var(--text2)' : (taxDays <= 7 ? 'var(--red)' : taxDays <= 14 ? 'var(--amber)' : 'var(--teal)');
+  var taxBg = (!taxPassed && taxDays <= 14) ? 'background:var(--rbg);border-color:rgba(224,48,48,.25)' : '';
   var el = document.getElementById('dashMetrics5');
   if (!el) return;
   el.innerHTML =
     '<div class="mc clickable" onclick="V(\'finance\',null)"><div class="ml">Open Tasks</div><div class="mv">' + open + '</div><div class="ms">across all areas</div></div>' +
     '<div class="mc" style="' + (urgent > 0 ? 'background:var(--rbg);border-color:rgba(224,48,48,.25)' : '') + '"><div class="ml">Urgent</div><div class="mv" style="color:' + (urgent > 0 ? 'var(--red)' : 'var(--green)') + '">' + urgent + '</div><div class="ms">' + (urgent > 0 ? 'needs attention' : 'all clear') + '</div></div>' +
     '<div class="mc clickable" onclick="V(\'finance\',null)"><div class="ml">PP Balance</div><div class="mv" style="color:var(--red)">$93K</div><div class="ms">GenMed remaining</div></div>' +
-    '<div class="mc" style="' + taxBg + '"><div class="ml">Tax Amendment</div><div class="mv" style="color:' + taxColor + '">' + taxDays + 'd</div><div class="ms">deadline Jun 11</div></div>' +
+    '<div class="mc" style="' + taxBg + '"><div class="ml">Tax Amendment</div><div class="mv" style="color:' + taxColor + '">' + (taxPassed ? 'Passed' : taxDays + 'd') + '</div><div class="ms">' + (taxPassed ? 'Jun 11 deadline passed' : 'deadline Jun 11') + '</div></div>' +
     '<div class="mc"><div class="ml">Milestone LLC</div><div class="mv" style="font-size:13px;color:var(--amber)">Bank ↗</div><div class="ms">open account</div></div>';
 }
 
@@ -492,8 +493,8 @@ window.STORE_DEFAULTS = {
     {id:'p2', text:'Wave AI voice notes', sub:'Upload valuable recordings to Drive manually', status:'pending'},
     {id:'p3', text:'Yeshiva tuition \u2014 on hold', sub:'Waiting on BuyersEdge platform and Mark', status:'hold'},
     {id:'p4', text:'MileagePlus merge \u2014 3 accounts', sub:'Call 1-800-421-4655 \u00b7 XV915448, YH388442, + 1 by SSN', status:'urgent'},
-    {id:'p5', text:'2022 tax amendment', sub:'June 11 deadline \u2014 reach out to 5 orgs for receipts', status:'urgent'},
-    {id:'p6', text:'Milestone Metrics bank account', sub:'Chase appt Tue May 26 11am \u2014 bring EIN + formation doc', status:'urgent'},
+    {id:'p5', text:'2022 tax amendment', sub:'June 11 deadline passed \u2014 confirm whether it was filed', status:'info'},
+    {id:'p6', text:'Milestone Metrics bank account', sub:'May 26 Chase appt date passed \u2014 confirm if account is open', status:'info'},
     {id:'p7', text:'Handicap placard', sub:'Reapply Aug/Sep 2026 with new prescription', status:'info'},
     {id:'p8', text:'Kia $40 refund', sub:'MVC refund \u2014 mail in form', status:'pending'}
   ],
@@ -506,9 +507,9 @@ window.STORE_DEFAULTS = {
     {id:'f6', text:'AmeriHealth', sub:'$1,974.82/mo \u2014 AutoPay via Chase checking 3529', status:'done', val:'AutoPay \u2713'}
   ],
   health: [
-    {id:'h1', text:'CPAP compliance', sub:'7 of 30 nights \u2014 window closes Jul 20, 2026', status:'pending', val:'7/30'},
-    {id:'h2', text:'Tapezza Treatment 3', sub:'Call Option Care 973-597-0414 \u2014 schedule before Jun 1', status:'urgent'},
-    {id:'h3', text:'Dr. Landsman ENT', sub:'Mon May 25 11am', status:'info'},
+    {id:'h1', text:'CPAP compliance', sub:'Compliance window ended Jul 20, 2026', status:'info', val:'ended'},
+    {id:'h2', text:'Tapezza Treatment 3', sub:'Jun 1 scheduling window passed \u2014 confirm status with Option Care', status:'info'},
+    {id:'h3', text:'Dr. Landsman ENT', sub:'May 25 \u2014 date passed', status:'info'},
     {id:'h4', text:'Kasa Smart Plug \u2014 CPAP timer', sub:'Plugged in and running on auto start/stop', status:'done'}
   ],
   projects: [
@@ -518,11 +519,11 @@ window.STORE_DEFAULTS = {
   ],
   email: [
     {id:'em1', text:'MileagePlus merge \u2014 3 accounts', sub:'Call 1-800-421-4655 \u00b7 XV915448 YH388442 plus 1 more', status:'urgent'},
-    {id:'em2', text:'2022 charity receipts \u2014 5 orgs', sub:'Reach out for receipts before June 11 deadline', status:'urgent'},
+    {id:'em2', text:'2022 charity receipts \u2014 5 orgs', sub:'June 11 deadline passed \u2014 confirm receipts/filing', status:'info'},
     {id:'em3', text:'Israel Steinberg \u2014 2022 amendment', sub:'Has it been filed yet? Confirm status.', status:'pending'}
   ],
   work: [
-    {id:'w1', text:'June 8 event \u2014 COO speech prep', sub:'Procurement presentation \u2014 15 days away', status:'urgent'},
+    {id:'w1', text:'June 8 event \u2014 COO speech', sub:'Event date passed (Jun 8, 2026)', status:'info'},
     {id:'w2', text:'Culligan \u2014 redlined contract', sub:'Thomas Caputo \u2014 no response in 3+ weeks', status:'urgent'},
     {id:'w3', text:'Mobotics \u2014 DocuSign pending', sub:'Yehuda + Mark need to sign \u00b7 sent Apr 30', status:'pending'},
     {id:'w4', text:'Salesforce \u2014 4 dev items', sub:'Ownership change, matching rule, parent-child, dormant opps', status:'info'}
@@ -702,44 +703,30 @@ function renderCalendarFromWorker() {
   var todayEl = document.getElementById('calTodayItems');
   var weekEl = document.getElementById('calWeekItems');
   if (!todayEl) return;
-  // Build today's events from known calendar data
-  var today = now.toDateString();
-  var todayEvents = [];
-  var weekEvents = [];
-  // Static known events (updated to current week)
-  var knownEvents = [
-    {date:'Mon May 25 2026', title:'Dr. Landsman ENT', time:'11:00 AM', type:'appt'},
-    {date:'Tue May 26 2026', title:'Chase — Milestone Metrics LLC', time:'11:00 AM', note:'Adam King · 201-391-8350 · bring EIN + formation doc', type:'bank'},
-    {date:'Fri May 29 2026', title:'Shabbos candle lighting', time:'7:57 PM', type:'jewish'},
-    {date:'Sat May 30 2026', title:'Havdalah', time:'9:03 PM', type:'jewish'},
-    {date:'Sun Jun 8 2026', title:'Prime Source company event — COO speech', time:'All day', type:'work'}
-  ];
-  knownEvents.forEach(function(ev) {
-    var evDate = new Date(ev.date);
-    var todayDate = new Date(now.toDateString());
-    if (evDate.toDateString() === todayDate.toDateString()) todayEvents.push(ev);
-    else if (evDate > todayDate) weekEvents.push(ev);
-  });
-  // Render today
-  if (!todayEvents.length) {
-    todayEl.innerHTML = '<div style="font-size:10px;color:var(--text3);padding:6px 0">No scheduled events today</div>';
-  } else {
-    todayEl.innerHTML = todayEvents.map(function(ev) {
-      var color = ev.type==='jewish'?'var(--red)':ev.type==='work'?'var(--amber)':'var(--text)';
-      return '<div class="row"><div><div class="rn" style="font-size:10px;color:'+color+'">'+ev.title+'</div>'+
-        '<div class="rs">'+ev.time+(ev.note?' · '+ev.note:'')+'</div></div></div>';
-    }).join('');
+  var intel = window._liveIntel;
+  if (intel && intel.today && intel.today.events) {
+    if (typeof applyLiveIntel === 'function') {
+      // Calendar portion only — applyLiveIntel fills today/week from the worker
+      var todayEvents = intel.today.events || [];
+      if (!todayEvents.length) {
+        todayEl.innerHTML = '<div style="font-size:10px;color:var(--text3);padding:6px 0">No scheduled events today</div>';
+      } else {
+        todayEl.innerHTML = todayEvents.map(function(ev) {
+          var color = ev.type==='jewish'?'var(--red)':ev.type==='medical'?'var(--amber)':'var(--text)';
+          return '<div class="row"><div><div class="rn" style="font-size:10px;color:'+color+'">'+ev.title+'</div><div class="rs">'+ev.time+(ev.note?' \u00b7 '+ev.note.substring(0,60):'')+'</div></div></div>';
+        }).join('');
+      }
+      if (weekEl && intel.week && intel.week.length) {
+        weekEl.innerHTML = intel.week.slice(0,7).map(function(ev) {
+          var color = ev.type==='jewish'?'var(--hi)':ev.type==='medical'?'var(--amber)':'var(--text)';
+          return '<div class="row"><div><div class="rn" style="font-size:10px;color:'+color+'">'+ev.title+'</div><div class="rs">'+ev.date+(ev.time?' \u00b7 '+ev.time:'')+'</div></div></div>';
+        }).join('');
+      }
+      return;
+    }
   }
-  // Render week
-  if (weekEl) {
-    weekEl.innerHTML = weekEvents.slice(0,6).map(function(ev) {
-      var d = new Date(ev.date);
-      var ds = d.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
-      var color = ev.type==='jewish'?'var(--hi)':ev.type==='work'?'var(--amber)':'var(--text)';
-      return '<div class="row"><div><div class="rn" style="font-size:10px;color:'+color+'">'+ev.title+'</div>'+
-        '<div class="rs">'+ds+(ev.time?' · '+ev.time:'')+'</div></div></div>';
-    }).join('');
-  }
+  todayEl.innerHTML = '<div style="font-size:10px;color:var(--text3);padding:6px 0">Waiting for live intel\u2026</div>';
+  if (weekEl) weekEl.innerHTML = '<div style="font-size:10px;color:var(--text3)">This week loads from the intel worker</div>';
 }
 
 
@@ -761,6 +748,12 @@ function loadJewishCal() {
       var ds=d.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
       return '<div class="row" style="padding:3px 0"><div><div class="rn" style="font-size:10px;color:'+color+'">'+item.title+'</div><div class="rs">'+ds+'</div></div></div>';
     }).join('');
+    var nextCandles=data.items.filter(function(item){return item.category==='candles'&&new Date(item.date)>=now;})[0];
+    var zmanEl=document.getElementById('shabbosZmanDetail');
+    if(zmanEl&&nextCandles){
+      var cd=new Date(nextCandles.date);
+      zmanEl.textContent=cd.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'})+' \u00b7 '+nextCandles.title.replace(/^Candle lighting:?\s*/i,'')+' Toms River';
+    }
   }).catch(function(){
     el.innerHTML='<div style="font-size:10px;color:var(--text3)">Tap refresh to load</div>';
   });
@@ -769,24 +762,35 @@ function loadJewishCal() {
 function updateWorkCountdowns() {
   var now = new Date();
   var eventEl = document.getElementById('workEventDays');
+  var subEl = document.getElementById('workEventSub');
   if (eventEl) {
-    var days = Math.ceil((new Date('2026-06-08') - now) / 86400000);
-    eventEl.textContent = days + 'd';
-    eventEl.style.color = days <= 7 ? 'var(--red)' : days <= 14 ? 'var(--amber)' : 'var(--green)';
+    var days = Math.ceil((new Date('2026-06-08T00:00:00-04:00') - now) / 86400000);
+    var liveDays = window._liveIntel && window._liveIntel.metrics && typeof window._liveIntel.metrics.event_days === 'number'
+      ? window._liveIntel.metrics.event_days : days;
+    if (liveDays < 0 || days < 0) {
+      eventEl.textContent = 'Passed';
+      eventEl.style.color = 'var(--text2)';
+      if (subEl) subEl.textContent = 'Event date passed';
+    } else {
+      eventEl.textContent = liveDays + 'd';
+      eventEl.style.color = liveDays <= 7 ? 'var(--red)' : liveDays <= 14 ? 'var(--amber)' : 'var(--green)';
+      if (subEl) subEl.textContent = 'COO speech prep now';
+    }
   }
 }
 
 function renderFocusToday() {
   var el = document.getElementById('focusTodayEl');
   if (!el) return;
-  var now = new Date();
-  var taxDays = Math.ceil((new Date('2026-06-11') - now) / 86400000);
-  var eventDays = Math.ceil((new Date('2026-06-08') - now) / 86400000);
+  var intel = window._liveIntel;
+  if (intel && intel.panels && intel.panels.focus) {
+    var liveHtml = window.sanitizeIntelHtml ? window.sanitizeIntelHtml(intel.panels.focus) : intel.panels.focus;
+    if (liveHtml && liveHtml.indexOf('ii ') > -1) {
+      el.innerHTML = liveHtml;
+      return;
+    }
+  }
   var items = [
-    {color:'var(--red)', label:'June 8 speech', detail: eventDays+'d — COO procurement presentation, NOT prepped'},
-    {color:'var(--red)', label:'Tax amendment', detail: taxDays+'d — June 11 deadline, charity receipts needed'},
-    {color:'var(--amber)', label:'Chase bank appt', detail:'Tue May 26 11am — bring EIN + formation doc for Milestone Metrics'},
-    {color:'var(--amber)', label:'CPAP tonight', detail:'7/30 nights — put mask on before sleep, Bluetooth on'},
     {color:'var(--text)', label:'MileagePlus merge', detail:'Call 1-800-421-4655 when ready — 3 accounts to consolidate'},
   ];
   el.innerHTML = items.map(function(item) {
@@ -853,8 +857,93 @@ function setDonaldWebAppUrl(url) {
 }
 
 
+window.isExpiredSnapshotText = function(text) {
+  if (!text) return false;
+  var t = String(text).replace(/\s+/g, ' ');
+  if (/passed|ended|closed Jul 20|date passed/i.test(t) && !/(prep needed NOW|15 days away|window closes)/i.test(t)) return false;
+  if (/[—\-]\s*-\d+\s*days?\b/i.test(t)) return true;
+  if (/\b-\d+\s*days?\b/i.test(t) && /(june\s*8|speech|tax amendment|deadline)/i.test(t)) return true;
+  if (/window closes\s+jul\s*20/i.test(t)) return true;
+  if (/7\/30 nights/i.test(t) && /(jul\s*20|window|compliance)/i.test(t)) return true;
+  if (/schedule before jun\s*1/i.test(t)) return true;
+  if (/chase appt\s+tue may 26/i.test(t)) return true;
+  if (/\b(june|jun)\s*8\b/i.test(t) && /(speech|event|prep)/i.test(t)) return true;
+  if (/\b(june|jun)\s*11\b/i.test(t) && /(deadline|tax|amendment|receipts)/i.test(t)) return true;
+  if (/jul\s*20/i.test(t) && /(window|compliance|cpap)/i.test(t)) return true;
+  if (/may\s*26/i.test(t) && /(chase|milestone)/i.test(t)) return true;
+  if (/may\s*25/i.test(t) && /landsman/i.test(t)) return true;
+  if (/may\s*15/i.test(t) && /sightmd/i.test(t) && !/(completed|done)/i.test(t)) return true;
+  if (/may\s*29/i.test(t) && /(shabbos|candle)/i.test(t)) return true;
+  if (/(sefira|shavuos|isru chag)/i.test(t) && /(may|day 33)/i.test(t)) return true;
+  if (/jun\s*26/i.test(t) && /court/i.test(t)) return true;
+  if (/15 days away/i.test(t) && /(june\s*8|speech)/i.test(t)) return true;
+  if (/cpap tonight/i.test(t) && /nights/i.test(t)) return true;
+  if (/23 more nights/i.test(t)) return true;
+  return false;
+};
+
+window.sanitizeIntelHtml = function(html) {
+  if (!html) return html;
+  var tmp = document.createElement('div');
+  tmp.innerHTML = html;
+  var nodes = tmp.querySelectorAll('.ii, .ii-wrap');
+  var kept = 0;
+  nodes.forEach(function(el) {
+    if (window.isExpiredSnapshotText(el.textContent || '')) {
+      if (el.parentNode) el.parentNode.removeChild(el);
+    } else {
+      kept++;
+    }
+  });
+  if (!kept) {
+    return '<div class="ii ii-blue"><strong>Live intel</strong> — expired May/June snapshot items hidden. Pull Now for current panels.</div>';
+  }
+  return tmp.innerHTML;
+};
+
+window.migrateStaleStoreSnapshot = function() {
+  if (localStorage.getItem('po2_staleSnap_v1') === '1') return;
+  var patches = {
+    pending: {
+      p5: { match: /2022 tax amendment/i, sub: 'June 11 deadline passed \u2014 confirm whether it was filed', status: 'info' },
+      p6: { match: /Milestone Metrics bank/i, sub: 'May 26 Chase appt date passed \u2014 confirm if account is open', status: 'info' }
+    },
+    health: {
+      h1: { match: /CPAP compliance/i, sub: 'Compliance window ended Jul 20, 2026', status: 'info', val: 'ended' },
+      h2: { match: /Tapezza/i, sub: 'Jun 1 scheduling window passed \u2014 confirm status with Option Care', status: 'info' },
+      h3: { match: /Landsman/i, sub: 'May 25 \u2014 date passed', status: 'info' }
+    },
+    email: {
+      em2: { match: /charity receipts/i, sub: 'June 11 deadline passed \u2014 confirm receipts/filing', status: 'info' }
+    },
+    work: {
+      w1: { match: /June 8 event/i, sub: 'Event date passed (Jun 8, 2026)', status: 'info' }
+    }
+  };
+  Object.keys(patches).forEach(function(storeName) {
+    var items;
+    try { items = JSON.parse(localStorage.getItem('po2_store_' + storeName) || 'null'); } catch(e) { items = null; }
+    if (!items || !items.length) return;
+    var changed = false;
+    items.forEach(function(item) {
+      var patch = patches[storeName][item.id];
+      if (!patch || !patch.match.test(item.text || '')) return;
+      item.sub = patch.sub;
+      item.status = patch.status;
+      if (patch.val) item.val = patch.val;
+      changed = true;
+    });
+    if (changed) {
+      try { localStorage.setItem('po2_store_' + storeName, JSON.stringify(items)); } catch(e) {}
+    }
+  });
+  try { localStorage.setItem('po2_staleSnap_v1', '1'); } catch(e) {}
+};
+
 function applyLiveIntel(intel) {
   if (!intel) return;
+  window._liveIntel = intel;
+  _liveIntel = intel;
   
   // Hebrew date
   if (intel.hebrew_date) {
@@ -894,7 +983,7 @@ function applyLiveIntel(intel) {
   if (intel.panels) {
     var now = new Date().toISOString();
     Object.keys(intel.panels).forEach(function(panelId) {
-      var html = intel.panels[panelId];
+      var html = window.sanitizeIntelHtml ? window.sanitizeIntelHtml(intel.panels[panelId]) : intel.panels[panelId];
       if (!html) return;
       
       // Update intel cache with fresh timestamp
@@ -962,12 +1051,11 @@ function applyLiveIntel(intel) {
     window.renderStore('email','emailStoreEl');
   }
   
-  // Metrics
-  if (intel.metrics) {
-    try { renderDashMetrics(intel.metrics); } catch(e) {}
-    try { renderFocusToday(); } catch(e) {}
-    try { updateWorkCountdowns(); } catch(e) {}
-  }
+  // Metrics + world cards that used to show the May/June snapshot as current
+  try { renderDashMetrics(intel.metrics || null); } catch(e) {}
+  try { renderFocusToday(); } catch(e) {}
+  try { updateWorkCountdowns(); } catch(e) {}
+  try { renderCalendarFromWorker(); } catch(e) {}
   
   // Sync bar
   var syncEl = document.querySelector('.sync-bar');
@@ -1006,6 +1094,7 @@ window.setDonaldWebAppUrl = function(url) {
 };
 
 function v26init() {
+    try { if (typeof migrateStaleStoreSnapshot === 'function') migrateStaleStoreSnapshot(); } catch(e) {}
     try { renderDashMetrics(); } catch(e) {}
     try { renderAgentsPanel(); } catch(e) {}
     try { renderHebrewDate(); } catch(e) {}
@@ -1232,7 +1321,7 @@ function v26init() {
     <div class="card">
       <div class="ct">Quick actions</div>
       <button class="adb" onclick="ask('What do I need to do to collect the remaining $93K from Prime Procurement and reroute health insurance and charity through Prime Procurement?')"><span class="adb-icon">💰</span>PP collection strategy</button>
-      <button class="adb" onclick="ask('Full tax strategy update: 2022 amendment deadline June 11, Milestone Metrics LLC bank account, Solo 401k setup, Malky REPS hours log. What do I need to do this week?')"><span class="adb-icon">📋</span>Tax strategy</button>
+      <button class="adb" onclick="ask('Full tax strategy update: 2022 amendment June 11 deadline has passed — confirm filing status. Milestone Metrics LLC bank account, Solo 401k setup, Malky REPS hours log. What do I need to do this week?')"><span class="adb-icon">📋</span>Tax strategy</button>
       <button class="adb" onclick="ask('Donor Advised Fund setup — what do I need to do to establish one and how does it help with my 2026 tax situation?')"><span class="adb-icon">🎁</span>DAF setup</button>
       <textarea class="nta" id="financeNotes" placeholder="Finance notes..." oninput="S('financeNotes',this.value)" style="min-height:80px;margin-top:8px"></textarea>
     </div>
@@ -1268,17 +1357,17 @@ function v26init() {
     <div class="world-actions"><button class="cc-btn" onclick="ask('Full health update — CPAP nights remaining, next appointment, and what I need to do tonight for compliance.')">Health Briefing ↗</button></div>
   </div>
   <div class="metrics">
-    <div class="mc"><div class="ml">Nights done</div><div class="mv">3</div><div class="ms">of 30 required</div></div>
-    <div class="mc"><div class="ml">Still needed</div><div class="mv" style="color:var(--amber)">27</div><div class="ms">in 90-day window</div></div>
+    <div class="mc"><div class="ml">Nights logged</div><div class="mv" style="font-size:18px;color:var(--text2)">—</div><div class="ms">see live intel</div></div>
+    <div class="mc"><div class="ml">Window</div><div class="mv" style="font-size:14px;color:var(--text2)">Ended</div><div class="ms">closed Jul 20, 2026</div></div>
     <div class="mc"><div class="ml">Window opened</div><div class="mv" style="font-size:14px">Apr 22</div><div class="ms">first use night</div></div>
-    <div class="mc"><div class="ml">Compliance deadline</div><div class="mv" style="font-size:14px">Jul 20</div><div class="ms">~69 days left</div></div>
+    <div class="mc"><div class="ml">Compliance deadline</div><div class="mv" style="font-size:14px;color:var(--text2)">Passed</div><div class="ms">Jul 20, 2026</div></div>
   </div>
   <div class="g2">
     <div class="card">
       <div class="ct">CPAP tracker</div>
       <div class="prog">
-        <div class="pt2"><span class="pn">30-night compliance window</span><span class="pp" style="color:var(--amber)">10%</span></div>
-        <div class="ptrack"><div class="pfill" style="width:10%;background:var(--amber)"></div></div>
+        <div class="pt2"><span class="pn">30-night compliance window</span><span class="pp" style="color:var(--text2)">ended</span></div>
+        <div class="ptrack"><div class="pfill" style="width:0%;background:var(--text3)"></div></div>
       </div>
       <div class="row"><span class="rn">Machine first used</span><span class="badge bx">Apr 22, 2026</span></div>
       <div class="row"><span class="rn">Requirement: 4+ hrs/night</span><span class="badge ba">Bluetooth on overnight</span></div>
@@ -1286,7 +1375,7 @@ function v26init() {
       <div class="row"><span class="rn">Supplies — CPAPmyway</span><span class="badge bg">~$449/yr independent</span></div>
       <div class="row"><span class="rn">Negotiate Option Care supplies</span><span class="badge ba">Next quarterly</span></div>
       <div class="row"><span class="rn">Kasa Smart Plug</span><span class="badge ba">Ordered — Shabbos timer</span></div>
-      <button class="adb" onclick="ask('CPAP compliance check — I started April 22. As of today I have 3 nights. How many do I need and what do I need to do tonight to stay on track?')"><span class="adb-icon">💪</span>CPAP compliance check</button>
+      <button class="adb" onclick="ask('CPAP check — the Jul 20, 2026 compliance window has ended. Do not treat the old 3/30 or 7/30 snapshot as current. What should I confirm with the provider if anything is still open?')"><span class="adb-icon">💪</span>CPAP status check</button>
       <button class="adb" onclick="ask('Help me prepare to negotiate CPAP supply pricing with Option Care at my next quarterly replenishment. What are market prices vs what CPAPmyway charges, and what are my talking points?')"><span class="adb-icon">🎯</span>Prep Option Care negotiation</button>
     </div>
     <div class="card">
@@ -1294,7 +1383,7 @@ function v26init() {
       <div class="row"><div><div class="rn">Tapezza infusion</div><div class="rs">May 8, 2026</div></div><span class="badge bx">Completed</span></div>
       <div class="row"><div><div class="rn">SightMD</div><div class="rs">May 15 — completed</div></div><span class="badge bg">Done</span></div>
       <div class="row"><div><div class="rn">Handicap placard renewal</div><div class="rs">Current expires Oct 2026 — reapply Aug/Sep with new prescription</div></div><span class="badge bx">Aug/Sep</span></div>
-      <button class="adb" onclick="ask('What do I need to prepare for my SightMD appointment on May 15?')"><span class="adb-icon">📅</span>SightMD prep</button>
+      <button class="adb" onclick="ask('Health overview — upcoming appointments only. SightMD May 15 is already completed.')"><span class="adb-icon">📅</span>Health overview</button>
       <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border)">
         <div class="ct" style="margin-bottom:6px">Add appointment</div>
         <div class="irow">
@@ -1317,10 +1406,8 @@ function v26init() {
   </div>
   <div class="g2">
     <div class="card">
-      <div class="ct">Jewish calendar</div>
-      <div class="row"><div><div class="rn">Shabbos</div><div class="rs">Candle lighting Fri May 29 — 7:59 PM · Havdalah Sat 9:06 PM</div></div><span class="badge bp">Fri</span></div>
-      <div class="row"><div><div class="rn">Shabbos candle lighting</div><div class="rs">Friday ~7:45 PM · Toms River</div></div><span class="badge bx">Fri</span></div>
-      <div class="row"><div><div class="rn">Sefira</div><div class="rs">Day 33 — Shavuos in 2 days</div></div><span class="badge bp">Active</span></div>
+      <div class="ct">Jewish calendar <span id="hebrewDateCard" style="font-size:9px;color:var(--red);font-weight:600;text-transform:none;letter-spacing:0"></span></div>
+      <div id="jewishCalItems"><div style="font-size:10px;color:var(--text3);font-style:italic">Loading current Jewish calendar...</div></div>
       <button class="adb" onclick="ask('What is on the Jewish calendar this week and coming month that I should know about?')"><span class="adb-icon">✡</span>Jewish calendar this week</button>
       <button class="adb" onclick="ask('Help me prepare for Shabbos this week. What do I need to do before zman on Friday?')"><span class="adb-icon">✨</span>Shabbos prep check</button>
     </div>
@@ -1346,7 +1433,7 @@ function v26init() {
     <div class="card">
       <div class="ct">Shabbos prep</div>
       <div class="row"><span class="rn">CPAP timer</span><span class="badge ba">Kasa plug — ordered</span></div>
-      <div class="row"><span class="rn">Shabbos zman Friday</span><span class="badge bx">~7:45 PM Toms River</span></div>
+      <div class="row"><span class="rn">Next Shabbos zman</span><span class="badge bx" id="shabbosZmanDetail">from live calendar</span></div>
       <div class="row"><span class="rn">Haircut</span><span class="badge ba">OK to cut</span></div>
       <textarea class="nta" id="familyNotes" placeholder="Family notes, things to discuss with Malky..." oninput="S('familyNotes',this.value)" style="min-height:80px;margin-top:10px"></textarea>
     </div>
@@ -1361,7 +1448,7 @@ function v26init() {
   </div>
   <div class="card" style="margin-bottom:10px">
     <div class="ct">Active Work Projects</div>
-    <div class="row"><div><div class="rn" style="color:var(--red)">June 8 company event speech</div><div class="rs">COO procurement presentation — prep not started</div></div><span class="badge br">Urgent</span></div>
+    <div class="row"><div><div class="rn">June 8 company event</div><div class="rs">COO procurement speech — event date passed</div></div><span class="badge bx">Passed</span></div>
     <div class="row"><div><div class="rn" style="color:var(--red)">Culligan contract</div><div class="rs">Thomas Caputo — redlined, stalled 3+ weeks</div></div><span class="badge br">Stalled</span></div>
     <div class="row"><div><div class="rn" style="color:var(--amber)">Mobotics DocuSign</div><div class="rs">Yehuda + Mark need to sign — sent Apr 30</div></div><span class="badge ba">Pending</span></div>
     <div class="row"><div><div class="rn" style="color:var(--amber)">BEP BAA + permissions</div><div class="rs">Still outstanding — blocking BEP integration</div></div><span class="badge ba">Pending</span></div>
@@ -1423,7 +1510,7 @@ function v26init() {
       <div class="ct">Quick actions</div>
       <button class="adb" onclick="ask('Scan davidlgenuth@gmail.com — what needs a response today?')">Personal inbox scan</button>
       <button class="adb" onclick="ask('Scan davidmalky@gmail.com — any financial, family, or urgent items?')">Family inbox scan</button>
-      <button class="adb" onclick="ask('Draft follow-up to Israel Steinberg about 2022 tax amendment — charity receipts from 5 orgs needed, deadline June 11.')">Tax amendment follow-up</button>
+      <button class="adb" onclick="ask('Draft follow-up to Israel Steinberg about 2022 tax amendment — June 11 deadline has passed. Confirm whether it was filed and if receipts are still needed.')">Tax amendment follow-up</button>
       <button class="adb" onclick="ask('What emails have I been ignoring that I should deal with this week?')">Overdue emails</button>
       <div class="ct" style="margin-top:10px">Accounts</div>
       <div class="row"><span class="rn" style="font-size:10px">davidlgenuth@gmail.com</span><span class="badge bg">Connected</span></div>
@@ -1440,7 +1527,7 @@ function v26init() {
     <div class="world-actions"><button class="cc-btn" onclick="window.open('https://claude.ai/chat/fc096dae-272e-4c62-a2eb-59d4ec255a62','_blank')">Open Work DONALD</button></div>
   </div>
   <div class="metrics">
-    <div class="mc" id="workEventCard" style="cursor:pointer" onclick="ask('June 8 company event: give me a full prep brief for the COO procurement speech.')"><div class="ml">June 8 Event</div><div class="mv" style="font-size:14px;color:var(--red)" id="workEventDays">15d</div><div class="ms">COO speech prep now</div></div>
+    <div class="mc" id="workEventCard"><div class="ml">June 8 Event</div><div class="mv" style="font-size:14px;color:var(--text2)" id="workEventDays">Passed</div><div class="ms" id="workEventSub">Event date passed</div></div>
     <div class="mc"><div class="ml">Culligan deal</div><div class="mv" style="font-size:14px;color:var(--amber)">Pending</div><div class="ms">Redlined contract</div></div>
     <div class="mc"><div class="ml">Mobotics</div><div class="mv" style="font-size:14px;color:var(--amber)">DocuSign</div><div class="ms">Yehuda + Mark pending</div></div>
     <div class="mc"><div class="ml">Salesforce</div><div class="mv" style="font-size:14px;color:var(--amber)">4 items</div><div class="ms">Tap for status</div></div>
@@ -1454,8 +1541,7 @@ function v26init() {
     </div>
     <div class="card">
       <div class="ct">Quick actions</div>
-      <button class="adb" onclick="ask('June 8 company event: COO presentation on procurement. Structure, key talking points, and an opening line.')">June 8 speech prep</button>
-      <button class="adb" onclick="ask('Prime Source overview: Culligan, Mobotics DocuSign, BEP BAA, Salesforce, Purchasing Director. What needs me most urgently?')">Work overview</button>
+      <button class="adb" onclick="ask('Prime Source overview: Culligan, Mobotics DocuSign, BEP BAA, Salesforce, Purchasing Director. What needs me most urgently? Do not treat the June 8 speech as current.')">Work overview</button>
       <button class="adb" onclick="ask('Culligan — Thomas Caputo returned heavily redlined contract May 1, no response in 3+ weeks. What is my approach?')">Culligan strategy</button>
     </div>
   </div>
@@ -1471,10 +1557,7 @@ function v26init() {
   <div class="g2">
     <div class="card">
       <div class="ct">Today's priorities</div>
-      <div class="row"><div><div class="rn" style="font-size:10px;color:var(--red)">Call Cathy re CPAP compliance result</div><div class="rs">Health Innovations · 732-897-7373</div></div><span class="badge br">Today</span></div>
-      <div class="row"><div><div class="rn" style="font-size:10px;color:var(--red)">Call United MileagePlus merge</div><div class="rs">1-800-421-4655 · accounts XV915448 + YH388442</div></div><span class="badge br">Today</span></div>
-      <div class="row"><div><div class="rn" style="font-size:10px;color:var(--amber)">Salesforce progress meeting</div><div class="rs">Today 2:00 PM Microsoft Teams</div></div><span class="badge ba">2:00 PM</span></div>
-      <div class="row"><div><div class="rn" style="font-size:10px;color:var(--amber)">Court hearing prep</div><div class="rs">Avi Adler · Friday Jun 26 10:30 AM · Ocean County Courthouse</div></div><span class="badge ba">Fri</span></div>
+      <div class="row"><div><div class="rn" style="font-size:10px">Call United MileagePlus merge</div><div class="rs">1-800-421-4655 · accounts XV915448 + YH388442</div></div><span class="badge bx">Open</span></div>
       <div id="focusTodayEl" style="margin-bottom:8px"></div>
       <div style="padding-top:6px;border-top:1px solid var(--border);margin-top:4px">
         <button class="adb" onclick="ask('Top 3 priorities for today — be specific, tell me exactly what to do and in what order.')">Get today's top 3 ↗</button>
@@ -1484,9 +1567,7 @@ function v26init() {
     </div>
     <div class="card">
       <div class="ct">Upcoming deadlines</div>
-      <div class="row"><div><div class="rn" style="font-size:10px;color:var(--amber)">Jun 24: Ushy/Mark/David catch up</div><div class="rs">3:00 PM Microsoft Teams</div></div><span class="badge ba">Jun 24</span></div>
-      <div class="row"><div><div class="rn" style="font-size:10px;color:var(--red)">Jun 26: Court hearing</div><div class="rs">10:30 AM Ocean County Courthouse Toms River</div></div><span class="badge br">Jun 26</span></div>
-      <div class="row"><div><div class="rn" style="font-size:10px">Jun 26: Candle lighting</div><div class="rs">8:11 PM</div></div><span class="badge bx">Jun 26</span></div>
+      <div class="row"><div><div class="rn" style="font-size:10px;color:var(--text2)">Jun 26: Court hearing</div><div class="rs">Hearing date passed — Ocean County Courthouse</div></div><span class="badge bx">Passed</span></div>
       <div class="row"><div><div class="rn" style="font-size:10px">Dec 31: Solo 401k establish</div><div class="rs">Max $70K — establish before year end</div></div><span class="badge bx">Dec 31</span></div>
       <div class="row"><div><div class="rn" style="font-size:10px">Dec 31: Malky REPS hours</div><div class="rs">Must be logged all year</div></div><span class="badge bx">Dec 31</span></div>
       <textarea class="nta" id="focusNotes" placeholder="Focus notes..." oninput="S('focusNotes',this.value)" style="min-height:80px;margin-top:8px"></textarea>
@@ -1517,7 +1598,7 @@ function v26init() {
       <div class="qa-grid">
         <button class="qab" onclick="ask('Full morning briefing for today.')">☀ Morning briefing</button>
         <button class="qab" onclick="ask('Scan personal and family email — flag anything urgent.')">✉ Scan all email</button>
-        <button class="qab" onclick="ask('CPAP check — how many nights remaining and what do I need to do tonight?')">💪 CPAP check</button>
+        <button class="qab" onclick="ask('CPAP status — the Jul 20, 2026 window ended. Do not use the old 7/30 snapshot as current. What if anything is still open?')">💪 CPAP check</button>
         <button class="qab" onclick="ask('What is my single most important personal priority right now?')">⚡ Top priority</button>
         <button class="qab" onclick="ask('Quick work pulse — any urgent Outlook emails or meetings I should know about?')">📬 Work pulse</button>
         <button class="qab" onclick="ask('What is on the Jewish calendar this week?')">✡ Jewish calendar</button>
@@ -1699,9 +1780,8 @@ var CC_PANELS=[
   {id:'finance',icon:'💰',label:'Finance',pri:'amber',desc:'$93K owed, accounts, insurance, investments, DAF setup.',
    badgeFn:function(){return {count:1,cls:'red'};},
    actions:[{label:'Finance status',prompt:'Full personal finance status — Prime Procurement balance, Capital One, investments, DAF, what needs to move this week.'},{label:'Collect the $93K',prompt:'What do I need to do to collect the remaining $93K from Prime Procurement?'},{label:'Insurance discount',prompt:'Auto insurance discount follow-up. I completed defensive driving April 26. Next steps?'}],openTab:'finance'},
-  {id:'health',icon:'💪',label:'Health',pri:'amber',desc:'CPAP: 27 of 30 nights needed. SightMD May 15.',
-   badgeFn:function(){return {count:27,cls:'amber'};},
-   actions:[{label:'CPAP check',prompt:'CPAP compliance check — how many nights do I have, how many remaining, what do I do tonight?'},{label:'SightMD prep',prompt:'What do I need to prepare for my SightMD appointment on May 15?'},{label:'Health overview',prompt:'Full health status — CPAP compliance, upcoming appointments, anything I should be tracking.'}],openTab:'health'},
+  {id:'health',icon:'💪',label:'Health',pri:'amber',desc:'CPAP Jul 20 window ended. SightMD May 15 completed. Pull live intel for current health items.',
+   actions:[{label:'CPAP check',prompt:'CPAP status — the Jul 20, 2026 compliance window ended. Do not treat the old 7/30 snapshot as current. What if anything is still open?'},{label:'Health overview',prompt:'Full health status — upcoming appointments only. SightMD May 15 is completed. Do not invent new medical facts.'}],openTab:'health'},
   {id:'family',icon:'🏠',label:'Family & Home',pri:'blue',desc:'Malky, kids, home, Shabbos, Jewish calendar.',
    actions:[{label:'Family check-in',prompt:'Family and home briefing — what is on the calendar this week for family, Shabbos, and home?'},{label:'Jewish calendar',prompt:'What is on the Jewish calendar this week and coming month?'},{label:'Shabbos prep',prompt:'Help me prepare for Shabbos this week. What do I need to do before zman on Friday?'}],openTab:'family'},
   {id:'projects',icon:'🚀',label:'Personal Projects',pri:'gray',desc:'FashionScan25.3 (blocked), DONALD OS v2 (active).',
@@ -1715,7 +1795,7 @@ var CC_PANELS=[
    actions:[{label:'Work pulse',prompt:'Work pulse — urgent Outlook emails, meetings today or tomorrow, key Prime Source items.'},{label:'Top work priorities',prompt:'Top 3 work priorities I should push on right now at Prime Source.'},{label:'Open Prime Source OS',url:'https://primesource-os.vercel.app'}],openTab:'work'},
   {id:'notes',icon:'📝',label:'Capture',pri:'gray',desc:'Quick thoughts, scratchpad, notes.',
    actions:[{label:'Quick capture',prompt:'I want to capture a thought or note. Ask me what I want to remember.'},{label:'Review notes',prompt:'What notes have I captured recently that I should review?'}],openTab:null},
-  {id:'focus',icon:'⏱',label:'Focus & Time',pri:'green',desc:'Priority stack: June 8 speech prep, tax amendment deadline Jun 11, Milestone Metrics bank, MileagePlus merge, Renzo build.',
+  {id:'focus',icon:'⏱',label:'Focus & Time',pri:'green',desc:'Priority stack from live intel. June 8 speech and Jun 11 tax deadline are past — do not treat as current.',
    badgeFn:function(){var op=tasks.filter(function(t){return !t.done&&t.pri==='high'});return op.length>0?{count:op.length,cls:'red'}:null;},
    actions:[{label:'Structure my day',prompt:'Structure my day today by priority. Pull my calendar, open tasks, and pending items. Tell me exactly what I should work on in order with time estimates.'},{label:'Best use of next 30 min',prompt:'I have 30 minutes right now. What is the single highest-leverage thing I can do?'},{label:'Weekly plan',prompt:'Build me a realistic weekly plan. What are the 3-5 most important things to accomplish this week across personal, financial, health, and work?'}],openTab:'focus'},
 ];
@@ -1856,7 +1936,7 @@ function ccBadgeHtml(panel){
   var key=PANEL_INTEL_KEY?PANEL_INTEL_KEY[panel.id]:null;
   var liveData=key&&intelCache?intelCache[key]:null;
   var html='';
-  if(liveData&&liveData.html){html=liveData.html;}
+  if(liveData&&liveData.html){html=window.sanitizeIntelHtml?window.sanitizeIntelHtml(liveData.html):liveData.html;}
   else{var domEl=document.getElementById('cp-intel-'+panel.id);if(domEl)html=domEl.innerHTML;}
   if(html){
     var red=(html.match(/ii-red/g)||[]).length;var amber=(html.match(/ii-amber/g)||[]).length;
@@ -1913,7 +1993,7 @@ function openCCDrawer(pid){
     title.innerHTML=panel.icon+' '+panel.label+(badgeHtml?'<span style="margin-left:8px;display:inline-flex;gap:3px">'+badgeHtml+'</span>':'');
   }
   var html='';
-  if(liveData&&liveData.html){html=liveData.html;}
+  if(liveData&&liveData.html){html=window.sanitizeIntelHtml?window.sanitizeIntelHtml(liveData.html):liveData.html;}
   else if(liveData&&liveData.items&&liveData.items.length){
     if(liveData.updated){var d=new Date(liveData.updated);var ageMin=Math.round((new Date()-d)/60000);html+='<div class="cp-fresh" style="margin-bottom:10px">● Live intel · '+(ageMin<60?ageMin+'m ago':Math.round(ageMin/60)+'h ago')+'</div>';}
     liveData.items.forEach(function(item){var dot=item.type==='red'?'red':item.type==='amber'?'amber':item.type==='green'?'green':item.type==='blue'?'blue':'gray';html+='<div class="ii-wrap"><span class="ii-dot '+dot+'"></span><strong>'+item.title+'</strong>'+(item.detail?' <span class="ii-detail">— '+item.detail+'</span>':'')+'</div>';});
@@ -1936,10 +2016,10 @@ function closeCCDrawer(){document.getElementById('ccDrawer').classList.remove('s
 var INTEL_MAP={
   daily:function(){var hi=tasks.filter(function(t){return !t.done&&t.pri==='high'});var d=new Date();var days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];var lines=['<div class="ii ii-blue">📅 <strong>'+days[d.getDay()]+', '+d.toLocaleDateString('en-US',{month:'short',day:'numeric'})+'</strong></div>'];if(hi.length){lines.push('<div class="ii-section-label">High priority today</div>');hi.slice(0,3).forEach(function(t){lines.push('<div class="ii ii-red">▸ <strong>'+t.text+'</strong></div>');});}return lines.join('');},
   finance:function(){return '<div class="ii ii-red">💰 <strong>$93K owed</strong> — Prime Procurement balance</div><div class="ii ii-amber">📋 <strong>DAF not set up</strong> — needed for charity routing</div><div class="ii ii-amber">🚗 <strong>Auto insurance</strong> — follow up after household completions</div><div class="ii ii-green">✓ <strong>Capital One Spark</strong> — AutoPay enrolled</div>';},
-  health:function(){return '<div class="ii ii-amber">💪 <strong>CPAP: 27 nights remaining</strong> — window closes ~Jul 20</div><div class="ii ii-blue">📅 <strong>SightMD — May 15, 2026</strong></div><div class="ii ii-amber">⚡ <strong>Bluetooth on overnight</strong> — required for MyAir tracking</div>';},
-  family:function(){return '<div class="ii ii-blue">📅 <strong>Post-Shavuos week</strong> — Isru Chag Sun May 24 · normal schedule resumes</div><div class="ii ii-blue">🕯 <strong>Shabbos</strong> — Fri May 29 · candle lighting ~7:57 PM</div><div class="ii ii-amber">👤 <strong>Avrumy</strong> — in Israel, check in after Yom Tov</div><div class="ii ii-amber">👤 <strong>Leah</strong> — at Shalva, monitor settling in</div>';},
-  email:function(){return '<div class="ii ii-amber">📧 <strong>MileagePlus merge</strong> — 3 accounts to consolidate · call 1-800-421-4655</div><div class="ii ii-amber">📧 <strong>2022 charity receipts</strong> — reach out to 5 orgs before Jun 11 deadline</div><div class="ii ii-blue">📧 <strong>Milestone Metrics LLC</strong> — Chase appt Tue May 26 11am · bring EIN + formation doc</div><div class="ii ii-gray">Push Intel Update to load live email summary</div>';},
-  work:function(){return '<div class="ii ii-red">🎤 <strong>June 8 Company Event</strong> — COO procurement speech · START PREP NOW</div><div class="ii ii-amber">⚡ <strong>Renzo program</strong> — AI outreach/follow-up tool · potential revenue stream</div><div class="ii ii-amber">🏢 <strong>Vendor Catalog VCS</strong> — data accuracy audit in progress with Jane</div><div class="ii ii-blue">💼 <strong>Open Prime Source OS</strong> for full work depth and live intel</div>';}
+  health:function(){return '<div class="ii ii-blue">💪 <strong>CPAP window ended Jul 20, 2026</strong> — do not treat the old 7/30 snapshot as current</div><div class="ii ii-blue">📅 <strong>SightMD — May 15, 2026</strong> — completed</div><div class="ii ii-amber">⚡ <strong>Bluetooth on overnight</strong> — required for MyAir tracking if still using the machine</div>';},
+  family:function(){return '<div class="ii ii-blue">🕯 <strong>Shabbos</strong> — times load from Hebcal / live intel</div><div class="ii ii-amber">👤 <strong>Avrumy</strong> — in Israel, check in this week</div><div class="ii ii-amber">👤 <strong>Leah</strong> — at Shalva, monitor settling in</div>';},
+  email:function(){return '<div class="ii ii-amber">📧 <strong>MileagePlus merge</strong> — 3 accounts to consolidate · call 1-800-421-4655</div><div class="ii ii-blue">📧 <strong>2022 charity receipts</strong> — June 11 deadline passed — confirm receipts/filing</div><div class="ii ii-gray">Pull Now to load live email summary</div>';},
+  work:function(){return '<div class="ii ii-blue">🎤 <strong>June 8 Company Event</strong> — event date passed</div><div class="ii ii-amber">⚡ <strong>Renzo program</strong> — AI outreach/follow-up tool · potential revenue stream</div><div class="ii ii-amber">🏢 <strong>Vendor Catalog VCS</strong> — data accuracy audit in progress with Jane</div><div class="ii ii-blue">💼 <strong>Open Prime Source OS</strong> for full work depth and live intel</div>';}
 };
 function injectAllIntel(){CC_PANELS.forEach(function(p){injectPanelIntel(p.id);});setTimeout(updateAllBadges,200);}
 function injectPanelIntel(id){
@@ -1950,7 +2030,7 @@ function injectPanelIntel(id){
   var d=intelCache[fullKey];
   // Also try short key (from applyLiveIntel / Pull Now)
   if(!d||!d.html) d=intelCache[id];
-  if(d&&d.html){el.innerHTML=d.html;return;}
+  if(d&&d.html){el.innerHTML=window.sanitizeIntelHtml?window.sanitizeIntelHtml(d.html):d.html;return;}
   // Fall back to static INTEL_MAP
   var fn=INTEL_MAP[id];
   if(fn)el.innerHTML=fn();
@@ -2032,16 +2112,13 @@ function sendRefreshPrompt() {
   var context = 'TODAY: ' + dateStr + (hd ? ' | Hebrew: ' + hd : '') + '\n\n' +
     'DAVID\'S CURRENT SITUATION:\n' +
     '- COO at Prime Source Expense Experts, Toms River NJ\n' +
-    '- June 8 company event — COO procurement speech (15 days away, NOT prepped)\n' +
     '- $93K owed from GenMed via Prime Procurement\n' +
-    '- 2022 tax amendment deadline June 11 (charity receipts needed from 5 orgs)\n' +
-    '- Milestone Metrics LLC bank account — Chase appt Tue May 26 11am\n' +
-    '- CPAP compliance: 7/30 nights, window closes Jul 20\n' +
+    '- 2022 tax amendment June 11 deadline has passed — confirm filing status, do not treat as current\n' +
+    '- June 8 company event / COO speech date has passed — do not treat as current prep\n' +
+    '- CPAP Jul 20, 2026 compliance window ended — do not use the old 7/30 snapshot as current\n' +
     '- MileagePlus merge: 3 accounts to consolidate\n\n' +
-    'THIS WEEK CALENDAR:\n' +
-    '- Mon May 25: Dr. Landsman ENT 11am\n' +
-    '- Tue May 26: Chase bank (Milestone Metrics) 11am with Adam King\n' +
-    '- Fri May 29: Shabbos candle lighting 7:57 PM\n\n' +
+    'CALENDAR:\n' +
+    '- Use live intel / Google Calendar. Do not use the May 25 Landsman / May 26 Chase / May 29 Shabbos snapshot.\n\n' +
     'OPEN TASKS:\n' + (openTasks || '(none loaded)') + '\n\n' +
     'Generate a DONALD personal command center briefing. For each panel below, provide 4-6 bullet items in this exact JSON format:\n' +
     '{"daily":["item1","item2"],"finance":["item1"],"health":["item1"],"family":["item1"],"projects":["item1"],"growth":["item1"],"email":["item1"],"work":["item1"],"focus":["item1"]}\n\n' +
