@@ -1654,11 +1654,11 @@ function v26init() {
   <div class="psect" id="psect-deploy">
     <div class="deploy-area">
       <div style="font-family:'Inter',sans-serif;font-size:13px;font-weight:800;color:var(--text);margin-bottom:4px">Deploy Update</div>
-      <div style="font-size:10px;color:var(--text2);margin-bottom:12px;line-height:1.6">Paste updated index.html → Deploy. Live in ~30 seconds.</div>
+      <div style="font-size:10px;color:var(--text2);margin-bottom:12px;line-height:1.6">Paste updated index.html → Deploy. Pushes this repo; Vercel auto-deploys from GitHub.</div>
       <textarea class="deploy-ta" id="deployCode" placeholder="Paste new index.html code here..."></textarea>
-      <button class="deploy-btn" id="deployBtn" onclick="deployUpdate()">Deploy to personal-os.vercel.app</button>
+      <button class="deploy-btn" id="deployBtn" onclick="deployUpdate()">Deploy to GitHub (Vercel auto-deploys)</button>
       <div class="dstatus" id="dstatus"></div>
-      <div style="margin-top:10px;font-size:9px;color:var(--text3);line-height:1.7">Token stored in browser. Pushes to GitHub → Vercel auto-deploys in ~30s.</div>
+      <div style="margin-top:10px;font-size:9px;color:var(--text3);line-height:1.7">Token stored in browser. Pushes to GitHub → Vercel auto-deploys. Public dashboard: personal-os-phi-gray.vercel.app. Team production alias stays SSO-gated until Deployment Protection is changed in the Vercel dashboard. personal-os.vercel.app is a different NextAuth app — not this dashboard.</div>
     </div>
   </div>
   <div class="psect" id="psect-settings">
@@ -1699,7 +1699,7 @@ function v26init() {
       </div>
       <button class="addb" onclick="toggleTheme()" style="width:100%;margin-bottom:6px">Toggle dark / light mode</button>
       <button class="addb" onclick="if(confirm('Clear all data?'))clearAll()" style="width:100%;color:var(--red)">Clear all saved data</button>
-      <div style="font-size:9px;color:var(--text3);line-height:1.8;margin-top:14px;padding-top:12px;border-top:1px solid var(--border)">Personal OS v3.26<br>personal-os.vercel.app<br>David Genuth — COO Prime Source</div>
+      <div style="font-size:9px;color:var(--text3);line-height:1.8;margin-top:14px;padding-top:12px;border-top:1px solid var(--border)">Personal OS v3.26<br>personal-os-phi-gray.vercel.app<br>David Genuth — COO Prime Source</div>
     </div>
   </div>
 </div>
@@ -2278,7 +2278,7 @@ async function deployUpdate(){
     if(r2.ok){st.className='dstatus ok show';st.textContent='Deployed. Live in ~30 seconds.';document.getElementById('deployCode').value='';}
     else{var err=await r2.json();throw new Error(err.message||r2.status);}
   }catch(err){st.className='dstatus err show';st.textContent='Deploy failed: '+err.message;}
-  btn.disabled=false;btn.textContent='Deploy to personal-os.vercel.app';
+  btn.disabled=false;btn.textContent='Deploy to GitHub (Vercel auto-deploys)';
 }
 function saveGhToken(){var t=document.getElementById('ghTokenInput').value.trim();if(!t)return;localStorage.setItem('po2_ghToken',t);alert('Token saved.');document.getElementById('ghTokenInput').value='';}
 function saveDonaldUrl(){var u=document.getElementById('donaldUrlInput').value.trim();S('donaldUrl',u);DONALD_URL=u;var link=document.getElementById('donaldChatLink');if(link&&u)link.href=u;}
