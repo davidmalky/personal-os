@@ -1309,6 +1309,34 @@ window.migrateStaleStoreSnapshot = function() {
           source: 'tasklog'
         });
       }
+      if (storeName === 'pending') {
+        (window.TASK_LOG_OPEN || []).forEach(function(canon) {
+          var has = next.some(function(item) {
+            var a = (item.text || '').toLowerCase();
+            var b = (canon.text || '').toLowerCase();
+            return a.indexOf(b.slice(0, 16)) >= 0 || b.indexOf(a.slice(0, 16)) >= 0;
+          });
+          if (!has) {
+            next.push({
+              id: 'p_tl_' + canon.nid,
+              text: canon.text,
+              sub: 'from task log',
+              status: canon.pri === 'high' ? 'urgent' : 'pending',
+              source: 'tasklog'
+            });
+          }
+        });
+      }
+      if (storeName === 'health' && !next.length) {
+        next.push({
+          id: 'h1',
+          text: 'CPAP habit',
+          sub: 'Keep nightly use; prior compliance windows are closed',
+          status: 'pending',
+          val: 'nightly',
+          source: 'tasklog'
+        });
+      }
       try { localStorage.setItem('po2_store_' + storeName, JSON.stringify(next)); } catch(e) {}
     });
     var tlist;
@@ -1460,16 +1488,35 @@ function applyLiveIntel(intel) {
 }
 
 
+window.fetchIntelPayload = function() {
+  var qs = '?t=' + Date.now();
+  var urls = ['/api/intel' + qs, 'https://donald-proxy.davidlgenuth.workers.dev/intel' + qs];
+  try {
+    if (location && /^(localhost|127\.0\.0\.1)$/.test(location.hostname)) urls.push('/_intel_fixture.json');
+  } catch (e) {}
+  var i = 0;
+  function next() {
+    if (i >= urls.length) return Promise.reject(new Error('No intel data'));
+    var url = urls[i++];
+    return fetch(url).then(function(r) {
+      if (!r.ok) throw new Error((url.indexOf('workers.dev') > -1 ? 'Worker ' : 'Intel ') + r.status);
+      return r.json();
+    }).then(function(intel) {
+      if (!intel || !intel.updated) throw new Error('No intel data');
+      return intel;
+    }).catch(function(err) {
+      if (i >= urls.length) throw err;
+      return next();
+    });
+  }
+  return next();
+};
+
 window.fetchDriveIntel = function() {
   var status = document.getElementById('liveIntelStatus');
   if (status) { status.textContent = 'Fetching...'; status.style.color = 'var(--amber)'; }
-  fetch('https://donald-proxy.davidlgenuth.workers.dev/intel?t=' + Date.now())
-    .then(function(r) {
-      if (!r.ok) throw new Error('Worker ' + r.status);
-      return r.json();
-    })
+  window.fetchIntelPayload()
     .then(function(intel) {
-      if (!intel || !intel.updated) throw new Error('No intel data');
       window._liveIntel = intel;
       if (typeof applyLiveIntel === 'function') applyLiveIntel(intel);
       try { localStorage.setItem('po2_liveIntelCache', JSON.stringify(intel)); localStorage.setItem('po2_liveIntelTime', Date.now().toString()); } catch(e) {}

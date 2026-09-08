@@ -47,6 +47,7 @@ ok(!/\$93K owed/.test(intelMap), 'INTEL_MAP finance fallback must not say $93K o
 ok(!/Collect the \$93K/.test(html), 'Chat/agent pack must not offer Collect the $93K');
 ok(/syncStoresFromLiveIntel/.test(html), 'applyLiveIntel path must sync stores from live intel');
 ok(/po2_staleSnap_v3/.test(html), 'Auto-heal migration v3 must exist');
+ok(/\/api\/intel/.test(html), 'Pull Now must try same-origin /api/intel before worker CORS');
 
 if (fails.length) {
   console.error('FAIL\n' + fails.map(function(f){ return ' - ' + f; }).join('\n'));
