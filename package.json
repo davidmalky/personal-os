@@ -1,1 +1,7 @@
-{"name":"personal-os","private":true}
+{
+  "name": "personal-os",
+  "private": true,
+  "scripts": {
+    "test": "node scripts/check-stale-life-ops.js && node scripts/check-live-intel-cards.js"
+  }
+}

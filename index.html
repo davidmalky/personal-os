@@ -5,7 +5,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Personal OS — DONALD</title><!-- v3.29 adler-oct30 cpap-june-scrub -->
+<title>Personal OS — DONALD</title><!-- v3.30 live-intel-cards pp-balance -->
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#0d0d0e;--bg2:#111214;--surf:#18191c;--surf2:#1f2024;--surf3:#28292e;--surf4:#32333a;--border:rgba(255,255,255,.06);--border2:rgba(255,255,255,.11);--border3:rgba(255,255,255,.18);--text:#e8e8ea;--text2:#8a8a96;--text3:#55555f;--green:#00c471;--gbg:rgba(0,196,113,.1);--teal:#3dbf8f;--amber:#e8a020;--abg:rgba(232,160,32,.1);--red:#e03030;--rbg:rgba(224,48,48,.1);--acc:#c8cbd0;--acc2:#e8e8ea;--acbg:rgba(200,203,208,.08);--acborder:rgba(200,203,208,.18);--hi:#1e7ec8;--hibg:rgba(30,126,200,.12);--r:8px;--rs:6px;--rsm:4px}
@@ -377,7 +377,7 @@ function buildDonaldContext() {
     'WHO YOU ARE SERVING:\n' +
     'David Genuth, 43, COO at Prime Source Expense Experts (national consulting for post-acute care facilities), Toms River NJ.\n' +
     'Observant/Hasidic. Shabbos starts tonight ' + (now.getDay()===5 ? 'at candle lighting' : 'Friday at candle lighting') + '.\n' +
-    'Key priorities: $93K owed from GenMed (Prime Procurement), Milestone Metrics LLC bank account, MileagePlus merge. Adler hearing is Friday October 30, 2026, 9am, Courtroom 9 (Ocean County Courthouse) — June 26 is the old date, do not use it. Do not treat the June 8 speech, June 11 tax deadline, Jul 20 CPAP window, or CPAP "window closed June 22" / 9-of-21 nights as current.\n\n' +
+    'Key priorities: GenMed receivable — use live intel metrics.pp_balance and ACH facts (remaining unknown until reconciled). Milestone Metrics LLC bank account is open. MileagePlus merge still open. Adler hearing is Friday October 30, 2026, 9am, Courtroom 9 (Ocean County Courthouse) — June 26 is the old date, do not use it. Do not treat the June 8 speech, June 11 tax deadline, Jul 20 CPAP window, or CPAP "window closed June 22" / 9-of-21 nights as current. Do not treat a leftover GenMed balance figure as still owed.\n\n' +
     'OPEN TASKS RIGHT NOW:\n' + (taskLines || 'No open tasks loaded') + '\n\n' +
     'LIVE INTEL FROM COMMAND CENTER:\n' + (intelLines || 'No intel loaded — user needs to run Refresh Intel') + '\n\n' +
     'YOUR OPERATING RULES:\n' +
@@ -428,26 +428,40 @@ async function sendDcMsg() {
 
 // --- DASHBOARD METRICS ---
 function renderDashMetrics(liveMetrics) {
-  var tasks = [];
-  try { tasks = JSON.parse(localStorage.getItem('po2_tasks') || '[]'); } catch(e) {}
-  var open = tasks.filter(function(t){ return !t.done; }).length;
-  var urgent = tasks.filter(function(t){ return !t.done && t.priority === 'high'; }).length;
+  liveMetrics = liveMetrics || (window._liveIntel && window._liveIntel.metrics) || null;
+  var taskList = [];
+  try { taskList = JSON.parse(localStorage.getItem('po2_tasks') || '[]'); } catch(e) {}
+  var open = taskList.filter(function(t){ return !t.done; }).length;
+  var urgent = taskList.filter(function(t){ return !t.done && (t.priority === 'high' || t.pri === 'high'); }).length;
   var now = new Date();
   var taxDeadline = new Date('2026-06-11T23:59:00-04:00');
   var taxDays = Math.ceil((taxDeadline - now) / 86400000);
-  if (liveMetrics && typeof liveMetrics.tax_days === 'number') taxDays = liveMetrics.tax_days;
+  // Trust the real Jun 11 date once it has passed; do not revive a stale positive tax_days
+  if (liveMetrics && typeof liveMetrics.tax_days === 'number' && taxDays > 0) taxDays = liveMetrics.tax_days;
   var taxPassed = taxDays <= 0;
   var taxColor = taxPassed ? 'var(--text2)' : (taxDays <= 7 ? 'var(--red)' : taxDays <= 14 ? 'var(--amber)' : 'var(--teal)');
   var taxBg = (!taxPassed && taxDays <= 14) ? 'background:var(--rbg);border-color:rgba(224,48,48,.25)' : '';
+  var pp = window.ppBalanceFromMetrics ? window.ppBalanceFromMetrics(liveMetrics) : {display:'—',color:'var(--text2)',sub:'Pull Now for live balance'};
   var el = document.getElementById('dashMetrics5');
   if (!el) return;
   el.innerHTML =
     '<div class="mc clickable" onclick="V(\'finance\',null)"><div class="ml">Open Tasks</div><div class="mv">' + open + '</div><div class="ms">across all areas</div></div>' +
     '<div class="mc" style="' + (urgent > 0 ? 'background:var(--rbg);border-color:rgba(224,48,48,.25)' : '') + '"><div class="ml">Urgent</div><div class="mv" style="color:' + (urgent > 0 ? 'var(--red)' : 'var(--green)') + '">' + urgent + '</div><div class="ms">' + (urgent > 0 ? 'needs attention' : 'all clear') + '</div></div>' +
-    '<div class="mc clickable" onclick="V(\'finance\',null)"><div class="ml">PP Balance</div><div class="mv" style="color:var(--red)">$93K</div><div class="ms">GenMed remaining</div></div>' +
+    '<div class="mc clickable" onclick="V(\'finance\',null)"><div class="ml">PP Balance</div><div class="mv" style="color:' + pp.color + '">' + pp.display + '</div><div class="ms">' + pp.sub + '</div></div>' +
     '<div class="mc" style="' + taxBg + '"><div class="ml">Tax Amendment</div><div class="mv" style="color:' + taxColor + '">' + (taxPassed ? 'Passed' : taxDays + 'd') + '</div><div class="ms">' + (taxPassed ? 'Jun 11 deadline passed' : 'deadline Jun 11') + '</div></div>' +
-    '<div class="mc"><div class="ml">Milestone LLC</div><div class="mv" style="font-size:13px;color:var(--amber)">Bank ↗</div><div class="ms">open account</div></div>';
+    '<div class="mc"><div class="ml">Milestone LLC</div><div class="mv" style="font-size:13px;color:var(--green)">Open</div><div class="ms">Chase — opened</div></div>';
 }
+
+window.renderFinWorldMetrics = function() {
+  var el = document.getElementById('finWorldMetrics');
+  if (!el) return;
+  var pp = window.ppBalanceFromMetrics ? window.ppBalanceFromMetrics(window._liveIntel && window._liveIntel.metrics) : {display:'—',color:'var(--text2)',sub:'Pull Now for live balance'};
+  el.innerHTML =
+    '<div class="mc clickable" onclick="V(\'finance\',null)"><div class="ml">PP Balance</div><div class="mv" style="color:' + pp.color + '">' + pp.display + '</div><div class="ms">' + pp.sub + '</div></div>' +
+    '<div class="mc"><div class="ml">DAF</div><div class="mv" style="font-size:13px;color:var(--amber)">Not set up</div><div class="ms">task log — open</div></div>' +
+    '<div class="mc"><div class="ml">Solo 401k</div><div class="mv" style="font-size:13px;color:var(--amber)">Open</div><div class="ms">before Dec 31 2026</div></div>' +
+    '<div class="mc"><div class="ml">AmeriHealth</div><div class="mv" style="font-size:13px;color:var(--green)">AutoPay</div><div class="ms">Chase 3529</div></div>';
+};
 
 // --- AGENTS PANEL ---
 var AGENT_LIST = [
@@ -489,28 +503,27 @@ function renderHebrewDate() {
 
 window.STORE_DEFAULTS = {
   pending: [
-    {id:'p1', text:'Cube ACR \u2192 Drive auto-backup', sub:'Call pipeline active \u2014 transcripts going to Drive', status:'info'},
-    {id:'p2', text:'Wave AI voice notes', sub:'Upload valuable recordings to Drive manually', status:'pending'},
-    {id:'p3', text:'Yeshiva tuition \u2014 on hold', sub:'Waiting on BuyersEdge platform and Mark', status:'hold'},
-    {id:'p4', text:'MileagePlus merge \u2014 3 accounts', sub:'Call 1-800-421-4655 \u00b7 XV915448, YH388442, + 1 by SSN', status:'urgent'},
-    {id:'p5', text:'2022 tax amendment', sub:'June 11 deadline passed \u2014 confirm whether it was filed', status:'info'},
-    {id:'p6', text:'Milestone Metrics bank account', sub:'May 26 Chase appt date passed \u2014 confirm if account is open', status:'info'},
-    {id:'p7', text:'Handicap placard', sub:'Reapply Aug/Sep 2026 with new prescription', status:'info'},
-    {id:'p8', text:'Kia $40 refund', sub:'MVC refund \u2014 mail in form', status:'pending'}
+    {id:'p1', text:'Adler hearing \u2014 Fri Oct 30 9am', sub:'Ocean County Courthouse, Courtroom 9', status:'urgent', source:'seed'},
+    {id:'p2', text:'MileagePlus merge \u2014 3 accounts', sub:'Call 1-800-421-4655 \u00b7 XV915448, YH388442, + 1 by SSN', status:'urgent', source:'seed'},
+    {id:'p3', text:'Solo 401k', sub:'Establish before Dec 31 2026 \u2014 max $70K', status:'pending', source:'seed'},
+    {id:'p4', text:'Malky REPS hours', sub:'Must log throughout 2026', status:'pending', source:'seed'},
+    {id:'p5', text:'Donor Advised Fund', sub:'Not yet set up \u2014 needed for charity routing', status:'pending', source:'seed'},
+    {id:'p6', text:'2023\u20132025 tax amendments', sub:'Waiting corrected receipts from Yeshiva Chemdas HaTorah', status:'pending', source:'seed'},
+    {id:'p7', text:'Handicap placard', sub:'Reapply Aug/Sep 2026 with new prescription', status:'info', source:'seed'},
+    {id:'p8', text:'Malky and Esty defensive driving', sub:'Still pending for auto insurance discount', status:'pending', source:'seed'}
   ],
   finance: [
-    {id:'f1', text:'Prime Procurement \u2014 GenMed balance', sub:'$93K remaining of $193K total', status:'urgent', val:'~$93K'},
-    {id:'f2', text:'Capital One Spark', sub:'AutoPay enrolled \u2014 Malky authorized user', status:'done', val:'AutoPay \u2713'},
-    {id:'f3', text:'Donor Advised Fund', sub:'Not set up \u2014 needed for charity routing and tax strategy', status:'pending', val:'Not set up'},
-    {id:'f4', text:'Auto insurance discount', sub:'David done \u2014 Malky and Esty still need to complete', status:'pending', val:'Follow up'},
-    {id:'f5', text:'IRS installment agreement', sub:'$439/month auto-debit \u2014 balance ~$32K', status:'info', val:'$439/mo'},
-    {id:'f6', text:'AmeriHealth', sub:'$1,974.82/mo \u2014 AutoPay via Chase checking 3529', status:'done', val:'AutoPay \u2713'}
+    {id:'f1', text:'Prime Procurement \u2014 GenMed', sub:'Remaining receivable unknown \u2014 reconcile with MY PRIME PROCURE books', status:'pending', val:'reconcile', source:'seed'},
+    {id:'f2', text:'Capital One Spark', sub:'AutoPay enrolled \u2014 Malky authorized user', status:'done', val:'AutoPay \u2713', source:'seed'},
+    {id:'f3', text:'Donor Advised Fund', sub:'Not set up \u2014 needed for charity routing and tax strategy', status:'pending', val:'Not set up', source:'seed'},
+    {id:'f4', text:'Auto insurance discount', sub:'David done \u2014 Malky and Esty still need to complete', status:'pending', val:'Follow up', source:'seed'},
+    {id:'f5', text:'IRS installment agreement', sub:'$439/month auto-debit \u2014 balance ~$32K', status:'info', val:'$439/mo', source:'seed'},
+    {id:'f6', text:'AmeriHealth', sub:'$1,974.82/mo \u2014 AutoPay via Chase checking 3529', status:'done', val:'AutoPay \u2713', source:'seed'},
+    {id:'f7', text:'Solo 401k', sub:'Establish before Dec 31 2026 \u2014 max $70K', status:'pending', val:'Open', source:'seed'}
   ],
   health: [
-    {id:'h1', text:'CPAP compliance', sub:'Compliance window ended Jul 20, 2026', status:'info', val:'ended'},
-    {id:'h2', text:'Tapezza Treatment 3', sub:'Jun 1 scheduling window passed \u2014 confirm status with Option Care', status:'info'},
-    {id:'h3', text:'Dr. Landsman ENT', sub:'May 25 \u2014 date passed', status:'info'},
-    {id:'h4', text:'Kasa Smart Plug \u2014 CPAP timer', sub:'Plugged in and running on auto start/stop', status:'done'}
+    {id:'h1', text:'CPAP habit', sub:'Keep nightly use; prior compliance windows are closed', status:'pending', val:'nightly', source:'seed'},
+    {id:'h4', text:'Kasa Smart Plug \u2014 CPAP timer', sub:'Plugged in and running on auto start/stop', status:'done', source:'seed'}
   ],
   projects: [
     {id:'pr1', text:'Personal DONALD OS', sub:'v3.3 live at personal-os-phi-gray.vercel.app', status:'info'},
@@ -883,6 +896,7 @@ window.isExpiredSnapshotText = function(text) {
   if (/15 days away/i.test(t) && /(june\s*8|speech)/i.test(t)) return true;
   if (/cpap tonight/i.test(t) && /nights/i.test(t)) return true;
   if (/23 more nights/i.test(t)) return true;
+  if (/\$?\s*93\s*k\b|~\$93k/i.test(t) && /(owed|remaining|genmed|prime procur|collect)/i.test(t)) return true;
   return false;
 };
 
@@ -930,8 +944,296 @@ window.sanitizeIntelHtml = function(html, opts) {
   return out;
 };
 
+// --- LIVE INTEL CARD SYNC ---
+window.TASK_LOG_OPEN = [
+  {nid:101, text:'Adler hearing — Fri Oct 30 9am Courtroom 9', pri:'high', cat:'family'},
+  {nid:102, text:'MileagePlus merge — 3 accounts', pri:'high', cat:'other'},
+  {nid:103, text:'Solo 401k — establish before Dec 31 2026', pri:'high', cat:'finance'},
+  {nid:104, text:'Malky REPS hours — log throughout 2026', pri:'med', cat:'finance'},
+  {nid:105, text:'Set up Donor Advised Fund', pri:'med', cat:'finance'},
+  {nid:106, text:'2023–2025 tax amendments — Yeshiva receipts', pri:'med', cat:'finance'},
+  {nid:107, text:'Malky and Esty defensive driving', pri:'med', cat:'finance'}
+];
+
+window.formatUsdCompact = function(n) {
+  if (typeof n !== 'number' || !isFinite(n)) return null;
+  var sign = n < 0 ? '-' : '';
+  var abs = Math.abs(n);
+  if (abs === 0) return '$0';
+  if (abs >= 1000 && abs % 1000 === 0 && abs < 1000000) return sign + '$' + (abs / 1000) + 'K';
+  if (abs >= 1000 && abs < 1000000) return sign + '$' + Math.round(abs / 1000) + 'K';
+  return sign + '$' + abs.toLocaleString('en-US');
+};
+
+window.isResidualNinetyThreeKText = function(text) {
+  return /\$?\s*93\s*k\b|~?\s*\$93k|93,?000/i.test(String(text || ''));
+};
+
+window.storeItemBlob = function(item) {
+  return ((item && item.text) || '') + ' ' + ((item && item.sub) || '') + ' ' + ((item && item.val) || '');
+};
+
+window.parseIntelPanelItems = function(html) {
+  if (!html) return [];
+  if (typeof document !== 'undefined' && document.createElement) {
+    try {
+      var tmp = document.createElement('div');
+      tmp.innerHTML = html;
+      var nodes = tmp.querySelectorAll('.ii');
+      if (nodes && nodes.length) {
+        var parsed = [];
+        nodes.forEach(function(el) {
+          var type = 'blue';
+          ['red','amber','green','blue','gray'].forEach(function(c){ if (el.classList.contains('ii-'+c)) type = c; });
+          var strong = el.querySelector('strong');
+          var title = strong ? String(strong.textContent || '').trim() : '';
+          var full = String(el.textContent || '').replace(/\s+/g, ' ').trim();
+          var detail = full.replace(title, '').replace(/^\s*[—\-]\s*/, '').trim();
+          if (title || detail) parsed.push({type:type, title:title || detail, detail:detail});
+        });
+        if (parsed.length) return parsed;
+      }
+    } catch (e) {}
+  }
+  var items = [];
+  var re = /<div class="ii ii-(\w+)"[^>]*>([\s\S]*?)<\/div>/gi;
+  var m;
+  while ((m = re.exec(html))) {
+    var type = m[1];
+    var inner = m[2];
+    var sm = inner.match(/<strong>([\s\S]*?)<\/strong>/i);
+    var title = sm ? sm[1].replace(/<[^>]+>/g, '').trim() : '';
+    var full = inner.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+    var detail = full.replace(title, '').replace(/^\s*[—\-]\s*/, '').trim();
+    items.push({type:type, title:title || detail, detail:detail});
+  }
+  return items;
+};
+
+window.intelTypeToStatus = function(type) {
+  return type === 'red' ? 'urgent' : type === 'amber' ? 'pending' : type === 'green' ? 'done' : 'info';
+};
+
+window.isKnownStaleSeedItem = function(storeName, item) {
+  if (!item) return false;
+  var blob = window.storeItemBlob(item);
+  if (window.isResidualNinetyThreeKText(blob)) return true;
+  if (storeName === 'finance') {
+    if (/GenMed balance/i.test(item.text || '') && /93/.test(blob)) return true;
+    if (/~\$93|\$93K remaining/i.test(blob)) return true;
+  }
+  if (storeName === 'pending') {
+    if (/Cube ACR/i.test(blob)) return true;
+    if (/Wave AI/i.test(blob)) return true;
+    if (/Kia\s*\$40/i.test(blob)) return true;
+    if (/Yeshiva tuition/i.test(blob) && /on hold|BuyersEdge/i.test(blob)) return true;
+    if (/2022 tax amendment/i.test(blob)) return true;
+    if (/Milestone Metrics bank/i.test(blob)) return true;
+  }
+  if (storeName === 'health') {
+    if (/Tapezza/i.test(blob) && /Treatment 3|Jun 1|scheduling window/i.test(blob)) return true;
+    if (/Landsman/i.test(blob) && /May 25|date passed/i.test(blob)) return true;
+    if (/CPAP compliance/i.test(item.text || '') && /window ended Jul 20|7\/30|ended/i.test(blob)) return true;
+  }
+  return false;
+};
+
+window.isKnownStaleSeedTask = function(t) {
+  if (!t || t.source === 'user') return false;
+  var text = t.text || '';
+  if (window.isResidualNinetyThreeKText(text)) return true;
+  if (/Cube ACR/i.test(text) && /Drive|auto-backup/i.test(text)) return true;
+  if (/SMS Backup/i.test(text)) return true;
+  if (/Yeshiva Dvar Torah/i.test(text)) return true;
+  if (/Wave AI/i.test(text)) return true;
+  if (/Configure CPAP Shabbos timer/i.test(text)) return true;
+  if (/Get MVR report/i.test(text)) return true;
+  if (/Follow up with insurer after household defensive driving/i.test(text)) return true;
+  return false;
+};
+
+window.isActionableFinanceIntel = function(item) {
+  if (!item) return false;
+  if (item.type === 'red' || item.type === 'amber' || item.type === 'green') return true;
+  var t = ((item.title || '') + ' ' + (item.detail || '')).toLowerCase();
+  return /genmed|prime procur|daf|donor advised|401k|amerihealth|capital one|irs|tax amendment|insurance|pp balance/.test(t);
+};
+
+window.ppBalanceFromMetrics = function(metrics) {
+  metrics = metrics || (window._liveIntel && window._liveIntel.metrics) || {};
+  var hasBal = metrics && typeof metrics.pp_balance === 'number';
+  var display = hasBal ? window.formatUsdCompact(metrics.pp_balance) : '—';
+  var color = 'var(--text2)';
+  var sub = 'Pull Now for live balance';
+  if (hasBal) {
+    color = metrics.pp_balance > 0 ? 'var(--red)' : 'var(--green)';
+    var ach = metrics.genmed_ach_received;
+    var achDate = metrics.genmed_ach_date || '';
+    if (typeof ach === 'number' && ach > 0) {
+      var achStr = window.formatUsdCompact(ach);
+      var when = '';
+      if (achDate) {
+        var p = String(achDate).split('-');
+        if (p.length === 3) {
+          var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+          when = ' ' + months[parseInt(p[1], 10) - 1] + ' ' + parseInt(p[2], 10);
+        }
+      }
+      sub = metrics.pp_balance === 0
+        ? 'GenMed ' + achStr + ' ACH' + when + ' · reconcile remaining'
+        : 'GenMed ' + achStr + ' ACH' + when;
+    } else {
+      sub = metrics.pp_balance === 0 ? 'no remaining balance in intel' : 'from live intel';
+    }
+  }
+  return {display: display, color: color, sub: sub};
+};
+
+window.scrubResidualNinetyThreeK = function() {
+  ['finance','pending','health','email','work'].forEach(function(name) {
+    var items;
+    try { items = JSON.parse(localStorage.getItem('po2_store_' + name) || 'null'); } catch (e) { items = null; }
+    if (!items || !items.length) return;
+    var next = items.filter(function(i) { return !window.isResidualNinetyThreeKText(window.storeItemBlob(i)); });
+    if (next.length !== items.length) {
+      try { localStorage.setItem('po2_store_' + name, JSON.stringify(next)); } catch (e) {}
+    }
+  });
+  var tlist;
+  try { tlist = JSON.parse(localStorage.getItem('po2_tasks') || 'null'); } catch (e) { tlist = null; }
+  if (tlist && tlist.length) {
+    var tn = tlist.filter(function(t) { return !window.isResidualNinetyThreeKText(t.text || ''); });
+    if (tn.length !== tlist.length) {
+      try { localStorage.setItem('po2_tasks', JSON.stringify(tn)); } catch (e) {}
+      if (typeof window.tasks !== 'undefined') window.tasks = tn;
+    }
+  }
+};
+
+window.mergeLiveStoreItems = function(name, liveItems) {
+  var existing = [];
+  try { existing = JSON.parse(localStorage.getItem('po2_store_' + name) || '[]') || []; } catch (e) { existing = []; }
+  var deleted = [];
+  try { deleted = JSON.parse(localStorage.getItem('po2_store_' + name + '_deleted') || '[]') || []; } catch (e) {}
+  var deletedNorm = deleted.map(function(d) {
+    return ((d.text || '') + ' ' + (d.sub || '')).toLowerCase().replace(/\s+/g, ' ').trim();
+  });
+  var live = (liveItems || []).filter(function(i) {
+    var n = ((i.text || '') + ' ' + (i.sub || '')).toLowerCase().replace(/\s+/g, ' ').trim();
+    if (window.isResidualNinetyThreeKText(n)) return false;
+    if (window.isExpiredSnapshotText && window.isExpiredSnapshotText(n)) return false;
+    return deletedNorm.indexOf(n) === -1;
+  });
+  var kept = existing.filter(function(i) {
+    if (i.source === 'live' || i.source === 'tasklog') return false;
+    if (window.isKnownStaleSeedItem(name, i)) return false;
+    if (window.isResidualNinetyThreeKText(window.storeItemBlob(i))) return false;
+    return true;
+  });
+  var liveTexts = live.map(function(i) { return (i.text || '').toLowerCase(); });
+  kept = kept.filter(function(i) {
+    var t = (i.text || '').toLowerCase();
+    if (!t) return true;
+    return !liveTexts.some(function(lt) {
+      return lt && (lt.indexOf(t.slice(0, 18)) >= 0 || t.indexOf(lt.slice(0, 18)) >= 0);
+    });
+  });
+  var next = live.concat(kept).slice(0, 14);
+  try { localStorage.setItem('po2_store_' + name, JSON.stringify(next)); } catch (e) {}
+  return next;
+};
+
+window.syncTasksFromLiveIntel = function(intel) {
+  var focusItems = window.parseIntelPanelItems(intel && intel.panels && intel.panels.focus);
+  var existing = [];
+  try { existing = JSON.parse(localStorage.getItem('po2_tasks') || '[]') || []; } catch (e) {}
+  var prevByNorm = {};
+  existing.forEach(function(t) {
+    prevByNorm[(t.text || '').toLowerCase().slice(0, 24)] = t;
+  });
+  var user = existing.filter(function(t) {
+    if (t.source === 'live' || t.source === 'tasklog') return false;
+    if (window.isKnownStaleSeedTask(t)) return false;
+    return true;
+  });
+  var liveTasks = focusItems.map(function(it, i) {
+    var blob = ((it.title || '') + ' ' + (it.detail || ''));
+    var pri = it.type === 'red' ? 'high' : it.type === 'amber' ? 'med' : 'low';
+    var text = it.title + (it.detail && it.detail.length < 90 ? ' — ' + it.detail : '');
+    var prev = prevByNorm[text.toLowerCase().slice(0, 24)];
+    return {
+      id: 9000 + i,
+      text: text,
+      pri: pri,
+      priority: pri,
+      cat: /adler|court/i.test(blob) ? 'family' : /401k|daf|tax|reps|insur|mileage|genmed/i.test(blob) ? 'finance' : 'other',
+      done: !!(prev && prev.done),
+      source: 'live'
+    };
+  }).filter(function(t) {
+    return !window.isResidualNinetyThreeKText(t.text || '');
+  });
+  var liveTexts = liveTasks.map(function(t) { return (t.text || '').toLowerCase().slice(0, 24); });
+  user = user.filter(function(t) {
+    var t0 = (t.text || '').toLowerCase().slice(0, 24);
+    return !liveTexts.some(function(lt) { return lt && t0 && (lt.indexOf(t0.slice(0, 16)) >= 0 || t0.indexOf(lt.slice(0, 16)) >= 0); });
+  });
+  var next = liveTasks.concat(user);
+  try { localStorage.setItem('po2_tasks', JSON.stringify(next)); } catch (e) {}
+  if (typeof window.tasks !== 'undefined') window.tasks = next;
+  return next;
+};
+
+window.syncStoresFromLiveIntel = function(intel) {
+  if (!intel) return;
+  var panels = intel.panels || {};
+  function fromPanel(html, prefix, filterFn, limit) {
+    var items = window.parseIntelPanelItems(html);
+    if (filterFn) items = items.filter(filterFn);
+    return items.slice(0, limit || 10).map(function(it, i) {
+      return {
+        id: prefix + '_live_' + i,
+        text: it.title,
+        sub: it.detail,
+        status: window.intelTypeToStatus(it.type),
+        source: 'live',
+        val: it.type === 'red' ? 'Urgent' : it.type === 'green' ? '\u2713' : ''
+      };
+    });
+  }
+  if (panels.finance) {
+    window.mergeLiveStoreItems('finance', fromPanel(panels.finance, 'f', window.isActionableFinanceIntel, 8));
+  }
+  if (panels.health) {
+    window.mergeLiveStoreItems('health', fromPanel(panels.health, 'h', null, 8));
+  }
+  if (panels.focus) {
+    window.mergeLiveStoreItems('pending', fromPanel(panels.focus, 'p', function(it) {
+      var t = ((it.title || '') + ' ' + (it.detail || ''));
+      if (window.isExpiredSnapshotText && window.isExpiredSnapshotText(t)) return false;
+      if (window.isResidualNinetyThreeKText(t)) return false;
+      return true;
+    }, 10));
+  }
+  window.syncTasksFromLiveIntel(intel);
+  window.scrubResidualNinetyThreeK();
+};
+
+window.rerenderSnapshotCards = function() {
+  try { window.renderStore('pending', 'pendingStoreEl'); } catch (e) {}
+  try { window.renderStore('finance', 'financeStoreEl'); } catch (e) {}
+  try { window.renderStore('finance', 'financeWorldStoreEl'); } catch (e) {}
+  try { window.renderStore('health', 'healthStoreEl'); } catch (e) {}
+  try { if (typeof renderDashTasks === 'function') renderDashTasks(); } catch (e) {}
+  try { renderDashMetrics(window._liveIntel && window._liveIntel.metrics); } catch (e) {}
+  try { if (typeof window.renderFinWorldMetrics === 'function') window.renderFinWorldMetrics(); } catch (e) {}
+};
+// --- END LIVE INTEL CARD SYNC ---
+
 window.migrateStaleStoreSnapshot = function() {
-  if (localStorage.getItem('po2_staleSnap_v2') === '1') return;
+  if (localStorage.getItem('po2_staleSnap_v2') === '1') {
+    // v2 already applied — still run v3 + residual $93K scrub below
+  } else {
   var patches = {
     pending: {
       p5: { match: /2022 tax amendment/i, sub: 'June 11 deadline passed \u2014 confirm whether it was filed', status: 'info' },
@@ -987,6 +1289,47 @@ window.migrateStaleStoreSnapshot = function() {
     try { localStorage.setItem('po2_store_' + storeName, JSON.stringify(next)); } catch(e) {}
   });
   try { localStorage.setItem('po2_staleSnap_v2', '1'); } catch(e) {}
+  }
+
+  try { window.scrubResidualNinetyThreeK(); } catch(e) {}
+
+  if (localStorage.getItem('po2_staleSnap_v3') !== '1') {
+    ['finance','pending','health'].forEach(function(storeName) {
+      var items;
+      try { items = JSON.parse(localStorage.getItem('po2_store_' + storeName) || 'null'); } catch(e) { items = null; }
+      if (!items || !items.length) return;
+      var next = items.filter(function(i) { return !window.isKnownStaleSeedItem(storeName, i); });
+      if (storeName === 'finance' && !next.some(function(i) { return /genmed|prime procur/i.test(i.text || ''); })) {
+        next.unshift({
+          id: 'f1',
+          text: 'Prime Procurement \u2014 GenMed',
+          sub: 'Remaining receivable unknown \u2014 reconcile with MY PRIME PROCURE books',
+          status: 'pending',
+          val: 'reconcile',
+          source: 'tasklog'
+        });
+      }
+      try { localStorage.setItem('po2_store_' + storeName, JSON.stringify(next)); } catch(e) {}
+    });
+    var tlist;
+    try { tlist = JSON.parse(localStorage.getItem('po2_tasks') || 'null'); } catch(e) { tlist = null; }
+    if (tlist && tlist.length) {
+      var tn = tlist.filter(function(t) { return !window.isKnownStaleSeedTask(t); });
+      (window.TASK_LOG_OPEN || []).forEach(function(canon) {
+        var has = tn.some(function(t) {
+          var a = (t.text || '').toLowerCase();
+          var b = (canon.text || '').toLowerCase();
+          return a.indexOf(b.slice(0, 16)) >= 0 || b.indexOf(a.slice(0, 16)) >= 0;
+        });
+        if (!has) {
+          tn.push({id: canon.nid, text: canon.text, pri: canon.pri, cat: canon.cat, done: false, source: 'tasklog'});
+        }
+      });
+      try { localStorage.setItem('po2_tasks', JSON.stringify(tn)); } catch(e) {}
+      if (typeof window.tasks !== 'undefined') window.tasks = tn;
+    }
+    try { localStorage.setItem('po2_staleSnap_v3', '1'); } catch(e) {}
+  }
 };
 
 function applyLiveIntel(intel) {
@@ -1100,6 +1443,10 @@ function applyLiveIntel(intel) {
     window.renderStore('email','emailStoreEl');
   }
   
+  // Snapshot cards — derive from live intel + task log (do not keep leftover GenMed owed figure)
+  try { window.syncStoresFromLiveIntel(intel); } catch(e) {}
+  try { window.rerenderSnapshotCards(); } catch(e) {}
+
   // Metrics + world cards that used to show the May/June snapshot as current
   try { renderDashMetrics(intel.metrics || null); } catch(e) {}
   try { renderFocusToday(); } catch(e) {}
@@ -1144,6 +1491,7 @@ window.setDonaldWebAppUrl = function(url) {
 
 function v26init() {
     try { if (typeof migrateStaleStoreSnapshot === 'function') migrateStaleStoreSnapshot(); } catch(e) {}
+    try { if (typeof window.rerenderSnapshotCards === 'function') window.rerenderSnapshotCards(); } catch(e) {}
     try { renderDashMetrics(); } catch(e) {}
     try { renderAgentsPanel(); } catch(e) {}
     try { renderHebrewDate(); } catch(e) {}
@@ -1194,7 +1542,7 @@ function v26init() {
   // Also re-render metrics whenever tasks change
   var _origSaveTask = window.saveTask;
   if (typeof _origSaveTask === 'function') {
-    window.saveTask = function() { _origSaveTask.apply(this, arguments); try { renderDashMetrics(); } catch(e){} };
+    window.saveTask = function() { _origSaveTask.apply(this, arguments); try { renderDashMetrics(window._liveIntel && window._liveIntel.metrics); } catch(e){} };
   }
 })();
 
@@ -1369,7 +1717,7 @@ function v26init() {
     </div>
     <div class="card">
       <div class="ct">Quick actions</div>
-      <button class="adb" onclick="ask('What do I need to do to collect the remaining $93K from Prime Procurement and reroute health insurance and charity through Prime Procurement?')"><span class="adb-icon">💰</span>PP collection strategy</button>
+      <button class="adb" onclick="ask('What do I need to do to reconcile the GenMed / Prime Procurement receivable using live intel (pp_balance and ACH facts) and reroute health insurance and charity through Prime Procurement? Do not treat a leftover GenMed owed figure as current.')"><span class="adb-icon">💰</span>PP / GenMed status</button>
       <button class="adb" onclick="ask('Full tax strategy update: 2022 amendment June 11 deadline has passed — confirm filing status. Milestone Metrics LLC bank account, Solo 401k setup, Malky REPS hours log. What do I need to do this week?')"><span class="adb-icon">📋</span>Tax strategy</button>
       <button class="adb" onclick="ask('Donor Advised Fund setup — what do I need to do to establish one and how does it help with my 2026 tax situation?')"><span class="adb-icon">🎁</span>DAF setup</button>
       <textarea class="nta" id="financeNotes" placeholder="Finance notes..." oninput="S('financeNotes',this.value)" style="min-height:80px;margin-top:8px"></textarea>
@@ -1796,15 +2144,13 @@ function G(k,d){try{var v=localStorage.getItem(PREFIX+k);return v!==null?JSON.pa
 function S(k,v){try{localStorage.setItem(PREFIX+k,JSON.stringify(v));}catch(e){}}
 
 var tasks=G('tasks',[
-  {id:1,text:'Set up Cube ACR → Google Drive auto-backup',pri:'high',cat:'projects',done:false},
-  {id:2,text:'Set up SMS Backup & Restore → Drive',pri:'high',cat:'projects',done:false},
-  {id:3,text:'Yeshiva Dvar Torah tuition — move on BuyersEdge/Mark',pri:'high',cat:'finance',done:false},
-  {id:4,text:'Follow up with insurer after household defensive driving completions',pri:'med',cat:'finance',done:false},
+  {id:1,text:'Adler hearing — Fri Oct 30 9am Courtroom 9',pri:'high',cat:'family',done:false},
+  {id:2,text:'MileagePlus merge — 3 accounts',pri:'high',cat:'other',done:false},
+  {id:3,text:'Solo 401k — establish before Dec 31 2026',pri:'high',cat:'finance',done:false},
+  {id:4,text:'Malky REPS hours — log throughout 2026',pri:'med',cat:'finance',done:false},
   {id:5,text:'Set up Donor Advised Fund',pri:'med',cat:'finance',done:false},
-  {id:6,text:'Wave AI voice note recovery — USB cable at home',pri:'med',cat:'projects',done:false},
-  {id:7,text:'Configure CPAP Shabbos timer (Kasa plug)',pri:'med',cat:'health',done:false},
-  {id:8,text:'Get MVR report for auto insurance',pri:'low',cat:'finance',done:false},
-  {id:9,text:'Verify if NJ defensive driving applies to Avrumy in Israel',pri:'low',cat:'finance',done:false},
+  {id:6,text:'2023–2025 tax amendments — Yeshiva receipts',pri:'med',cat:'finance',done:false},
+  {id:7,text:'Malky and Esty defensive driving',pri:'med',cat:'finance',done:false},
 ]);
 var nid=G('nid',200);
 var appts=G('appts',[]);
@@ -1826,9 +2172,9 @@ var AOL_COMPLETE=['Tesla','TD Auto Finance','Principal Financial','Penn Mutual',
 var CC_PANELS=[
   {id:'daily',icon:'☀',label:'Daily Briefing',pri:'blue',desc:'Morning routine, top priority, calendar, email highlights.',
    actions:[{label:'Morning briefing',prompt:'Full morning briefing for today — calendar, email highlights, CPAP status, and top priority.'},{label:'Top priority',prompt:'What is the single most important thing I should be doing right now personally?'},{label:'Evening wrap',prompt:'End of day wrap-up — what did I accomplish, what is unfinished, what do I carry into tomorrow?'}],openTab:'dashboard'},
-  {id:'finance',icon:'💰',label:'Finance',pri:'amber',desc:'$93K owed, accounts, insurance, investments, DAF setup.',
-   badgeFn:function(){return {count:1,cls:'red'};},
-   actions:[{label:'Finance status',prompt:'Full personal finance status — Prime Procurement balance, Capital One, investments, DAF, what needs to move this week.'},{label:'Collect the $93K',prompt:'What do I need to do to collect the remaining $93K from Prime Procurement?'},{label:'Insurance discount',prompt:'Auto insurance discount follow-up. I completed defensive driving April 26. Next steps?'}],openTab:'finance'},
+  {id:'finance',icon:'💰',label:'Finance',pri:'amber',desc:'Prime Procurement, accounts, insurance, investments, DAF setup.',
+   badgeFn:function(){return null;},
+   actions:[{label:'Finance status',prompt:'Full personal finance status — Prime Procurement balance from live intel, Capital One, investments, DAF, what needs to move this week. Do not treat a leftover GenMed owed figure as current.'},{label:'Reconcile GenMed',prompt:'What do I need to do to reconcile the GenMed / Prime Procurement receivable using live intel metrics (pp_balance and ACH facts)?'},{label:'Insurance discount',prompt:'Auto insurance discount follow-up. I completed defensive driving April 26. Next steps?'}],openTab:'finance'},
   {id:'health',icon:'💪',label:'Health',pri:'amber',desc:'CPAP Jul 20 window ended. SightMD May 15 completed. Pull live intel for current health items.',
    actions:[{label:'CPAP check',prompt:'CPAP status — the Jul 20, 2026 compliance window ended. Do not treat the old 7/30 snapshot as current. What if anything is still open?'},{label:'Health overview',prompt:'Full health status — upcoming appointments only. SightMD May 15 is completed. Do not invent new medical facts.'}],openTab:'health'},
   {id:'family',icon:'🏠',label:'Family & Home',pri:'blue',desc:'Malky, kids, home, Shabbos, Jewish calendar.',
@@ -2064,7 +2410,7 @@ function closeCCDrawer(){document.getElementById('ccDrawer').classList.remove('s
 
 var INTEL_MAP={
   daily:function(){var hi=tasks.filter(function(t){return !t.done&&t.pri==='high'});var d=new Date();var days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];var lines=['<div class="ii ii-blue">📅 <strong>'+days[d.getDay()]+', '+d.toLocaleDateString('en-US',{month:'short',day:'numeric'})+'</strong></div>'];if(hi.length){lines.push('<div class="ii-section-label">High priority today</div>');hi.slice(0,3).forEach(function(t){lines.push('<div class="ii ii-red">▸ <strong>'+t.text+'</strong></div>');});}return lines.join('');},
-  finance:function(){return '<div class="ii ii-red">💰 <strong>$93K owed</strong> — Prime Procurement balance</div><div class="ii ii-amber">📋 <strong>DAF not set up</strong> — needed for charity routing</div><div class="ii ii-amber">🚗 <strong>Auto insurance</strong> — follow up after household completions</div><div class="ii ii-green">✓ <strong>Capital One Spark</strong> — AutoPay enrolled</div>';},
+  finance:function(){var m=window._liveIntel&&window._liveIntel.metrics;var pp=window.ppBalanceFromMetrics?window.ppBalanceFromMetrics(m):null;var line=(pp&&pp.display!=='\u2014')?'<div class="ii ii-amber">\uD83D\uDCB0 <strong>PP Balance '+pp.display+'</strong> \u2014 '+pp.sub+'</div>':'<div class="ii ii-amber">\uD83D\uDCB0 <strong>GenMed receivable</strong> \u2014 remaining unknown \u2014 reconcile Prime Procurement books</div>';return line+'<div class="ii ii-amber">\uD83D\uDCCB <strong>DAF not set up</strong> \u2014 needed for charity routing</div><div class="ii ii-amber">\uD83D\uDE97 <strong>Auto insurance</strong> \u2014 follow up after household completions</div><div class="ii ii-green">\u2713 <strong>Capital One Spark</strong> \u2014 AutoPay enrolled</div>';},
   health:function(){return '<div class="ii ii-blue">💪 <strong>CPAP window ended Jul 20, 2026</strong> — do not treat old night-count snapshots as current</div><div class="ii ii-blue">📅 <strong>SightMD — May 15, 2026</strong> — completed</div><div class="ii ii-amber">⚡ <strong>Bluetooth on overnight</strong> — required for MyAir tracking if still using the machine</div>';},
   focus:function(){return '<div class="ii ii-amber"><strong>Adler hearing — Fri Oct 30, 9am</strong> — Courtroom 9, Ocean County Courthouse</div><div class="ii ii-blue"><strong>MileagePlus merge</strong> — 1-800-421-4655, 3 accounts</div>';},
   family:function(){return '<div class="ii ii-blue">🕯 <strong>Shabbos</strong> — times load from Hebcal / live intel</div><div class="ii ii-amber">👤 <strong>Avrumy</strong> — in Israel, check in this week</div><div class="ii ii-amber">👤 <strong>Leah</strong> — at Shalva, monitor settling in</div>';},
@@ -2162,7 +2508,7 @@ function sendRefreshPrompt() {
   var context = 'TODAY: ' + dateStr + (hd ? ' | Hebrew: ' + hd : '') + '\n\n' +
     'DAVID\'S CURRENT SITUATION:\n' +
     '- COO at Prime Source Expense Experts, Toms River NJ\n' +
-    '- $93K owed from GenMed via Prime Procurement\n' +
+    '- GenMed / Prime Procurement: use live intel metrics.pp_balance and ACH facts. Remaining receivable unknown until reconciled. Do not treat a leftover GenMed owed figure as current.\n' +
     '- 2022 tax amendment June 11 deadline has passed — confirm filing status, do not treat as current\n' +
     '- June 8 company event / COO speech date has passed — do not treat as current prep\n' +
     '- CPAP Jul 20, 2026 compliance window ended — do not use the old 7/30 snapshot as current\n' +
