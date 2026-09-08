@@ -96,7 +96,7 @@ var intel = {
     focus: '<div class="ii ii-red"><strong>Adler proof hearing — 52 days</strong> — Fri Oct 30 9:00 AM · Courtroom 9</div><div class="ii ii-amber"><strong>MileagePlus merge</strong> — call 1-800-421-4655</div><div class="ii ii-amber"><strong>Solo 401k</strong> — establish before Dec 31 2026</div>',
     family: '<div class="ii ii-red"><strong>Erev Rosh Hashana</strong> — Thu Sep 10</div><div class="ii ii-amber"><strong>Avrumy</strong> — in Israel, check in this week</div><div class="ii ii-amber"><strong>Leah</strong> — at Shalva, monitor how she is settling in</div>',
     email: '<div class="ii ii-blue"><strong>cursor[bot]</strong> — Re: Fix stale Adler hearing</div><div class="ii ii-blue"><strong>DG</strong> — Re: Compensation Structure &amp; Agreement Docs</div>',
-    work: '<div class="ii ii-blue"><strong>Chase® Ink®</strong> — Your Ink Business Unlimited® card</div><div class="ii ii-blue"><strong>Canceled: AI Acquisition Introduction Call with Toby Taylor</strong> — Sep 8</div><div class="ii ii-blue"><strong>DONALD Personal OS</strong> — DONALD Morning Briefing</div>'
+    work: '<div class="ii ii-blue">Work — live</div><div class="ii ii-blue"><strong>Chase® Ink®</strong> — Your Ink Business Unlimited® card</div><div class="ii ii-blue"><strong>Canceled: AI Acquisition Introduction Call with Toby Taylor</strong> — Sep 8</div><div class="ii ii-blue"><strong>DONALD Personal OS</strong> — DONALD Morning Briefing</div>'
   }
 };
 context.syncStoresFromLiveIntel(intel);
@@ -151,6 +151,8 @@ ok(!/cursor\[bot\]/i.test(emailHtml), 'Email HTML drops cursor bot');
 
 var workHtml = context.rankFilterIntelHtml('work', intel.panels.work, intel, {});
 ok(!/Ink|Toby Taylor|Morning Briefing/i.test(workHtml), 'Work HTML drops promo and canceled intro');
+ok(/no live work signals/i.test(workHtml), 'Work HTML uses empty-state when only junk remains');
+ok(/Avrami/i.test(focusHtml) && !/Avrumy/i.test(focusHtml), 'Focus prefers Avrami spelling');
 
 if (fails.length) {
   console.error('FAIL\n' + fails.map(function(f){ return ' - ' + f; }).join('\n'));

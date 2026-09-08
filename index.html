@@ -1089,6 +1089,11 @@ window.renderIntelItemsHtml = function(items) {
     var type = it.type || 'blue';
     var title = it.title || it.text || '';
     var detail = it.detail || it.sub || '';
+    if (/avrumy/i.test(title) && !/avrami/i.test(title)) title = title.replace(/Avrumy/gi, 'Avrami');
+    if (/avrumy/i.test(detail) && !/avrami/i.test(detail)) detail = detail.replace(/Avrumy/gi, 'Avrami');
+    if (/compensation structure|agreement docs/i.test(title + ' ' + detail) && !/\bmark\b/i.test(title)) {
+      title = 'Mark docs follow-up';
+    }
     return '<div class="ii ii-' + type + '"><strong>' + title + '</strong>' + (detail ? ' — ' + detail : '') + '</div>';
   }).join('');
 };
@@ -1105,7 +1110,10 @@ window.isRealWorkSignal = function(item) {
   if (window.isCardPromoOrMarketing(t)) return false;
   if (window.isBotOrAutomationMail(t)) return false;
   if (window.isCanceledOrStaleMeeting(t)) return false;
-  return String(t).replace(/\s+/g, ' ').trim().length > 2;
+  var compact = String(t).replace(/\s+/g, ' ').trim();
+  if (/^work(\s*[—\-:]\s*live)+$/i.test(compact)) return false;
+  if (/work\s*[—\-:]\s*live/i.test(compact) && !/(salesforce|culligan|mobotics|contract|pipeline|outlook|prime source)/i.test(compact)) return false;
+  return compact.length > 2;
 };
 
 window.isActionableHealthIntel = function(item) {
@@ -1421,7 +1429,7 @@ window.mergeLiveStoreItems = function(name, liveItems) {
   var next = live.concat(kept);
   if (name === 'pending' && window.THIS_WEEK_PERSONAL) {
     window.THIS_WEEK_PERSONAL.forEach(function(canon) {
-      var has = next.some(function(item) { return window.textsOverlap && window.textsOverlap(item.text, canon.text); });
+      var has = next.some(function(item) { return window.textsOverlap && window.textsOverlap((item.text || '') + ' ' + (item.sub || ''), canon.text); });
       if (!has) {
         next.push({
           id: 'p_tw_' + canon.nid,
@@ -1731,7 +1739,7 @@ window.migrateStaleStoreSnapshot = function() {
         });
         if (storeName === 'pending' && window.THIS_WEEK_PERSONAL) {
           window.THIS_WEEK_PERSONAL.forEach(function(canon) {
-            var has = next.some(function(item) { return window.textsOverlap && window.textsOverlap(item.text, canon.text); });
+            var has = next.some(function(item) { return window.textsOverlap && window.textsOverlap((item.text || '') + ' ' + (item.sub || ''), canon.text); });
             if (!has) next.unshift({id:'p_tw_'+canon.nid, text:canon.text, sub:'this week', status:'urgent', source:'tasklog'});
           });
         }
