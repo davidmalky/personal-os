@@ -1084,16 +1084,24 @@ window.scoreThisWeekPersonal = function(item, intel) {
   return score;
 };
 
+window.normalizePersonalItem = function(item) {
+  item = item || {};
+  var title = item.title || item.text || '';
+  var detail = item.detail || item.sub || '';
+  if (/avrumy/i.test(title) && !/avrami/i.test(title)) title = title.replace(/Avrumy/gi, 'Avrami');
+  if (/avrumy/i.test(detail) && !/avrami/i.test(detail)) detail = detail.replace(/Avrumy/gi, 'Avrami');
+  if (/compensation structure|agreement docs/i.test(title + ' ' + detail) && !/\bmark\b/i.test(title)) {
+    title = 'Mark docs follow-up';
+  }
+  return Object.assign({}, item, {title: title, text: title, detail: detail, sub: item.sub != null ? detail : item.sub});
+};
+
 window.renderIntelItemsHtml = function(items) {
   return (items || []).map(function(it) {
-    var type = it.type || 'blue';
-    var title = it.title || it.text || '';
-    var detail = it.detail || it.sub || '';
-    if (/avrumy/i.test(title) && !/avrami/i.test(title)) title = title.replace(/Avrumy/gi, 'Avrami');
-    if (/avrumy/i.test(detail) && !/avrami/i.test(detail)) detail = detail.replace(/Avrumy/gi, 'Avrami');
-    if (/compensation structure|agreement docs/i.test(title + ' ' + detail) && !/\bmark\b/i.test(title)) {
-      title = 'Mark docs follow-up';
-    }
+    var n = window.normalizePersonalItem ? window.normalizePersonalItem(it) : it;
+    var type = n.type || 'blue';
+    var title = n.title || '';
+    var detail = n.detail || '';
     return '<div class="ii ii-' + type + '"><strong>' + title + '</strong>' + (detail ? ' — ' + detail : '') + '</div>';
   }).join('');
 };
@@ -1469,7 +1477,8 @@ window.syncTasksFromLiveIntel = function(intel) {
     var blob = ((it.title || '') + ' ' + (it.detail || ''));
     var score = window.scoreThisWeekPersonal ? window.scoreThisWeekPersonal(it, intel) : 0;
     var pri = score >= 80 || it.type === 'red' ? 'high' : score >= 40 || it.type === 'amber' ? 'med' : 'low';
-    var text = it.title + (it.detail && it.detail.length < 90 ? ' — ' + it.detail : '');
+    var n = window.normalizePersonalItem ? window.normalizePersonalItem(it) : it;
+    var text = n.title + (n.detail && n.detail.length < 90 ? ' — ' + n.detail : '');
     var prev = prevByNorm[text.toLowerCase().slice(0, 24)];
     var cat = /adler|court|rosh|avrami|avrumy|shalva|faigy|leah|family/i.test(blob) ? 'family' : /401k|daf|tax|reps|insur|mileage|genmed/i.test(blob) ? 'finance' : 'other';
     return {
@@ -1514,10 +1523,14 @@ window.syncStoresFromLiveIntel = function(intel) {
     var items = window.parseIntelPanelItems(html);
     if (filterFn) items = items.filter(filterFn);
     return items.slice(0, limit || 10).map(function(it, i) {
+      var title = it.title || '';
+      var detail = it.detail || '';
+      if (/avrumy/i.test(title) && !/avrami/i.test(title)) title = title.replace(/Avrumy/gi, 'Avrami');
+      if (/compensation structure|agreement docs/i.test(title + ' ' + detail) && !/\bmark\b/i.test(title)) title = 'Mark docs follow-up';
       return {
         id: prefix + '_live_' + i,
-        text: it.title,
-        sub: it.detail,
+        text: title,
+        sub: detail,
         status: window.intelTypeToStatus(it.type),
         source: 'live',
         val: it.type === 'red' ? 'Urgent' : it.type === 'green' ? '\u2713' : ''
@@ -1542,10 +1555,11 @@ window.syncStoresFromLiveIntel = function(intel) {
   if (panels.focus || (intel.week && intel.week.length)) {
     var focusItems = window.sanitizePanelItems('focus', window.parseIntelPanelItems(panels.focus), intel);
     window.mergeLiveStoreItems('pending', focusItems.map(function(it, i) {
+      var n = window.normalizePersonalItem ? window.normalizePersonalItem(it) : it;
       return {
         id: 'p_live_' + i,
-        text: it.title,
-        sub: it.detail,
+        text: n.title,
+        sub: n.detail,
         status: window.intelTypeToStatus(it.type),
         source: 'live',
         val: it.type === 'red' ? 'Urgent' : it.type === 'green' ? '\u2713' : ''
