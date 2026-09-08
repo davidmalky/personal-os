@@ -48,6 +48,10 @@ ok(!/Collect the \$93K/.test(html), 'Chat/agent pack must not offer Collect the 
 ok(/syncStoresFromLiveIntel/.test(html), 'applyLiveIntel path must sync stores from live intel');
 ok(/po2_staleSnap_v3/.test(html), 'Auto-heal migration v3 must exist');
 ok(/\/api\/intel/.test(html), 'Pull Now must try same-origin /api/intel before worker CORS');
+ok(/isCardPromoOrMarketing/.test(html) && /rankFilterIntelHtml/.test(html), 'This-week relevancy sanitizers must exist');
+ok(/po2_homeDock_v1/.test(html) && /po2_relevancy_v1/.test(html), 'Home dock + relevancy migrations must exist');
+ok(/Avrami/.test(html), 'Family copy prefers Avrami');
+ok(!/Esty \(Raizy\/Rose\)/.test(html), 'Esty must not be aliased as Raizy/Rose');
 
 if (fails.length) {
   console.error('FAIL\n' + fails.map(function(f){ return ' - ' + f; }).join('\n'));
