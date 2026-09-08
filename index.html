@@ -5,7 +5,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Personal OS — DONALD</title>
+<title>Personal OS — DONALD</title><!-- v3.29 adler-oct30 cpap-june-scrub -->
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#0d0d0e;--bg2:#111214;--surf:#18191c;--surf2:#1f2024;--surf3:#28292e;--surf4:#32333a;--border:rgba(255,255,255,.06);--border2:rgba(255,255,255,.11);--border3:rgba(255,255,255,.18);--text:#e8e8ea;--text2:#8a8a96;--text3:#55555f;--green:#00c471;--gbg:rgba(0,196,113,.1);--teal:#3dbf8f;--amber:#e8a020;--abg:rgba(232,160,32,.1);--red:#e03030;--rbg:rgba(224,48,48,.1);--acc:#c8cbd0;--acc2:#e8e8ea;--acbg:rgba(200,203,208,.08);--acborder:rgba(200,203,208,.18);--hi:#1e7ec8;--hibg:rgba(30,126,200,.12);--r:8px;--rs:6px;--rsm:4px}
@@ -377,7 +377,7 @@ function buildDonaldContext() {
     'WHO YOU ARE SERVING:\n' +
     'David Genuth, 43, COO at Prime Source Expense Experts (national consulting for post-acute care facilities), Toms River NJ.\n' +
     'Observant/Hasidic. Shabbos starts tonight ' + (now.getDay()===5 ? 'at candle lighting' : 'Friday at candle lighting') + '.\n' +
-    'Key priorities: $93K owed from GenMed (Prime Procurement), Milestone Metrics LLC bank account, MileagePlus merge. Do not treat the June 8 speech, June 11 tax deadline, Jul 20 CPAP window, or June court dates as current unless live intel says they are still open.\n\n' +
+    'Key priorities: $93K owed from GenMed (Prime Procurement), Milestone Metrics LLC bank account, MileagePlus merge. Adler hearing is Friday October 30, 2026, 9am, Courtroom 9 (Ocean County Courthouse) — June 26 is the old date, do not use it. Do not treat the June 8 speech, June 11 tax deadline, Jul 20 CPAP window, or CPAP "window closed June 22" / 9-of-21 nights as current.\n\n' +
     'OPEN TASKS RIGHT NOW:\n' + (taskLines || 'No open tasks loaded') + '\n\n' +
     'LIVE INTEL FROM COMMAND CENTER:\n' + (intelLines || 'No intel loaded — user needs to run Refresh Intel') + '\n\n' +
     'YOUR OPERATING RULES:\n' +
@@ -784,13 +784,14 @@ function renderFocusToday() {
   if (!el) return;
   var intel = window._liveIntel;
   if (intel && intel.panels && intel.panels.focus) {
-    var liveHtml = window.sanitizeIntelHtml ? window.sanitizeIntelHtml(intel.panels.focus) : intel.panels.focus;
+    var liveHtml = window.sanitizeIntelHtml ? window.sanitizeIntelHtml(intel.panels.focus, {ensureAdler:true}) : intel.panels.focus;
     if (liveHtml && liveHtml.indexOf('ii ') > -1) {
       el.innerHTML = liveHtml;
       return;
     }
   }
   var items = [
+    {color:'var(--amber)', label:'Adler hearing', detail:'Fri Oct 30, 9am, Courtroom 9 — Ocean County Courthouse'},
     {color:'var(--text)', label:'MileagePlus merge', detail:'Call 1-800-421-4655 when ready — 3 accounts to consolidate'},
   ];
   el.innerHTML = items.map(function(item) {
@@ -875,15 +876,44 @@ window.isExpiredSnapshotText = function(text) {
   if (/may\s*15/i.test(t) && /sightmd/i.test(t) && !/(completed|done)/i.test(t)) return true;
   if (/may\s*29/i.test(t) && /(shabbos|candle)/i.test(t)) return true;
   if (/(sefira|shavuos|isru chag)/i.test(t) && /(may|day 33)/i.test(t)) return true;
-  if (/jun\s*26/i.test(t) && /court/i.test(t)) return true;
+  if (/(june|jun)\s*26/i.test(t) && /(adler|court)/i.test(t)) return true;
+  if (/(june|jun)\s*22/i.test(t) && /(cpap|window|compliance|nights)/i.test(t)) return true;
+  if (/window closed\s+(june|jun)/i.test(t) && /cpap/i.test(t)) return true;
+  if (/9\s*(of|\/)\s*21\s*nights/i.test(t)) return true;
   if (/15 days away/i.test(t) && /(june\s*8|speech)/i.test(t)) return true;
   if (/cpap tonight/i.test(t) && /nights/i.test(t)) return true;
   if (/23 more nights/i.test(t)) return true;
   return false;
 };
 
-window.sanitizeIntelHtml = function(html) {
+window.ADLER_HEARING_HTML = '<div class="ii ii-amber"><strong>Adler hearing — Fri Oct 30, 9am</strong> — Courtroom 9, Ocean County Courthouse</div>';
+
+window.rewriteCanonicalIntelHtml = function(html) {
   if (!html) return html;
+  var tmp = document.createElement('div');
+  tmp.innerHTML = html;
+  var nodes = tmp.querySelectorAll('.ii, .ii-wrap');
+  nodes.forEach(function(el) {
+    var t = el.textContent || '';
+    var isJuneAdler = (/(june|jun)\s*26/i.test(t) && /(adler|court)/i.test(t));
+    if (isJuneAdler) {
+      el.className = (el.className || '').replace(/\bii-(red|amber|green|blue|gray)\b/g, 'ii-amber');
+      if (!/\bii\b/.test(el.className)) el.className = (el.className + ' ii ii-amber').trim();
+      el.innerHTML = '<strong>Adler hearing — Fri Oct 30, 9am</strong> — Courtroom 9, Ocean County Courthouse';
+    }
+  });
+  return tmp.innerHTML;
+};
+
+window.ensureAdlerHearingHtml = function(html) {
+  var h = html || '';
+  if (/oct\s*30/i.test(h) && /(adler|courtroom\s*9)/i.test(h)) return h;
+  return h + window.ADLER_HEARING_HTML;
+};
+
+window.sanitizeIntelHtml = function(html, opts) {
+  if (!html) html = '';
+  html = window.rewriteCanonicalIntelHtml(html);
   var tmp = document.createElement('div');
   tmp.innerHTML = html;
   var nodes = tmp.querySelectorAll('.ii, .ii-wrap');
@@ -895,14 +925,13 @@ window.sanitizeIntelHtml = function(html) {
       kept++;
     }
   });
-  if (!kept) {
-    return '<div class="ii ii-blue"><strong>Live intel</strong> — expired May/June snapshot items hidden. Pull Now for current panels.</div>';
-  }
-  return tmp.innerHTML;
+  var out = kept ? tmp.innerHTML : '<div class="ii ii-blue"><strong>Live intel</strong> — expired May/June snapshot items hidden. Pull Now for current panels.</div>';
+  if (opts && opts.ensureAdler) out = window.ensureAdlerHearingHtml(out);
+  return out;
 };
 
 window.migrateStaleStoreSnapshot = function() {
-  if (localStorage.getItem('po2_staleSnap_v1') === '1') return;
+  if (localStorage.getItem('po2_staleSnap_v2') === '1') return;
   var patches = {
     pending: {
       p5: { match: /2022 tax amendment/i, sub: 'June 11 deadline passed \u2014 confirm whether it was filed', status: 'info' },
@@ -937,7 +966,27 @@ window.migrateStaleStoreSnapshot = function() {
       try { localStorage.setItem('po2_store_' + storeName, JSON.stringify(items)); } catch(e) {}
     }
   });
-  try { localStorage.setItem('po2_staleSnap_v1', '1'); } catch(e) {}
+  ['pending','health','email','work','finance'].forEach(function(storeName) {
+    var items;
+    try { items = JSON.parse(localStorage.getItem('po2_store_' + storeName) || 'null'); } catch(e) { items = null; }
+    if (!items || !items.length) return;
+    var next = items.filter(function(item) {
+      var blob = ((item.text || '') + ' ' + (item.sub || '') + ' ' + (item.val || ''));
+      if (/(june|jun)\s*22/i.test(blob) && /(cpap|window|compliance|nights)/i.test(blob)) return false;
+      if (/9\s*(of|\/)\s*21\s*nights/i.test(blob)) return false;
+      return true;
+    }).map(function(item) {
+      var blob = ((item.text || '') + ' ' + (item.sub || ''));
+      if (/(june|jun)\s*26/i.test(blob) && /(adler|court)/i.test(blob)) {
+        item.text = 'Adler hearing';
+        item.sub = 'Fri Oct 30, 9am, Courtroom 9 \u2014 Ocean County Courthouse';
+        item.status = 'pending';
+      }
+      return item;
+    });
+    try { localStorage.setItem('po2_store_' + storeName, JSON.stringify(next)); } catch(e) {}
+  });
+  try { localStorage.setItem('po2_staleSnap_v2', '1'); } catch(e) {}
 };
 
 function applyLiveIntel(intel) {
@@ -983,7 +1032,7 @@ function applyLiveIntel(intel) {
   if (intel.panels) {
     var now = new Date().toISOString();
     Object.keys(intel.panels).forEach(function(panelId) {
-      var html = window.sanitizeIntelHtml ? window.sanitizeIntelHtml(intel.panels[panelId]) : intel.panels[panelId];
+      var html = window.sanitizeIntelHtml ? window.sanitizeIntelHtml(intel.panels[panelId], {ensureAdler: panelId==='focus'}) : intel.panels[panelId];
       if (!html) return;
       
       // Update intel cache with fresh timestamp
@@ -1567,7 +1616,7 @@ function v26init() {
     </div>
     <div class="card">
       <div class="ct">Upcoming deadlines</div>
-      <div class="row"><div><div class="rn" style="font-size:10px;color:var(--text2)">Jun 26: Court hearing</div><div class="rs">Hearing date passed — Ocean County Courthouse</div></div><span class="badge bx">Passed</span></div>
+      <div class="row"><div><div class="rn" style="font-size:10px">Fri Oct 30: Adler hearing</div><div class="rs">9am · Courtroom 9 · Ocean County Courthouse</div></div><span class="badge ba">Oct 30</span></div>
       <div class="row"><div><div class="rn" style="font-size:10px">Dec 31: Solo 401k establish</div><div class="rs">Max $70K — establish before year end</div></div><span class="badge bx">Dec 31</span></div>
       <div class="row"><div><div class="rn" style="font-size:10px">Dec 31: Malky REPS hours</div><div class="rs">Must be logged all year</div></div><span class="badge bx">Dec 31</span></div>
       <textarea class="nta" id="focusNotes" placeholder="Focus notes..." oninput="S('focusNotes',this.value)" style="min-height:80px;margin-top:8px"></textarea>
@@ -1795,7 +1844,7 @@ var CC_PANELS=[
    actions:[{label:'Work pulse',prompt:'Work pulse — urgent Outlook emails, meetings today or tomorrow, key Prime Source items.'},{label:'Top work priorities',prompt:'Top 3 work priorities I should push on right now at Prime Source.'},{label:'Open Prime Source OS',url:'https://primesource-os.vercel.app'}],openTab:'work'},
   {id:'notes',icon:'📝',label:'Capture',pri:'gray',desc:'Quick thoughts, scratchpad, notes.',
    actions:[{label:'Quick capture',prompt:'I want to capture a thought or note. Ask me what I want to remember.'},{label:'Review notes',prompt:'What notes have I captured recently that I should review?'}],openTab:null},
-  {id:'focus',icon:'⏱',label:'Focus & Time',pri:'green',desc:'Priority stack from live intel. June 8 speech and Jun 11 tax deadline are past — do not treat as current.',
+  {id:'focus',icon:'⏱',label:'Focus & Time',pri:'green',desc:'Priority stack from live intel. Adler hearing Fri Oct 30 9am Courtroom 9. June 8 speech and Jun 11 tax deadline are past.',
    badgeFn:function(){var op=tasks.filter(function(t){return !t.done&&t.pri==='high'});return op.length>0?{count:op.length,cls:'red'}:null;},
    actions:[{label:'Structure my day',prompt:'Structure my day today by priority. Pull my calendar, open tasks, and pending items. Tell me exactly what I should work on in order with time estimates.'},{label:'Best use of next 30 min',prompt:'I have 30 minutes right now. What is the single highest-leverage thing I can do?'},{label:'Weekly plan',prompt:'Build me a realistic weekly plan. What are the 3-5 most important things to accomplish this week across personal, financial, health, and work?'}],openTab:'focus'},
 ];
@@ -1936,7 +1985,7 @@ function ccBadgeHtml(panel){
   var key=PANEL_INTEL_KEY?PANEL_INTEL_KEY[panel.id]:null;
   var liveData=key&&intelCache?intelCache[key]:null;
   var html='';
-  if(liveData&&liveData.html){html=window.sanitizeIntelHtml?window.sanitizeIntelHtml(liveData.html):liveData.html;}
+  if(liveData&&liveData.html){html=window.sanitizeIntelHtml?window.sanitizeIntelHtml(liveData.html,{ensureAdler:panel.id==='focus'}):liveData.html;}
   else{var domEl=document.getElementById('cp-intel-'+panel.id);if(domEl)html=domEl.innerHTML;}
   if(html){
     var red=(html.match(/ii-red/g)||[]).length;var amber=(html.match(/ii-amber/g)||[]).length;
@@ -1993,7 +2042,7 @@ function openCCDrawer(pid){
     title.innerHTML=panel.icon+' '+panel.label+(badgeHtml?'<span style="margin-left:8px;display:inline-flex;gap:3px">'+badgeHtml+'</span>':'');
   }
   var html='';
-  if(liveData&&liveData.html){html=window.sanitizeIntelHtml?window.sanitizeIntelHtml(liveData.html):liveData.html;}
+  if(liveData&&liveData.html){html=window.sanitizeIntelHtml?window.sanitizeIntelHtml(liveData.html,{ensureAdler:pid==='focus'}):liveData.html;}
   else if(liveData&&liveData.items&&liveData.items.length){
     if(liveData.updated){var d=new Date(liveData.updated);var ageMin=Math.round((new Date()-d)/60000);html+='<div class="cp-fresh" style="margin-bottom:10px">● Live intel · '+(ageMin<60?ageMin+'m ago':Math.round(ageMin/60)+'h ago')+'</div>';}
     liveData.items.forEach(function(item){var dot=item.type==='red'?'red':item.type==='amber'?'amber':item.type==='green'?'green':item.type==='blue'?'blue':'gray';html+='<div class="ii-wrap"><span class="ii-dot '+dot+'"></span><strong>'+item.title+'</strong>'+(item.detail?' <span class="ii-detail">— '+item.detail+'</span>':'')+'</div>';});
@@ -2016,7 +2065,8 @@ function closeCCDrawer(){document.getElementById('ccDrawer').classList.remove('s
 var INTEL_MAP={
   daily:function(){var hi=tasks.filter(function(t){return !t.done&&t.pri==='high'});var d=new Date();var days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];var lines=['<div class="ii ii-blue">📅 <strong>'+days[d.getDay()]+', '+d.toLocaleDateString('en-US',{month:'short',day:'numeric'})+'</strong></div>'];if(hi.length){lines.push('<div class="ii-section-label">High priority today</div>');hi.slice(0,3).forEach(function(t){lines.push('<div class="ii ii-red">▸ <strong>'+t.text+'</strong></div>');});}return lines.join('');},
   finance:function(){return '<div class="ii ii-red">💰 <strong>$93K owed</strong> — Prime Procurement balance</div><div class="ii ii-amber">📋 <strong>DAF not set up</strong> — needed for charity routing</div><div class="ii ii-amber">🚗 <strong>Auto insurance</strong> — follow up after household completions</div><div class="ii ii-green">✓ <strong>Capital One Spark</strong> — AutoPay enrolled</div>';},
-  health:function(){return '<div class="ii ii-blue">💪 <strong>CPAP window ended Jul 20, 2026</strong> — do not treat the old 7/30 snapshot as current</div><div class="ii ii-blue">📅 <strong>SightMD — May 15, 2026</strong> — completed</div><div class="ii ii-amber">⚡ <strong>Bluetooth on overnight</strong> — required for MyAir tracking if still using the machine</div>';},
+  health:function(){return '<div class="ii ii-blue">💪 <strong>CPAP window ended Jul 20, 2026</strong> — do not treat the old 7/30 or June 22 / 9-of-21 snapshots as current</div><div class="ii ii-blue">📅 <strong>SightMD — May 15, 2026</strong> — completed</div><div class="ii ii-amber">⚡ <strong>Bluetooth on overnight</strong> — required for MyAir tracking if still using the machine</div>';},
+  focus:function(){return '<div class="ii ii-amber"><strong>Adler hearing — Fri Oct 30, 9am</strong> — Courtroom 9, Ocean County Courthouse</div><div class="ii ii-blue"><strong>MileagePlus merge</strong> — 1-800-421-4655, 3 accounts</div>';},
   family:function(){return '<div class="ii ii-blue">🕯 <strong>Shabbos</strong> — times load from Hebcal / live intel</div><div class="ii ii-amber">👤 <strong>Avrumy</strong> — in Israel, check in this week</div><div class="ii ii-amber">👤 <strong>Leah</strong> — at Shalva, monitor settling in</div>';},
   email:function(){return '<div class="ii ii-amber">📧 <strong>MileagePlus merge</strong> — 3 accounts to consolidate · call 1-800-421-4655</div><div class="ii ii-blue">📧 <strong>2022 charity receipts</strong> — June 11 deadline passed — confirm receipts/filing</div><div class="ii ii-gray">Pull Now to load live email summary</div>';},
   work:function(){return '<div class="ii ii-blue">🎤 <strong>June 8 Company Event</strong> — event date passed</div><div class="ii ii-amber">⚡ <strong>Renzo program</strong> — AI outreach/follow-up tool · potential revenue stream</div><div class="ii ii-amber">🏢 <strong>Vendor Catalog VCS</strong> — data accuracy audit in progress with Jane</div><div class="ii ii-blue">💼 <strong>Open Prime Source OS</strong> for full work depth and live intel</div>';}
@@ -2030,7 +2080,7 @@ function injectPanelIntel(id){
   var d=intelCache[fullKey];
   // Also try short key (from applyLiveIntel / Pull Now)
   if(!d||!d.html) d=intelCache[id];
-  if(d&&d.html){el.innerHTML=window.sanitizeIntelHtml?window.sanitizeIntelHtml(d.html):d.html;return;}
+  if(d&&d.html){el.innerHTML=window.sanitizeIntelHtml?window.sanitizeIntelHtml(d.html,{ensureAdler:id==='focus'}):d.html;return;}
   // Fall back to static INTEL_MAP
   var fn=INTEL_MAP[id];
   if(fn)el.innerHTML=fn();
@@ -2116,9 +2166,11 @@ function sendRefreshPrompt() {
     '- 2022 tax amendment June 11 deadline has passed — confirm filing status, do not treat as current\n' +
     '- June 8 company event / COO speech date has passed — do not treat as current prep\n' +
     '- CPAP Jul 20, 2026 compliance window ended — do not use the old 7/30 snapshot as current\n' +
+    '- Do not surface CPAP "window closed June 22" or "9 of 21 nights" as current\n' +
+    '- Adler hearing: Friday October 30, 2026, 9am, Courtroom 9, Ocean County Courthouse. June 26 is the old date.\n' +
     '- MileagePlus merge: 3 accounts to consolidate\n\n' +
     'CALENDAR:\n' +
-    '- Use live intel / Google Calendar. Do not use the May 25 Landsman / May 26 Chase / May 29 Shabbos snapshot.\n\n' +
+    '- Use live intel / Google Calendar. Adler hearing is Fri Oct 30 9am Courtroom 9. Do not use the May 25 Landsman / May 26 Chase / May 29 Shabbos snapshot.\n\n' +
     'OPEN TASKS:\n' + (openTasks || '(none loaded)') + '\n\n' +
     'Generate a DONALD personal command center briefing. For each panel below, provide 4-6 bullet items in this exact JSON format:\n' +
     '{"daily":["item1","item2"],"finance":["item1"],"health":["item1"],"family":["item1"],"projects":["item1"],"growth":["item1"],"email":["item1"],"work":["item1"],"focus":["item1"]}\n\n' +
@@ -2382,7 +2434,7 @@ function oneClickRefresh(){
   var isoNow=today.toISOString();
   var ks=['donald_personal_intel_daily','donald_personal_intel_finance','donald_personal_intel_health','donald_personal_intel_family','donald_personal_intel_projects','donald_personal_intel_growth','donald_personal_intel_email','donald_personal_intel_work','donald_personal_intel_notes','donald_personal_intel_focus'];
   var pt=ks.map(function(k){return '{"key":"'+k+'","value":{"updated":"'+isoNow+'","items":[]}}';}).join(',');
-  var msg='You are DONALD, David Genuth personal AI Chief of Staff. Today is '+dateStr+' at '+timeStr+' Eastern.\n\nDo the following to generate accurate intel:\n1. Check Google Calendar (davidlgenuth@gmail.com) for today and next 7 days including Hebrew calendar\n2. Scan Gmail (davidlgenuth@gmail.com) and (davidmalky@gmail.com) for urgent unread items\n3. Scan Outlook (DGenuth@PrimeSourceX.com) for work items\n4. Search past conversations for: Prime Procurement, LLC, Vanguard, DAF, tuition, CPAP, SightMD, family members, agents, Personal OS, Salesforce, William, AmeriHealth\n5. Read DONALD Master Context in Google Drive (document ID: 11yJghORj9P4xnszfNeWCe3sl74Dq1bSLC1TVWcbmQ2w)\n\nGenerate intel for all 10 panels. Be specific — use real names, amounts, dates from actual data.\n\nCRITICAL: Return raw JSON only. No markdown. No code fences. No backticks. No explanation. Start response with { and end with }:\n{"panels":['+pt+']}\n\nRules: type is red/amber/green/blue/gray. Min 3 items per panel, max 8. Include chatLink for active conversations. Prioritize urgency.'
+  var msg='You are DONALD, David Genuth personal AI Chief of Staff. Today is '+dateStr+' at '+timeStr+' Eastern.\n\nDo the following to generate accurate intel:\n1. Check Google Calendar (davidlgenuth@gmail.com) for today and next 7 days including Hebrew calendar\n2. Scan Gmail (davidlgenuth@gmail.com) and (davidmalky@gmail.com) for urgent unread items\n3. Scan Outlook (DGenuth@PrimeSourceX.com) for work items\n4. Search past conversations for: Prime Procurement, LLC, Vanguard, DAF, tuition, CPAP, SightMD, Adler hearing, family members, agents, Personal OS, Salesforce, William, AmeriHealth\n5. Read DONALD Master Context in Google Drive (document ID: 11yJghORj9P4xnszfNeWCe3sl74Dq1bSLC1TVWcbmQ2w) and content/DONALD-task-log.md facts: Adler hearing is Fri Oct 30 2026 9am Courtroom 9. Do not use June 26 for Adler. Do not surface CPAP window closed June 22 or 9 of 21 nights as current.\n\nGenerate intel for all 10 panels. Be specific — use real names, amounts, dates from actual data.\n\nCRITICAL: Return raw JSON only. No markdown. No code fences. No backticks. No explanation. Start response with { and end with }:\n{"panels":['+pt+']}\n\nRules: type is red/amber/green/blue/gray. Min 3 items per panel, max 8. Include chatLink for active conversations. Prioritize urgency.'
   fetch('https://donald-proxy.davidlgenuth.workers.dev',{
     method:'POST',
     headers:{'Content-Type':'application/json'},

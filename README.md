@@ -2,6 +2,8 @@
 
 Personal DONALD OS — personal command center (single `index.html` dashboard).
 
+Life/ops seed: `content/DONALD-task-log.md`. Adler hearing is Fri Oct 30, 9am, Courtroom 9. Expired June CPAP lines (`window closed June 22`, `9 of 21 nights`) are not current and must not be regenerated as open items.
+
 ## What is live after the Aug 27 2026 merge
 
 The stale-cards merge (`7ce4a24`) **did** create a Vercel Production deployment. Nothing in this repo (middleware, `vercel.json`, or the dashboard JS) is what you hit first. The team aliases return Vercel Deployment Protection SSO **before** the HTML loads.
