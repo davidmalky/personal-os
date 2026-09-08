@@ -896,7 +896,7 @@ window.isExpiredSnapshotText = function(text) {
   if (/15 days away/i.test(t) && /(june\s*8|speech)/i.test(t)) return true;
   if (/cpap tonight/i.test(t) && /nights/i.test(t)) return true;
   if (/23 more nights/i.test(t)) return true;
-  if (/\$?\s*93\s*k\b|~\$93k/i.test(t) && /(owed|remaining|genmed|prime procur|collect)/i.test(t)) return true;
+  if (window.isResidualNinetyThreeKText && window.isResidualNinetyThreeKText(t) && /(owed|remaining|genmed|prime procur|collect)/i.test(t)) return true;
   return false;
 };
 
@@ -966,7 +966,54 @@ window.formatUsdCompact = function(n) {
 };
 
 window.isResidualNinetyThreeKText = function(text) {
-  return /\$?\s*93\s*k\b|~?\s*\$93k|93,?000/i.test(String(text || ''));
+  return /(?:^|[^0-9])\$?\s*93\s*k\b|(?:^|[^0-9])~?\$93k\b|(?:^|[^0-9])93,000\b/i.test(String(text || ''));
+};
+
+window.itemTopicKey = function(text) {
+  var t = String(text || '').toLowerCase();
+  if (/adler|courtroom\s*9/.test(t)) return 'adler';
+  if (/mileageplus|xv915448/.test(t)) return 'mileageplus';
+  if (/solo\s*401k|\b401k\b/.test(t)) return 'solo401k';
+  if (/\breps\b/.test(t)) return 'reps';
+  if (/donor advised|\bdaf\b/.test(t)) return 'daf';
+  if (/(2023|2025)/.test(t) && /tax|amendment|yeshiva/.test(t)) return 'taxamend';
+  if (/defensive driving|auto insurance discount/.test(t)) return 'defensive';
+  if (/genmed|prime procur/.test(t)) return 'genmed';
+  if (/capital one/.test(t)) return 'capone';
+  if (/amerihealth/.test(t)) return 'amerihealth';
+  if (/kasa/.test(t)) return 'kasa';
+  if (/cpap/.test(t)) return 'cpap';
+  return '';
+};
+
+window.textsOverlap = function(a, b) {
+  a = String(a || '').toLowerCase().replace(/\s+/g, ' ').trim();
+  b = String(b || '').toLowerCase().replace(/\s+/g, ' ').trim();
+  if (!a || !b) return false;
+  var ka = window.itemTopicKey(a);
+  var kb = window.itemTopicKey(b);
+  if (ka && kb && ka === kb) return true;
+  return a.indexOf(b.slice(0, 18)) >= 0 || b.indexOf(a.slice(0, 18)) >= 0;
+};
+
+window.upsertTaskLogOpens = function(next, asStoreItems) {
+  var list = next || [];
+  (window.TASK_LOG_OPEN || []).forEach(function(canon) {
+    var has = list.some(function(item) { return window.textsOverlap(item.text, canon.text); });
+    if (has) return;
+    if (asStoreItems) {
+      list.push({
+        id: 'p_tl_' + canon.nid,
+        text: canon.text,
+        sub: 'from task log',
+        status: canon.pri === 'high' ? 'urgent' : 'pending',
+        source: 'tasklog'
+      });
+    } else {
+      list.push({id: canon.nid, text: canon.text, pri: canon.pri, cat: canon.cat, done: false, source: 'tasklog'});
+    }
+  });
+  return list;
 };
 
 window.storeItemBlob = function(item) {
@@ -1125,20 +1172,19 @@ window.mergeLiveStoreItems = function(name, liveItems) {
     return deletedNorm.indexOf(n) === -1;
   });
   var kept = existing.filter(function(i) {
-    if (i.source === 'live' || i.source === 'tasklog') return false;
+    if (i.source === 'live' || i.source === 'tasklog' || i.source === 'seed') return false;
     if (window.isKnownStaleSeedItem(name, i)) return false;
     if (window.isResidualNinetyThreeKText(window.storeItemBlob(i))) return false;
     return true;
   });
-  var liveTexts = live.map(function(i) { return (i.text || '').toLowerCase(); });
   kept = kept.filter(function(i) {
-    var t = (i.text || '').toLowerCase();
-    if (!t) return true;
-    return !liveTexts.some(function(lt) {
-      return lt && (lt.indexOf(t.slice(0, 18)) >= 0 || t.indexOf(lt.slice(0, 18)) >= 0);
-    });
+    var t = (i.text || '') + ' ' + (i.sub || '');
+    if (!t.trim()) return true;
+    return !live.some(function(l) { return window.textsOverlap(t, (l.text || '') + ' ' + (l.sub || '')); });
   });
-  var next = live.concat(kept).slice(0, 14);
+  var next = live.concat(kept);
+  if (name === 'pending') next = window.upsertTaskLogOpens(next, true);
+  next = next.slice(0, 14);
   try { localStorage.setItem('po2_store_' + name, JSON.stringify(next)); } catch (e) {}
   return next;
 };
@@ -1152,7 +1198,7 @@ window.syncTasksFromLiveIntel = function(intel) {
     prevByNorm[(t.text || '').toLowerCase().slice(0, 24)] = t;
   });
   var user = existing.filter(function(t) {
-    if (t.source === 'live' || t.source === 'tasklog') return false;
+    if (t.source === 'live' || t.source === 'tasklog' || t.source === 'seed') return false;
     if (window.isKnownStaleSeedTask(t)) return false;
     return true;
   });
@@ -1173,12 +1219,10 @@ window.syncTasksFromLiveIntel = function(intel) {
   }).filter(function(t) {
     return !window.isResidualNinetyThreeKText(t.text || '');
   });
-  var liveTexts = liveTasks.map(function(t) { return (t.text || '').toLowerCase().slice(0, 24); });
   user = user.filter(function(t) {
-    var t0 = (t.text || '').toLowerCase().slice(0, 24);
-    return !liveTexts.some(function(lt) { return lt && t0 && (lt.indexOf(t0.slice(0, 16)) >= 0 || t0.indexOf(lt.slice(0, 16)) >= 0); });
+    return !liveTasks.some(function(lt) { return window.textsOverlap(t.text, lt.text); });
   });
-  var next = liveTasks.concat(user);
+  var next = window.upsertTaskLogOpens(liveTasks.concat(user), false);
   try { localStorage.setItem('po2_tasks', JSON.stringify(next)); } catch (e) {}
   if (typeof window.tasks !== 'undefined') window.tasks = next;
   return next;
