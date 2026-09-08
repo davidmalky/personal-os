@@ -30,6 +30,25 @@ ok(/9\\s\*\(of\|\\\/\)\\s\*21\\s\*nights/.test(html), 'Sanitizer must match 9-of
 ok(/window closed\\s\+\(june\|jun\)/.test(html), 'Sanitizer must match window closed June');
 ok(/rewriteCanonicalIntelHtml/.test(html) && /ensureAdlerHearingHtml/.test(html), 'Intel rewrite + Adler ensure helpers must exist');
 
+var defaultsChunk = html.split('window.STORE_DEFAULTS')[1] || '';
+defaultsChunk = defaultsChunk.split('function loadStore')[0] || '';
+ok(!/\$93K|~\$93K/.test(defaultsChunk), 'STORE_DEFAULTS must not seed leftover GenMed $93K');
+ok(!/val:'~\$93K'/.test(defaultsChunk), 'STORE_DEFAULTS finance val must not be leftover $93K');
+
+var metricsFn = html.split('function renderDashMetrics')[1] || '';
+metricsFn = metricsFn.split('window.renderFinWorldMetrics')[0] || '';
+ok(/pp_balance/.test(html) && /ppBalanceFromMetrics/.test(metricsFn), 'renderDashMetrics must use live pp_balance helper');
+ok(!/color:var\(--red\)">\$93K/.test(metricsFn), 'renderDashMetrics must not hardcode PP Balance $93K');
+
+var intelMap = html.split('var INTEL_MAP=')[1] || '';
+intelMap = intelMap.split('function injectAllIntel')[0] || '';
+ok(!/\$93K owed/.test(intelMap), 'INTEL_MAP finance fallback must not say $93K owed');
+
+ok(!/Collect the \$93K/.test(html), 'Chat/agent pack must not offer Collect the $93K');
+ok(/syncStoresFromLiveIntel/.test(html), 'applyLiveIntel path must sync stores from live intel');
+ok(/po2_staleSnap_v3/.test(html), 'Auto-heal migration v3 must exist');
+ok(/\/api\/intel/.test(html), 'Pull Now must try same-origin /api/intel before worker CORS');
+
 if (fails.length) {
   console.error('FAIL\n' + fails.map(function(f){ return ' - ' + f; }).join('\n'));
   process.exit(1);
