@@ -5,7 +5,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Personal OS — DONALD</title><!-- v3.30 live-intel-cards pp-balance -->
+<title>Personal OS — DONALD</title><!-- v3.31 this-week relevancy -->
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#0d0d0e;--bg2:#111214;--surf:#18191c;--surf2:#1f2024;--surf3:#28292e;--surf4:#32333a;--border:rgba(255,255,255,.06);--border2:rgba(255,255,255,.11);--border3:rgba(255,255,255,.18);--text:#e8e8ea;--text2:#8a8a96;--text3:#55555f;--green:#00c471;--gbg:rgba(0,196,113,.1);--teal:#3dbf8f;--amber:#e8a020;--abg:rgba(232,160,32,.1);--red:#e03030;--rbg:rgba(224,48,48,.1);--acc:#c8cbd0;--acc2:#e8e8ea;--acbg:rgba(200,203,208,.08);--acborder:rgba(200,203,208,.18);--hi:#1e7ec8;--hibg:rgba(30,126,200,.12);--r:8px;--rs:6px;--rsm:4px}
@@ -503,14 +503,19 @@ function renderHebrewDate() {
 
 window.STORE_DEFAULTS = {
   pending: [
-    {id:'p1', text:'Adler hearing \u2014 Fri Oct 30 9am', sub:'Ocean County Courthouse, Courtroom 9', status:'urgent', source:'seed'},
-    {id:'p2', text:'MileagePlus merge \u2014 3 accounts', sub:'Call 1-800-421-4655 \u00b7 XV915448, YH388442, + 1 by SSN', status:'urgent', source:'seed'},
-    {id:'p3', text:'Solo 401k', sub:'Establish before Dec 31 2026 \u2014 max $70K', status:'pending', source:'seed'},
-    {id:'p4', text:'Malky REPS hours', sub:'Must log throughout 2026', status:'pending', source:'seed'},
-    {id:'p5', text:'Donor Advised Fund', sub:'Not yet set up \u2014 needed for charity routing', status:'pending', source:'seed'},
-    {id:'p6', text:'2023\u20132025 tax amendments', sub:'Waiting corrected receipts from Yeshiva Chemdas HaTorah', status:'pending', source:'seed'},
-    {id:'p7', text:'Handicap placard', sub:'Reapply Aug/Sep 2026 with new prescription', status:'info', source:'seed'},
-    {id:'p8', text:'Malky and Esty defensive driving', sub:'Still pending for auto insurance discount', status:'pending', source:'seed'}
+    {id:'p201', text:'High Holiday prep \u2014 Erev Rosh Hashana / Rosh Hashana', sub:'Thu Sep 10 \u00b7 Fri\u2013Sat Sep 11\u201312', status:'urgent', source:'seed'},
+    {id:'p202', text:'Avrami \u2014 check in (Israel)', sub:'Family may say Avrumy', status:'urgent', source:'seed'},
+    {id:'p203', text:'Leah at Shalva / Faigy', sub:'Monitor how she is settling in', status:'urgent', source:'seed'},
+    {id:'p204', text:'Mark docs follow-up', sub:'Compensation / agreement documents', status:'urgent', source:'seed'},
+    {id:'p1', text:'Adler hearing \u2014 Fri Oct 30 9am', sub:'Ocean County Courthouse, Courtroom 9', status:'pending', source:'seed'},
+    {id:'p205', text:'GenMed \u2014 reconcile remaining receivable', sub:'Remaining unknown \u2014 MY PRIME PROCURE books', status:'pending', source:'seed'},
+    {id:'p2', text:'MileagePlus merge \u2014 3 accounts', sub:'Call 1-800-421-4655 \u00b7 XV915448, YH388442, + 1 by SSN', status:'info', source:'seed'},
+    {id:'p3', text:'Solo 401k', sub:'Establish before Dec 31 2026 \u2014 max $70K', status:'info', source:'seed'}
+  ],
+  family: [
+    {id:'fam1', text:'High Holiday prep \u2014 Erev Rosh Hashana', sub:'Thu Sep 10 \u00b7 Rosh Hashana Fri\u2013Sat', status:'urgent', source:'seed'},
+    {id:'fam2', text:'Avrami \u2014 check in', sub:'In Israel (family may say Avrumy)', status:'pending', source:'seed'},
+    {id:'fam3', text:'Leah at Shalva / Faigy', sub:'Monitor how she is settling in', status:'pending', source:'seed'}
   ],
   finance: [
     {id:'f1', text:'Prime Procurement \u2014 GenMed', sub:'Remaining receivable unknown \u2014 reconcile with MY PRIME PROCURE books', status:'pending', val:'reconcile', source:'seed'},
@@ -522,8 +527,7 @@ window.STORE_DEFAULTS = {
     {id:'f7', text:'Solo 401k', sub:'Establish before Dec 31 2026 \u2014 max $70K', status:'pending', val:'Open', source:'seed'}
   ],
   health: [
-    {id:'h1', text:'CPAP habit', sub:'Keep nightly use; prior compliance windows are closed', status:'pending', val:'nightly', source:'seed'},
-    {id:'h4', text:'Kasa Smart Plug \u2014 CPAP timer', sub:'Plugged in and running on auto start/stop', status:'done', source:'seed'}
+    {id:'h5', text:'Handicap placard renewal', sub:'Expires Oct 2026 \u2014 reapply with new prescription', status:'pending', source:'seed'}
   ],
   projects: [
     {id:'pr1', text:'Personal DONALD OS', sub:'v3.3 live at personal-os-phi-gray.vercel.app', status:'info'},
@@ -531,15 +535,13 @@ window.STORE_DEFAULTS = {
     {id:'pr3', text:'FashionScan25.3', sub:'AR + AI wardrobe app \u2014 Gradle issues blocking progress', status:'hold'}
   ],
   email: [
-    {id:'em1', text:'MileagePlus merge \u2014 3 accounts', sub:'Call 1-800-421-4655 \u00b7 XV915448 YH388442 plus 1 more', status:'urgent'},
-    {id:'em2', text:'2022 charity receipts \u2014 5 orgs', sub:'June 11 deadline passed \u2014 confirm receipts/filing', status:'info'},
-    {id:'em3', text:'Israel Steinberg \u2014 2022 amendment', sub:'Has it been filed yet? Confirm status.', status:'pending'}
+    {id:'em4', text:'Mark docs follow-up', sub:'Compensation Structure & Agreement Docs', status:'pending', source:'seed'},
+    {id:'em3', text:'Israel Steinberg \u2014 documents for review', sub:'Tax / ISG follow-up', status:'pending', source:'seed'}
   ],
   work: [
-    {id:'w1', text:'June 8 event \u2014 COO speech', sub:'Event date passed (Jun 8, 2026)', status:'info'},
-    {id:'w2', text:'Culligan \u2014 redlined contract', sub:'Thomas Caputo \u2014 no response in 3+ weeks', status:'urgent'},
-    {id:'w3', text:'Mobotics \u2014 DocuSign pending', sub:'Yehuda + Mark need to sign \u00b7 sent Apr 30', status:'pending'},
-    {id:'w4', text:'Salesforce \u2014 4 dev items', sub:'Ownership change, matching rule, parent-child, dormant opps', status:'info'}
+    {id:'w2', text:'Culligan \u2014 redlined contract', sub:'Thomas Caputo \u2014 no response in 3+ weeks', status:'urgent', source:'seed'},
+    {id:'w3', text:'Mobotics \u2014 DocuSign pending', sub:'Yehuda + Mark need to sign \u00b7 sent Apr 30', status:'pending', source:'seed'},
+    {id:'w4', text:'Salesforce \u2014 4 dev items', sub:'Ownership change, matching rule, parent-child, dormant opps', status:'info', source:'seed'}
   ],
   growth: [
     {id:'g1', text:'Auto-refresh intel every 30 min', sub:'So panels never need manual refresh', status:'pending'},
@@ -553,7 +555,7 @@ window.STORE_DEFAULTS = {
     {id:'d1', text:'David', sub:'Completed Apr 26 \u2014 SAVEFIVE code used', status:'done'},
     {id:'d2', text:'Malky', sub:'Course link sent \u2014 not yet completed', status:'pending'},
     {id:'d3', text:'Esty', sub:'Course link sent \u2014 not yet completed', status:'pending'},
-    {id:'d4', text:'Avrumy', sub:'In Israel \u2014 verify if NJ course applies on return', status:'hold'}
+    {id:'d4', text:'Avrami', sub:'In Israel \u2014 verify if NJ course applies on return', status:'hold'}
   ]
 };
 
@@ -730,7 +732,13 @@ function renderCalendarFromWorker() {
         }).join('');
       }
       if (weekEl && intel.week && intel.week.length) {
-        weekEl.innerHTML = intel.week.slice(0,7).map(function(ev) {
+        var weekShow = intel.week.filter(function(ev){
+          var t = (ev && ev.title) || '';
+          if (window.isHebrewDateOnly && window.isHebrewDateOnly(t)) return false;
+          return ev.type==='jewish' || ev.type==='medical' || /rosh|erev|tzom|candle|הדלקת|adler|avrami|avrumy/i.test(t);
+        });
+        if (!weekShow.length) weekShow = intel.week.slice(0,7);
+        weekEl.innerHTML = weekShow.slice(0,7).map(function(ev) {
           var color = ev.type==='jewish'?'var(--hi)':ev.type==='medical'?'var(--amber)':'var(--text)';
           return '<div class="row"><div><div class="rn" style="font-size:10px;color:'+color+'">'+ev.title+'</div><div class="rs">'+ev.date+(ev.time?' \u00b7 '+ev.time:'')+'</div></div></div>';
         }).join('');
@@ -796,16 +804,17 @@ function renderFocusToday() {
   var el = document.getElementById('focusTodayEl');
   if (!el) return;
   var intel = window._liveIntel;
-  if (intel && intel.panels && intel.panels.focus) {
-    var liveHtml = window.sanitizeIntelHtml ? window.sanitizeIntelHtml(intel.panels.focus, {ensureAdler:true}) : intel.panels.focus;
+  if (intel && window.sanitizeIntelHtml) {
+    var liveHtml = window.sanitizeIntelHtml((intel.panels && intel.panels.focus) || '', {ensureAdler:true, panelId:'focus'});
     if (liveHtml && liveHtml.indexOf('ii ') > -1) {
       el.innerHTML = liveHtml;
       return;
     }
   }
   var items = [
+    {color:'var(--red)', label:'Erev Rosh Hashana', detail:'Thu Sep 10 — High Holiday prep this week'},
+    {color:'var(--amber)', label:'Avrami — check in', detail:'In Israel (family may say Avrumy)'},
     {color:'var(--amber)', label:'Adler hearing', detail:'Fri Oct 30, 9am, Courtroom 9 — Ocean County Courthouse'},
-    {color:'var(--text)', label:'MileagePlus merge', detail:'Call 1-800-421-4655 when ready — 3 accounts to consolidate'},
   ];
   el.innerHTML = items.map(function(item) {
     return '<div style="display:flex;align-items:flex-start;gap:8px;padding:4px 0;border-bottom:1px solid var(--border)">' +
@@ -940,20 +949,297 @@ window.sanitizeIntelHtml = function(html, opts) {
     }
   });
   var out = kept ? tmp.innerHTML : '<div class="ii ii-blue"><strong>Live intel</strong> — expired May/June snapshot items hidden. Pull Now for current panels.</div>';
-  if (opts && opts.ensureAdler) out = window.ensureAdlerHearingHtml(out);
+  if (window.rankFilterIntelHtml && opts && opts.panelId) {
+    out = window.rankFilterIntelHtml(opts.panelId, out, window._liveIntel, opts);
+  } else if (opts && opts.ensureAdler) {
+    out = window.ensureAdlerHearingHtml(out);
+  }
   return out;
 };
 
 // --- LIVE INTEL CARD SYNC ---
 window.TASK_LOG_OPEN = [
   {nid:101, text:'Adler hearing — Fri Oct 30 9am Courtroom 9', pri:'high', cat:'family'},
-  {nid:102, text:'MileagePlus merge — 3 accounts', pri:'high', cat:'other'},
-  {nid:103, text:'Solo 401k — establish before Dec 31 2026', pri:'high', cat:'finance'},
-  {nid:104, text:'Malky REPS hours — log throughout 2026', pri:'med', cat:'finance'},
-  {nid:105, text:'Set up Donor Advised Fund', pri:'med', cat:'finance'},
+  {nid:102, text:'MileagePlus merge — 3 accounts', pri:'low', cat:'other'},
+  {nid:103, text:'Solo 401k — establish before Dec 31 2026', pri:'low', cat:'finance'},
+  {nid:104, text:'Malky REPS hours — log throughout 2026', pri:'low', cat:'finance'},
+  {nid:105, text:'Set up Donor Advised Fund', pri:'low', cat:'finance'},
   {nid:106, text:'2023–2025 tax amendments — Yeshiva receipts', pri:'med', cat:'finance'},
-  {nid:107, text:'Malky and Esty defensive driving', pri:'med', cat:'finance'}
+  {nid:107, text:'Malky and Esty defensive driving', pri:'low', cat:'finance'}
 ];
+
+window.THIS_WEEK_PERSONAL = [
+  {nid:201, text:'High Holiday prep — Erev Rosh Hashana / Rosh Hashana', pri:'high', cat:'family'},
+  {nid:202, text:'Avrami — check in (Israel)', pri:'high', cat:'family'},
+  {nid:203, text:'Leah at Shalva / Faigy — settling in', pri:'high', cat:'family'},
+  {nid:204, text:'Mark docs follow-up — compensation / agreement', pri:'high', cat:'other'},
+  {nid:205, text:'GenMed — reconcile remaining receivable', pri:'high', cat:'finance'}
+];
+
+window.itemTopicKey = function(text) {
+  var t = String(text || '').toLowerCase();
+  if (/rosh hashana|erev rosh|high holiday|tzom gedaliah|הדלקת נרות|candle lighting/.test(t)) return 'rosh';
+  if (/avrami|avrumy/.test(t)) return 'avrami';
+  if (/shalva|faigy|\bleah\b/.test(t)) return 'shalva';
+  if (/\bmark\b/.test(t) || /compensation structure|agreement docs/.test(t)) return 'mark';
+  if (/israel steinberg|\bisg\b/.test(t)) return 'israel';
+  if (/adler|courtroom\s*9/.test(t)) return 'adler';
+  if (/mileageplus|xv915448/.test(t)) return 'mileageplus';
+  if (/solo\s*401k|\b401k\b/.test(t)) return 'solo401k';
+  if (/\breps\b/.test(t)) return 'reps';
+  if (/donor advised|\bdaf\b/.test(t)) return 'daf';
+  if (/(2023|2025)/.test(t) && /tax|amendment|yeshiva/.test(t)) return 'taxamend';
+  if (/defensive driving|auto insurance discount/.test(t)) return 'defensive';
+  if (/genmed|prime procur/.test(t)) return 'genmed';
+  if (/capital one/.test(t)) return 'capone';
+  if (/amerihealth/.test(t)) return 'amerihealth';
+  if (/kasa/.test(t)) return 'kasa';
+  if (/cpap/.test(t)) return 'cpap';
+  if (/raizy|rezi|\brose\b/.test(t) && /yossi|shidduch/.test(t)) return 'yossi_house';
+  return '';
+};
+
+window.textsOverlap = function(a, b) {
+  a = String(a || '').toLowerCase().replace(/\s+/g, ' ').trim();
+  b = String(b || '').toLowerCase().replace(/\s+/g, ' ').trim();
+  if (!a || !b) return false;
+  var ka = window.itemTopicKey(a);
+  var kb = window.itemTopicKey(b);
+  if (ka && kb && ka === kb) return true;
+  return a.indexOf(b.slice(0, 18)) >= 0 || b.indexOf(a.slice(0, 18)) >= 0;
+};
+
+window.isCardPromoOrMarketing = function(text) {
+  var t = String(text || '').toLowerCase();
+  if (/chase\s*[®.]?\s*ink|ink\s*[®.]?\s*business|ink business unlimited/.test(t)) return true;
+  if (/credit journey/.test(t)) return true;
+  if (/get more out of your card|add your ink|business travel easier|monthly business expenses/.test(t)) return true;
+  if (/credit.?card/.test(t) && /(offer|promo|unlimited|rewards|cash back|makes your business)/.test(t)) return true;
+  return false;
+};
+
+window.isBotOrAutomationMail = function(text) {
+  return /cursor\[bot\]|cursor bot|@cursor\[bot\]|bugbot|donald morning briefing|donald personal os/i.test(String(text || ''));
+};
+
+window.isCanceledOrStaleMeeting = function(text) {
+  var t = String(text || '');
+  if (/\bcancel(?:ed|led):/i.test(t)) return true;
+  if (/reminder:/i.test(t) && /introduction call|toby taylor/i.test(t)) return true;
+  if (/calendly/i.test(t) && /cancel|toby|introduction call/i.test(t)) return true;
+  return false;
+};
+
+window.isEvergreenFossil = function(text) {
+  var k = window.itemTopicKey(text);
+  return k === 'mileageplus' || k === 'solo401k' || k === 'daf' || k === 'reps' || k === 'defensive';
+};
+
+window.isThinCpapBoilerplate = function(text) {
+  var t = String(text || '');
+  if (/kasa smart plug/i.test(t) && /timer|auto start|plugged in/i.test(t)) return true;
+  if (/cpap habit/i.test(t) && /keep nightly|windows are closed|do not chase stale|prior compliance/i.test(t)) return true;
+  if (/cpap/i.test(t) && /nightly use|timer running/i.test(t) && !/(appointment|prescription|placard|option care|negotiate|open)/i.test(t)) return true;
+  return false;
+};
+
+window.isHebrewDateOnly = function(text) {
+  var t = String(text || '').replace(/\s+/g, ' ').trim();
+  if (!t) return false;
+  if (/rosh|erev|tzom|candle|הדלקת|הבדלה|avrami|avrumy|shalva|adler|genmed|mark/i.test(t)) return false;
+  return /[\u0590-\u05FF]/.test(t) && t.replace(/[\u0590-\u05FF\u05F3\u05F4׳״\s\.,]/g, '').length < 3;
+};
+
+window.THIS_WEEK_TOPIC_WEIGHT = {
+  rosh: 100, avrami: 96, shalva: 95, mark: 90, genmed: 88, adler: 84,
+  israel: 72, taxamend: 55, amerihealth: 28, capone: 26,
+  mileageplus: 12, solo401k: 14, daf: 14, reps: 12, defensive: 12, cpap: 10, kasa: 8
+};
+
+window.scoreThisWeekPersonal = function(item, intel) {
+  item = item || {};
+  var t = ((item.title || item.text || '') + ' ' + (item.detail || item.sub || '') + ' ' + (item.from || ''));
+  var score = 10;
+  var topic = window.itemTopicKey(t);
+  if (topic && window.THIS_WEEK_TOPIC_WEIGHT[topic] != null) score = window.THIS_WEEK_TOPIC_WEIGHT[topic];
+  if (window.isCardPromoOrMarketing(t)) return -200;
+  if (window.isBotOrAutomationMail(t)) return -150;
+  if (window.isCanceledOrStaleMeeting(t)) return -120;
+  if (window.isThinCpapBoilerplate(t)) return -80;
+  if (window.isHebrewDateOnly(t)) return -20;
+  if (window.isEvergreenFossil(t)) score = Math.min(score, 16);
+  if (intel && intel.week && intel.week.length) {
+    var blob = t.toLowerCase();
+    intel.week.forEach(function(ev) {
+      var title = String((ev && ev.title) || '');
+      if (!title) return;
+      var near = /rosh hashana|erev rosh|tzom gedaliah|candle|הדלקת נרות/i.test(title);
+      if (near && /rosh|holiday|erev|tzom|candle|prep/i.test(blob)) score += 36;
+      if (title.length > 4 && blob.indexOf(title.toLowerCase()) >= 0) score += 20;
+    });
+  }
+  if (/sep\s*1[0-3]|thu sep 10|fri sep 11|sat sep 12/i.test(t)) score += 18;
+  if (item.type === 'red' || item.status === 'urgent') score += 6;
+  if (item.type === 'amber' || item.status === 'pending') score += 3;
+  return score;
+};
+
+window.normalizePersonalItem = function(item) {
+  item = item || {};
+  var title = item.title || item.text || '';
+  var detail = item.detail || item.sub || '';
+  if (/avrumy/i.test(title) && !/avrami/i.test(title)) title = title.replace(/Avrumy/gi, 'Avrami');
+  if (/avrumy/i.test(detail) && !/avrami/i.test(detail)) detail = detail.replace(/Avrumy/gi, 'Avrami');
+  if (/compensation structure|agreement docs/i.test(title + ' ' + detail) && !/\bmark\b/i.test(title)) {
+    title = 'Mark docs follow-up';
+  }
+  return Object.assign({}, item, {title: title, text: title, detail: detail, sub: item.sub != null ? detail : item.sub});
+};
+
+window.renderIntelItemsHtml = function(items) {
+  return (items || []).map(function(it) {
+    var n = window.normalizePersonalItem ? window.normalizePersonalItem(it) : it;
+    var type = n.type || 'blue';
+    var title = n.title || '';
+    var detail = n.detail || '';
+    return '<div class="ii ii-' + type + '"><strong>' + title + '</strong>' + (detail ? ' — ' + detail : '') + '</div>';
+  }).join('');
+};
+
+window.isPersonalEmailKeep = function(item) {
+  var t = ((item && (item.title || item.text || '')) + ' ' + ((item && (item.detail || item.sub || item.from)) || ''));
+  if (window.isCardPromoOrMarketing(t)) return false;
+  if (window.isBotOrAutomationMail(t)) return false;
+  return true;
+};
+
+window.isRealWorkSignal = function(item) {
+  var t = ((item && (item.title || item.text || '')) + ' ' + ((item && (item.detail || item.sub || '')) || ''));
+  if (window.isCardPromoOrMarketing(t)) return false;
+  if (window.isBotOrAutomationMail(t)) return false;
+  if (window.isCanceledOrStaleMeeting(t)) return false;
+  var compact = String(t).replace(/\s+/g, ' ').trim();
+  if (/^work(\s*[—\-:]\s*live)+$/i.test(compact)) return false;
+  if (/work\s*[—\-:]\s*live/i.test(compact) && !/(salesforce|culligan|mobotics|contract|pipeline|outlook|prime source)/i.test(compact)) return false;
+  return compact.length > 2;
+};
+
+window.isActionableHealthIntel = function(item) {
+  if (!item) return false;
+  var t = ((item.title || item.text || '') + ' ' + (item.detail || item.sub || ''));
+  if (window.isThinCpapBoilerplate(t)) return false;
+  if (window.isExpiredSnapshotText && window.isExpiredSnapshotText(t)) return false;
+  if (/appointment|prescription|placard|option care|infusion|doctor|\bdr\.|handicap|open/i.test(t)) return true;
+  if ((item.type === 'red' || item.status === 'urgent') && !/cpap|kasa/i.test(t)) return true;
+  return false;
+};
+
+window.buildThisWeekFocusItems = function(intel, existing) {
+  var out = [];
+  var seen = {};
+  function add(item) {
+    if (!item) return;
+    var title = item.title || item.text || '';
+    var detail = item.detail || item.sub || '';
+    if (/avrumy/i.test(title) && !/avrami/i.test(title)) title = title.replace(/Avrumy/gi, 'Avrami');
+    var blob = title + ' ' + detail;
+    if (!title && !detail) return;
+    if (window.isCardPromoOrMarketing(blob) || window.isBotOrAutomationMail(blob)) return;
+    if (window.isEvergreenFossil(blob)) return;
+    if (window.isThinCpapBoilerplate(blob) || window.isHebrewDateOnly(blob)) return;
+    var k = window.itemTopicKey(blob) || title.toLowerCase().replace(/\s+/g, ' ').slice(0, 22);
+    if (!k || seen[k]) return;
+    seen[k] = true;
+    out.push({
+      type: item.type || (item.status === 'urgent' ? 'red' : item.status === 'pending' ? 'amber' : 'blue'),
+      title: title,
+      detail: detail
+    });
+  }
+  if (intel && intel.week) {
+    intel.week.forEach(function(ev) {
+      var title = (ev && ev.title) || '';
+      if (!title) return;
+      if (ev.type === 'jewish' || /rosh hashana|erev rosh|tzom gedaliah|candle|הדלקת נרות/i.test(title)) {
+        add({
+          type: /rosh hashana|erev/i.test(title) ? 'red' : 'amber',
+          title: title,
+          detail: ((ev.date || '') + (ev.time ? ' · ' + ev.time : '')).trim()
+        });
+      }
+    });
+  }
+  var panels = (intel && intel.panels) || {};
+  window.parseIntelPanelItems(panels.family).forEach(add);
+  window.parseIntelPanelItems(panels.email).forEach(function(it) {
+    var k = window.itemTopicKey((it.title || '') + ' ' + (it.detail || ''));
+    if (k === 'mark' || k === 'israel' || k === 'avrami' || k === 'shalva') add(it);
+  });
+  (intel && intel.email_highlights || []).forEach(function(h) {
+    var k = window.itemTopicKey((h.subject || '') + ' ' + (h.from || ''));
+    if (k === 'mark' || k === 'israel') {
+      add({type:'amber', title: h.subject, detail: 'From: ' + (h.from || '') + (h.date ? ' · ' + h.date : '')});
+    }
+  });
+  window.parseIntelPanelItems(panels.finance).forEach(function(it) {
+    if (window.isActionableFinanceIntel(it) && window.itemTopicKey((it.title || '') + ' ' + (it.detail || '')) === 'genmed') add(it);
+  });
+  (existing || []).forEach(function(it) {
+    var k = window.itemTopicKey((it.title || it.text || '') + ' ' + (it.detail || it.sub || ''));
+    if (k === 'adler' || k === 'rosh' || k === 'avrami' || k === 'shalva' || k === 'mark' || k === 'genmed') add(it);
+  });
+  add({
+    type: 'amber',
+    title: 'Adler hearing — Fri Oct 30, 9am',
+    detail: 'Courtroom 9, Ocean County Courthouse'
+  });
+  (window.THIS_WEEK_PERSONAL || []).forEach(function(canon) {
+    if (!seen[window.itemTopicKey(canon.text)]) add({type:'amber', title: canon.text, detail: 'this week'});
+  });
+  out.sort(function(a, b) { return window.scoreThisWeekPersonal(b, intel) - window.scoreThisWeekPersonal(a, intel); });
+  return out.slice(0, 8);
+};
+
+window.sanitizePanelItems = function(panelId, items, intel) {
+  items = (items || []).slice();
+  if (panelId === 'finance') items = items.filter(window.isActionableFinanceIntel);
+  else if (panelId === 'health') items = items.filter(window.isActionableHealthIntel);
+  else if (panelId === 'email') items = items.filter(window.isPersonalEmailKeep);
+  else if (panelId === 'work') items = items.filter(window.isRealWorkSignal);
+  else if (panelId === 'daily' || panelId === 'family') {
+    items = items.filter(function(it) {
+      var t = ((it.title || '') + ' ' + (it.detail || ''));
+      return !window.isCardPromoOrMarketing(t) && !window.isBotOrAutomationMail(t) && !window.isHebrewDateOnly(t);
+    });
+  } else if (panelId === 'projects' || panelId === 'growth') {
+    items = items.filter(function(it) {
+      var t = ((it.title || '') + ' ' + (it.detail || ''));
+      return !window.isCardPromoOrMarketing(t);
+    });
+  }
+  if (panelId === 'focus') items = window.buildThisWeekFocusItems(intel, items);
+  else items.sort(function(a, b) { return window.scoreThisWeekPersonal(b, intel) - window.scoreThisWeekPersonal(a, intel); });
+  return items;
+};
+
+window.rankFilterIntelHtml = function(panelId, html, intel, opts) {
+  if (!html) return html;
+  var items = window.parseIntelPanelItems(html);
+  if (!panelId) return html;
+  var next = window.sanitizePanelItems(panelId, items, intel || window._liveIntel);
+  if (!next.length) {
+    if (panelId === 'health') return '<div class="ii ii-blue"><strong>Health</strong> — no open personal medical items this week</div>';
+    if (panelId === 'work') return '<div class="ii ii-blue"><strong>Work</strong> — no live work signals after promo/cancel filter</div>';
+    if (panelId === 'finance') return '<div class="ii ii-amber"><strong>GenMed receivable</strong> — remaining unknown — reconcile Prime Procurement books</div>';
+    if (panelId === 'email') return '<div class="ii ii-blue"><strong>Email</strong> — no personal threads after promo/bot filter</div>';
+    if (panelId === 'focus') next = window.buildThisWeekFocusItems(intel || window._liveIntel, items);
+  }
+  var out = next.length ? window.renderIntelItemsHtml(next) : html;
+  if (opts && opts.ensureAdler && panelId === 'focus' && typeof window.ensureAdlerHearingHtml === 'function') {
+    out = window.ensureAdlerHearingHtml(out);
+  }
+  return out;
+};
 
 window.formatUsdCompact = function(n) {
   if (typeof n !== 'number' || !isFinite(n)) return null;
@@ -966,7 +1252,7 @@ window.formatUsdCompact = function(n) {
 };
 
 window.isResidualNinetyThreeKText = function(text) {
-  return /\$?\s*93\s*k\b|~?\s*\$93k|93,?000/i.test(String(text || ''));
+  return /(?:^|[^0-9])\$?\s*93\s*k\b|(?:^|[^0-9])~?\$93k\b|(?:^|[^0-9])93,000\b/i.test(String(text || ''));
 };
 
 window.storeItemBlob = function(item) {
@@ -1054,9 +1340,15 @@ window.isKnownStaleSeedTask = function(t) {
 
 window.isActionableFinanceIntel = function(item) {
   if (!item) return false;
-  if (item.type === 'red' || item.type === 'amber' || item.type === 'green') return true;
-  var t = ((item.title || '') + ' ' + (item.detail || '')).toLowerCase();
-  return /genmed|prime procur|daf|donor advised|401k|amerihealth|capital one|irs|tax amendment|insurance|pp balance/.test(t);
+  var t = ((item.title || item.text || '') + ' ' + (item.detail || item.sub || '')).toLowerCase();
+  if (window.isCardPromoOrMarketing(t)) return false;
+  if (window.isBotOrAutomationMail(t)) return false;
+  if (/estatement is available/i.test(t)) return false;
+  if (/docusign/.test(t) && /thank you for providing/i.test(t)) return false;
+  if (/chase/.test(t) && /ink|credit journey|your card/.test(t)) return false;
+  if (item.type === 'red' || item.type === 'amber') return true;
+  if (item.type === 'green') return /genmed|prime procur|amerihealth|capital one|ach received|autopay|pp balance/.test(t);
+  return /genmed|prime procur|daf|donor advised|401k|amerihealth|capital one|irs|tax amendment|yeshiva|israel steinberg|\bisg\b|pp balance|receivable|installment/.test(t);
 };
 
 window.ppBalanceFromMetrics = function(metrics) {
@@ -1122,29 +1414,54 @@ window.mergeLiveStoreItems = function(name, liveItems) {
     var n = ((i.text || '') + ' ' + (i.sub || '')).toLowerCase().replace(/\s+/g, ' ').trim();
     if (window.isResidualNinetyThreeKText(n)) return false;
     if (window.isExpiredSnapshotText && window.isExpiredSnapshotText(n)) return false;
+    if (window.isCardPromoOrMarketing && window.isCardPromoOrMarketing(n)) return false;
+    if (name === 'finance' && window.isBotOrAutomationMail && window.isBotOrAutomationMail(n)) return false;
+    if (name === 'health' && window.isThinCpapBoilerplate && window.isThinCpapBoilerplate(n)) return false;
+    if (name === 'work' && window.isRealWorkSignal && !window.isRealWorkSignal({title:i.text, detail:i.sub})) return false;
     return deletedNorm.indexOf(n) === -1;
   });
   var kept = existing.filter(function(i) {
-    if (i.source === 'live' || i.source === 'tasklog') return false;
+    if (i.source === 'live' || i.source === 'tasklog' || i.source === 'seed') return false;
     if (window.isKnownStaleSeedItem(name, i)) return false;
     if (window.isResidualNinetyThreeKText(window.storeItemBlob(i))) return false;
+    if (i.source !== 'user' && window.isCardPromoOrMarketing && window.isCardPromoOrMarketing(window.storeItemBlob(i))) return false;
     return true;
   });
-  var liveTexts = live.map(function(i) { return (i.text || '').toLowerCase(); });
   kept = kept.filter(function(i) {
-    var t = (i.text || '').toLowerCase();
-    if (!t) return true;
-    return !liveTexts.some(function(lt) {
-      return lt && (lt.indexOf(t.slice(0, 18)) >= 0 || t.indexOf(lt.slice(0, 18)) >= 0);
+    var t = (i.text || '') + ' ' + (i.sub || '');
+    if (!t.trim()) return true;
+    return !live.some(function(l) {
+      return window.textsOverlap ? window.textsOverlap(t, (l.text || '') + ' ' + (l.sub || '')) : false;
     });
   });
-  var next = live.concat(kept).slice(0, 14);
+  var next = live.concat(kept);
+  if (name === 'pending' && window.THIS_WEEK_PERSONAL) {
+    window.THIS_WEEK_PERSONAL.forEach(function(canon) {
+      var has = next.some(function(item) { return window.textsOverlap && window.textsOverlap((item.text || '') + ' ' + (item.sub || ''), canon.text); });
+      if (!has) {
+        next.push({
+          id: 'p_tw_' + canon.nid,
+          text: canon.text,
+          sub: 'this week',
+          status: 'urgent',
+          source: 'tasklog'
+        });
+      }
+    });
+  }
+  next.sort(function(a, b) {
+    if (a.source === 'user' && b.source !== 'user') return -1;
+    if (b.source === 'user' && a.source !== 'user') return 1;
+    return (window.scoreThisWeekPersonal(b, window._liveIntel) - window.scoreThisWeekPersonal(a, window._liveIntel));
+  });
+  next = next.slice(0, 14);
   try { localStorage.setItem('po2_store_' + name, JSON.stringify(next)); } catch (e) {}
   return next;
 };
 
 window.syncTasksFromLiveIntel = function(intel) {
-  var focusItems = window.parseIntelPanelItems(intel && intel.panels && intel.panels.focus);
+  var rawFocus = window.parseIntelPanelItems(intel && intel.panels && intel.panels.focus);
+  var focusItems = window.sanitizePanelItems ? window.sanitizePanelItems('focus', rawFocus, intel) : rawFocus;
   var existing = [];
   try { existing = JSON.parse(localStorage.getItem('po2_tasks') || '[]') || []; } catch (e) {}
   var prevByNorm = {};
@@ -1152,33 +1469,48 @@ window.syncTasksFromLiveIntel = function(intel) {
     prevByNorm[(t.text || '').toLowerCase().slice(0, 24)] = t;
   });
   var user = existing.filter(function(t) {
-    if (t.source === 'live' || t.source === 'tasklog') return false;
+    if (t.source === 'live' || t.source === 'tasklog' || t.source === 'seed') return false;
     if (window.isKnownStaleSeedTask(t)) return false;
     return true;
   });
   var liveTasks = focusItems.map(function(it, i) {
     var blob = ((it.title || '') + ' ' + (it.detail || ''));
-    var pri = it.type === 'red' ? 'high' : it.type === 'amber' ? 'med' : 'low';
-    var text = it.title + (it.detail && it.detail.length < 90 ? ' — ' + it.detail : '');
+    var score = window.scoreThisWeekPersonal ? window.scoreThisWeekPersonal(it, intel) : 0;
+    var pri = score >= 80 || it.type === 'red' ? 'high' : score >= 40 || it.type === 'amber' ? 'med' : 'low';
+    var n = window.normalizePersonalItem ? window.normalizePersonalItem(it) : it;
+    var text = n.title + (n.detail && n.detail.length < 90 ? ' — ' + n.detail : '');
     var prev = prevByNorm[text.toLowerCase().slice(0, 24)];
+    var cat = /adler|court|rosh|avrami|avrumy|shalva|faigy|leah|family/i.test(blob) ? 'family' : /401k|daf|tax|reps|insur|mileage|genmed/i.test(blob) ? 'finance' : 'other';
     return {
       id: 9000 + i,
       text: text,
       pri: pri,
       priority: pri,
-      cat: /adler|court/i.test(blob) ? 'family' : /401k|daf|tax|reps|insur|mileage|genmed/i.test(blob) ? 'finance' : 'other',
+      cat: cat,
       done: !!(prev && prev.done),
       source: 'live'
     };
   }).filter(function(t) {
     return !window.isResidualNinetyThreeKText(t.text || '');
   });
-  var liveTexts = liveTasks.map(function(t) { return (t.text || '').toLowerCase().slice(0, 24); });
   user = user.filter(function(t) {
-    var t0 = (t.text || '').toLowerCase().slice(0, 24);
-    return !liveTexts.some(function(lt) { return lt && t0 && (lt.indexOf(t0.slice(0, 16)) >= 0 || t0.indexOf(lt.slice(0, 16)) >= 0); });
+    return !liveTasks.some(function(lt) { return window.textsOverlap && window.textsOverlap(t.text, lt.text); });
   });
-  var next = liveTasks.concat(user);
+  var fossils = existing.filter(function(t) {
+    if (t.source === 'user' || t.source === 'live') return false;
+    if (!window.isEvergreenFossil || !window.isEvergreenFossil(t.text)) return false;
+    if (liveTasks.some(function(lt) { return window.textsOverlap && window.textsOverlap(t.text, lt.text); })) return false;
+    if (user.some(function(u) { return window.textsOverlap && window.textsOverlap(t.text, u.text); })) return false;
+    return true;
+  }).map(function(t) {
+    return Object.assign({}, t, {pri:'low', priority:'low', demoted:'evergreen'});
+  });
+  var next = liveTasks.concat(user).concat(fossils);
+  next.sort(function(a, b) {
+    if (a.done && !b.done) return 1;
+    if (b.done && !a.done) return -1;
+    return (window.scoreThisWeekPersonal(b, intel) - window.scoreThisWeekPersonal(a, intel));
+  });
   try { localStorage.setItem('po2_tasks', JSON.stringify(next)); } catch (e) {}
   if (typeof window.tasks !== 'undefined') window.tasks = next;
   return next;
@@ -1191,10 +1523,14 @@ window.syncStoresFromLiveIntel = function(intel) {
     var items = window.parseIntelPanelItems(html);
     if (filterFn) items = items.filter(filterFn);
     return items.slice(0, limit || 10).map(function(it, i) {
+      var title = it.title || '';
+      var detail = it.detail || '';
+      if (/avrumy/i.test(title) && !/avrami/i.test(title)) title = title.replace(/Avrumy/gi, 'Avrami');
+      if (/compensation structure|agreement docs/i.test(title + ' ' + detail) && !/\bmark\b/i.test(title)) title = 'Mark docs follow-up';
       return {
         id: prefix + '_live_' + i,
-        text: it.title,
-        sub: it.detail,
+        text: title,
+        sub: detail,
         status: window.intelTypeToStatus(it.type),
         source: 'live',
         val: it.type === 'red' ? 'Urgent' : it.type === 'green' ? '\u2713' : ''
@@ -1205,15 +1541,30 @@ window.syncStoresFromLiveIntel = function(intel) {
     window.mergeLiveStoreItems('finance', fromPanel(panels.finance, 'f', window.isActionableFinanceIntel, 8));
   }
   if (panels.health) {
-    window.mergeLiveStoreItems('health', fromPanel(panels.health, 'h', null, 8));
+    window.mergeLiveStoreItems('health', fromPanel(panels.health, 'h', window.isActionableHealthIntel, 8));
   }
-  if (panels.focus) {
-    window.mergeLiveStoreItems('pending', fromPanel(panels.focus, 'p', function(it) {
+  if (panels.family) {
+    window.mergeLiveStoreItems('family', fromPanel(panels.family, 'fam', function(it) {
       var t = ((it.title || '') + ' ' + (it.detail || ''));
-      if (window.isExpiredSnapshotText && window.isExpiredSnapshotText(t)) return false;
-      if (window.isResidualNinetyThreeKText(t)) return false;
-      return true;
-    }, 10));
+      return !window.isHebrewDateOnly(t) && !window.isCardPromoOrMarketing(t);
+    }, 8));
+  }
+  if (panels.work) {
+    window.mergeLiveStoreItems('work', fromPanel(panels.work, 'w', window.isRealWorkSignal, 8));
+  }
+  if (panels.focus || (intel.week && intel.week.length)) {
+    var focusItems = window.sanitizePanelItems('focus', window.parseIntelPanelItems(panels.focus), intel);
+    window.mergeLiveStoreItems('pending', focusItems.map(function(it, i) {
+      var n = window.normalizePersonalItem ? window.normalizePersonalItem(it) : it;
+      return {
+        id: 'p_live_' + i,
+        text: n.title,
+        sub: n.detail,
+        status: window.intelTypeToStatus(it.type),
+        source: 'live',
+        val: it.type === 'red' ? 'Urgent' : it.type === 'green' ? '\u2713' : ''
+      };
+    }));
   }
   window.syncTasksFromLiveIntel(intel);
   window.scrubResidualNinetyThreeK();
@@ -1224,6 +1575,9 @@ window.rerenderSnapshotCards = function() {
   try { window.renderStore('finance', 'financeStoreEl'); } catch (e) {}
   try { window.renderStore('finance', 'financeWorldStoreEl'); } catch (e) {}
   try { window.renderStore('health', 'healthStoreEl'); } catch (e) {}
+  try { window.renderStore('family', 'familyStoreEl'); } catch (e) {}
+  try { window.renderStore('email', 'emailStoreEl'); } catch (e) {}
+  try { window.renderStore('work', 'workStoreEl'); } catch (e) {}
   try { if (typeof renderDashTasks === 'function') renderDashTasks(); } catch (e) {}
   try { renderDashMetrics(window._liveIntel && window._liveIntel.metrics); } catch (e) {}
   try { if (typeof window.renderFinWorldMetrics === 'function') window.renderFinWorldMetrics(); } catch (e) {}
@@ -1358,6 +1712,56 @@ window.migrateStaleStoreSnapshot = function() {
     }
     try { localStorage.setItem('po2_staleSnap_v3', '1'); } catch(e) {}
   }
+
+  if (localStorage.getItem('po2_relevancy_v1') !== '1') {
+    try {
+      var tRel;
+      try { tRel = JSON.parse(localStorage.getItem('po2_tasks') || 'null'); } catch (e) { tRel = null; }
+      if (tRel && tRel.length) {
+        tRel = tRel.map(function(t) {
+          if (t.source === 'user') return t;
+          if (window.isEvergreenFossil && window.isEvergreenFossil(t.text)) {
+            return Object.assign({}, t, {pri:'low', priority:'low', demoted:'evergreen'});
+          }
+          return t;
+        });
+        (window.THIS_WEEK_PERSONAL || []).forEach(function(canon) {
+          var has = tRel.some(function(t) { return window.textsOverlap && window.textsOverlap(t.text, canon.text); });
+          if (!has) tRel.unshift({id: canon.nid, text: canon.text, pri: canon.pri, cat: canon.cat, done: false, source: 'tasklog'});
+        });
+        localStorage.setItem('po2_tasks', JSON.stringify(tRel));
+        if (typeof window.tasks !== 'undefined') window.tasks = tRel;
+      }
+      ['health','finance','email','work','pending'].forEach(function(storeName) {
+        var items;
+        try { items = JSON.parse(localStorage.getItem('po2_store_' + storeName) || 'null'); } catch (e) { items = null; }
+        if (!items || !items.length) return;
+        var next = items.filter(function(i) {
+          if (i.source === 'user') return true;
+          var blob = window.storeItemBlob(i);
+          if (window.isCardPromoOrMarketing && window.isCardPromoOrMarketing(blob)) return false;
+          if (storeName === 'health' && window.isThinCpapBoilerplate && window.isThinCpapBoilerplate(blob)) return false;
+          if (storeName === 'work' && window.isRealWorkSignal && !window.isRealWorkSignal({title:i.text, detail:i.sub})) return false;
+          if ((storeName === 'email' || storeName === 'finance') && window.isBotOrAutomationMail && window.isBotOrAutomationMail(blob)) return false;
+          return true;
+        }).map(function(i) {
+          if (i.source === 'user') return i;
+          if (window.isEvergreenFossil && window.isEvergreenFossil(i.text + ' ' + (i.sub || ''))) {
+            return Object.assign({}, i, {status:'info', val:'later'});
+          }
+          return i;
+        });
+        if (storeName === 'pending' && window.THIS_WEEK_PERSONAL) {
+          window.THIS_WEEK_PERSONAL.forEach(function(canon) {
+            var has = next.some(function(item) { return window.textsOverlap && window.textsOverlap((item.text || '') + ' ' + (item.sub || ''), canon.text); });
+            if (!has) next.unshift({id:'p_tw_'+canon.nid, text:canon.text, sub:'this week', status:'urgent', source:'tasklog'});
+          });
+        }
+        localStorage.setItem('po2_store_' + storeName, JSON.stringify(next));
+      });
+      localStorage.setItem('po2_relevancy_v1', '1');
+    } catch (e) {}
+  }
 };
 
 function applyLiveIntel(intel) {
@@ -1392,7 +1796,13 @@ function applyLiveIntel(intel) {
   if (intel.week && intel.week.length) {
     var weekEl = document.getElementById('calWeekItems');
     if (weekEl) {
-      weekEl.innerHTML = intel.week.slice(0,7).map(function(ev) {
+      var weekShow = intel.week.filter(function(ev){
+        var t = (ev && ev.title) || '';
+        if (window.isHebrewDateOnly && window.isHebrewDateOnly(t)) return false;
+        return ev.type==='jewish' || ev.type==='medical' || /rosh|erev|tzom|candle|הדלקת|adler|avrami|avrumy/i.test(t);
+      });
+      if (!weekShow.length) weekShow = intel.week.slice(0,7);
+      weekEl.innerHTML = weekShow.slice(0,7).map(function(ev) {
         var color = ev.type==='jewish'?'var(--hi)':ev.type==='medical'?'var(--amber)':'var(--text)';
         return '<div class="row"><div><div class="rn" style="font-size:10px;color:'+color+'">'+ev.title+'</div><div class="rs">'+ev.date+(ev.time?' \u00b7 '+ev.time:'')+'</div></div></div>';
       }).join('');
@@ -1403,7 +1813,7 @@ function applyLiveIntel(intel) {
   if (intel.panels) {
     var now = new Date().toISOString();
     Object.keys(intel.panels).forEach(function(panelId) {
-      var html = window.sanitizeIntelHtml ? window.sanitizeIntelHtml(intel.panels[panelId], {ensureAdler: panelId==='focus'}) : intel.panels[panelId];
+      var html = window.sanitizeIntelHtml ? window.sanitizeIntelHtml(intel.panels[panelId], {ensureAdler: panelId==='focus', panelId: panelId}) : intel.panels[panelId];
       if (!html) return;
       
       // Update intel cache with fresh timestamp
@@ -1455,7 +1865,7 @@ function applyLiveIntel(intel) {
     setTimeout(function(){ try { updateAllBadges(); } catch(e) {} }, 300);
   }
   
-  // Email store — populate from live email highlights
+  // Email store — personal ranking; drop promo / bot mail
   if (intel.email_highlights && intel.email_highlights.length) {
     var liveEmails = intel.email_highlights.map(function(h,i){
       return {
@@ -1463,10 +1873,20 @@ function applyLiveIntel(intel) {
         text: h.subject,
         sub: 'From: '+h.from+' \u00b7 '+h.date,
         status: h.unread ? 'pending' : 'info',
-        source: 'live'
+        source: 'live',
+        from: h.from
       };
+    }).filter(function(i) {
+      return window.isPersonalEmailKeep({title: i.text, detail: i.sub, from: i.from});
+    }).sort(function(a, b) {
+      return window.scoreThisWeekPersonal(a, intel) - window.scoreThisWeekPersonal(b, intel) ? window.scoreThisWeekPersonal(b, intel) - window.scoreThisWeekPersonal(a, intel) : 0;
     });
-    var existing = loadStore('email').filter(function(i){ return i.source !== 'live'; });
+    var existing = loadStore('email').filter(function(i){
+      if (i.source === 'live') return false;
+      if (i.source === 'user') return true;
+      var blob = (i.text || '') + ' ' + (i.sub || '');
+      return !window.isCardPromoOrMarketing(blob) && !window.isBotOrAutomationMail(blob);
+    });
     window.saveStore('email', liveEmails.concat(existing).slice(0,12));
     window.renderStore('email','emailStoreEl');
   }
@@ -1570,6 +1990,7 @@ function v26init() {
     // Interactive stores — Dashboard
     try { renderStore('pending','pendingStoreEl'); var pa=document.getElementById('pendingAddRow'); if(pa) pa.innerHTML=renderAddRow('pending','Add item...'); } catch(e) {}
     try { renderStore('finance','financeStoreEl'); var fa=document.getElementById('financeAddRow'); if(fa) fa.innerHTML=renderAddRow('finance','Add item...'); } catch(e) {}
+    try { renderStore('family','familyStoreEl'); var fma=document.getElementById('familyAddRow'); if(fma) fma.innerHTML=renderAddRow('family','Add family item...'); renderDeletedSection('family','familyDeletedEl'); } catch(e) {}
     try { renderStore('health','healthStoreEl'); var ha=document.getElementById('healthAddRow'); if(ha) ha.innerHTML=renderAddRow('health','Add item...'); renderDeletedSection('health','healthDeletedEl'); } catch(e) {}
     try { renderStore('projects','projectsStoreEl'); var pja=document.getElementById('projectsAddRow'); if(pja) pja.innerHTML=renderAddRow('projects','Add project...'); renderDeletedSection('projects','projectsDeletedEl'); } catch(e) {}
     try { renderStore('growth','growthStoreEl'); var ga=document.getElementById('growthAddRow'); if(ga) ga.innerHTML=renderAddRow('growth','Add growth item...'); renderDeletedSection('growth','growthDeletedEl'); } catch(e) {}
@@ -1659,8 +2080,9 @@ function v26init() {
       </div>
     </div>
     <div class="cc-controls">
+      <button class="ib-btn primary" onclick="fetchDriveIntel()">Pull Now</button>
       <button class="ib-btn" onclick="sendRefreshPrompt()">↻ Refresh Intel</button>
-      <button class="ib-btn primary" onclick="openIBModal()">⇡ Push Intel Update</button>
+      <button class="ib-btn" onclick="openIBModal()">⇡ Push Intel Update</button>
     </div>
   </div>
   <div class="ib-bar">
@@ -1704,6 +2126,13 @@ function v26init() {
           <div style="font-size:9px;color:var(--text3);margin-bottom:4px;font-weight:600;text-transform:uppercase;letter-spacing:.04em">This week</div>
           <div id="calWeekItems"><div style="font-size:10px;color:var(--text3);font-style:italic">Loading...</div></div>
         </div>
+      </div>
+      <div class="card" style="margin-bottom:0">
+        <div class="ct">Family this week</div>
+        <div id="familyStoreEl"></div>
+        <div id="familyAddRow"></div>
+        <div id="familyDeletedEl"></div>
+        <button class="adb" onclick="V('family',null)" style="margin-top:6px"><span class="adb-icon">🏠</span>Go to Family world</button>
       </div>
       <div class="card" style="margin-bottom:0">
         <div class="ct">Health Snapshot</div>
@@ -1858,8 +2287,9 @@ function v26init() {
     <div class="card">
       <div class="ct">Family</div>
       <div class="row"><div><div class="rn">Malky</div><div class="rs">Shared email: davidmalky@gmail.com</div></div><span class="badge bg">Primary</span></div>
-      <div class="row"><div><div class="rn">Avrumy</div><div class="rs">In Israel</div></div><span class="badge bx">Israel</span></div>
-      <div class="row"><div><div class="rn">Esty (Raizy/Rose)</div><div class="rs">Shidduch open</div></div><span class="badge bp">Home</span></div>
+      <div class="row"><div><div class="rn">Avrami</div><div class="rs">In Israel — family may say Avrumy</div></div><span class="badge bx">Israel</span></div>
+      <div class="row"><div><div class="rn">Leah / Shalva</div><div class="rs">Settling in — Faigy when relevant</div></div><span class="badge ba">This week</span></div>
+      <div class="row"><div><div class="rn">Esty</div><div class="rs">Home</div></div><span class="badge bp">Home</span></div>
       <div class="row"><div><div class="rn">Google Family Library</div><div class="rs">buildersrusnj → davidlgenuth migration</div></div><span class="badge ba">In progress</span></div>
       <button class="adb" onclick="ask('Any important family items coming up that I should be thinking about or preparing for?')"><span class="adb-icon">👨‍👩‍👧</span>Family check-in</button>
     </div>
@@ -2000,8 +2430,7 @@ function v26init() {
   </div>
   <div class="g2">
     <div class="card">
-      <div class="ct">Today's priorities</div>
-      <div class="row"><div><div class="rn" style="font-size:10px">Call United MileagePlus merge</div><div class="rs">1-800-421-4655 · accounts XV915448 + YH388442</div></div><span class="badge bx">Open</span></div>
+      <div class="ct">This week's priorities</div>
       <div id="focusTodayEl" style="margin-bottom:8px"></div>
       <div style="padding-top:6px;border-top:1px solid var(--border);margin-top:4px">
         <button class="adb" onclick="ask('Top 3 priorities for today — be specific, tell me exactly what to do and in what order.')">Get today's top 3 ↗</button>
@@ -2011,9 +2440,9 @@ function v26init() {
     </div>
     <div class="card">
       <div class="ct">Upcoming deadlines</div>
+      <div class="row"><div><div class="rn" style="font-size:10px">Thu Sep 10: Erev Rosh Hashana</div><div class="rs">High Holiday prep this week</div></div><span class="badge br">This week</span></div>
+      <div class="row"><div><div class="rn" style="font-size:10px">Fri–Sat Sep 11–12: Rosh Hashana 5787</div><div class="rs">Candle lighting Fri 6:54 PM · Toms River</div></div><span class="badge br">This week</span></div>
       <div class="row"><div><div class="rn" style="font-size:10px">Fri Oct 30: Adler hearing</div><div class="rs">9am · Courtroom 9 · Ocean County Courthouse</div></div><span class="badge ba">Oct 30</span></div>
-      <div class="row"><div><div class="rn" style="font-size:10px">Dec 31: Solo 401k establish</div><div class="rs">Max $70K — establish before year end</div></div><span class="badge bx">Dec 31</span></div>
-      <div class="row"><div><div class="rn" style="font-size:10px">Dec 31: Malky REPS hours</div><div class="rs">Must be logged all year</div></div><span class="badge bx">Dec 31</span></div>
       <textarea class="nta" id="focusNotes" placeholder="Focus notes..." oninput="S('focusNotes',this.value)" style="min-height:80px;margin-top:8px"></textarea>
     </div>
   </div>
@@ -2191,13 +2620,18 @@ function G(k,d){try{var v=localStorage.getItem(PREFIX+k);return v!==null?JSON.pa
 function S(k,v){try{localStorage.setItem(PREFIX+k,JSON.stringify(v));}catch(e){}}
 
 var tasks=G('tasks',[
+  {id:201,text:'High Holiday prep — Erev Rosh Hashana / Rosh Hashana',pri:'high',cat:'family',done:false,source:'seed'},
+  {id:202,text:'Avrami — check in (Israel)',pri:'high',cat:'family',done:false,source:'seed'},
+  {id:203,text:'Leah at Shalva / Faigy — settling in',pri:'high',cat:'family',done:false,source:'seed'},
+  {id:204,text:'Mark docs follow-up — compensation / agreement',pri:'high',cat:'other',done:false,source:'seed'},
+  {id:205,text:'GenMed — reconcile remaining receivable',pri:'high',cat:'finance',done:false,source:'seed'},
   {id:1,text:'Adler hearing — Fri Oct 30 9am Courtroom 9',pri:'high',cat:'family',done:false},
-  {id:2,text:'MileagePlus merge — 3 accounts',pri:'high',cat:'other',done:false},
-  {id:3,text:'Solo 401k — establish before Dec 31 2026',pri:'high',cat:'finance',done:false},
-  {id:4,text:'Malky REPS hours — log throughout 2026',pri:'med',cat:'finance',done:false},
-  {id:5,text:'Set up Donor Advised Fund',pri:'med',cat:'finance',done:false},
+  {id:2,text:'MileagePlus merge — 3 accounts',pri:'low',cat:'other',done:false},
+  {id:3,text:'Solo 401k — establish before Dec 31 2026',pri:'low',cat:'finance',done:false},
+  {id:4,text:'Malky REPS hours — log throughout 2026',pri:'low',cat:'finance',done:false},
+  {id:5,text:'Set up Donor Advised Fund',pri:'low',cat:'finance',done:false},
   {id:6,text:'2023–2025 tax amendments — Yeshiva receipts',pri:'med',cat:'finance',done:false},
-  {id:7,text:'Malky and Esty defensive driving',pri:'med',cat:'finance',done:false},
+  {id:7,text:'Malky and Esty defensive driving',pri:'low',cat:'finance',done:false},
 ]);
 var nid=G('nid',200);
 var appts=G('appts',[]);
@@ -2217,29 +2651,28 @@ var syncEnabled=false,syncTimer=null;
 var AOL_COMPLETE=['Tesla','TD Auto Finance','Principal Financial','Penn Mutual','Hyundai Motor Finance','Truist','AmeriHealth','Dropbox','Microsoft','Adobe','Target','US Bank','Verizon','Robinhood','Costco','E-ZPass NJ','Veolia Water','JCP&L/FirstEnergy','Chase','Schwab','Vanguard','Zoom','YouMail','Samsung','Airbnb'];
 
 var CC_PANELS=[
-  {id:'daily',icon:'☀',label:'Daily Briefing',pri:'blue',desc:'Morning routine, top priority, calendar, email highlights.',
-   actions:[{label:'Morning briefing',prompt:'Full morning briefing for today — calendar, email highlights, CPAP status, and top priority.'},{label:'Top priority',prompt:'What is the single most important thing I should be doing right now personally?'},{label:'Evening wrap',prompt:'End of day wrap-up — what did I accomplish, what is unfinished, what do I carry into tomorrow?'}],openTab:'dashboard'},
-  {id:'finance',icon:'💰',label:'Finance',pri:'amber',desc:'Prime Procurement, accounts, insurance, investments, DAF setup.',
+  {id:'focus',icon:'⏱',label:'Focus & Time',pri:'green',desc:'This week: High Holidays, Avrami, Shalva/Faigy, Mark docs, GenMed, Adler Oct 30.',
+   badgeFn:function(){var op=tasks.filter(function(t){return !t.done&&t.pri==='high'});return op.length>0?{count:op.length,cls:'red'}:null;},
+   actions:[{label:'Structure my day',prompt:'Structure my day today by this week\'s personal board — High Holidays, kids, Adler, GenMed, Mark docs. Not MileagePlus museum items unless I ask.'},{label:'Best use of next 30 min',prompt:'I have 30 minutes right now. What is the single highest-leverage personal thing I can do this week?'},{label:'Weekly plan',prompt:'Build me a realistic weekly plan around Rosh Hashana, Avrami, Shalva/Faigy, Mark docs, GenMed reconcile, and Adler Oct 30.'}],openTab:'focus'},
+  {id:'family',icon:'🏠',label:'Family & Home',pri:'red',desc:'High Holidays this week. Avrami in Israel. Leah at Shalva / Faigy.',
+   actions:[{label:'Family check-in',prompt:'Family and home briefing — High Holidays this week, Avrami (Avrumy) in Israel, Leah at Shalva / Faigy. Do not confuse Raizy/Rose/Rezi (Yossi\'s household) with Dave\'s kids.'},{label:'Jewish calendar',prompt:'What is on the Jewish calendar this week and coming month? High Holiday prep first.'},{label:'Shabbos prep',prompt:'Help me prepare for Rosh Hashana / Shabbos this week. What do I need to do before zman on Friday?'}],openTab:'family'},
+  {id:'finance',icon:'💰',label:'Finance',pri:'amber',desc:'Actionable money only: GenMed reconcile, tax receipts/ISG, real balances. Never card marketing.',
    badgeFn:function(){return null;},
-   actions:[{label:'Finance status',prompt:'Full personal finance status — Prime Procurement balance from live intel, Capital One, investments, DAF, what needs to move this week. Do not treat a leftover GenMed owed figure as current.'},{label:'Reconcile GenMed',prompt:'What do I need to do to reconcile the GenMed / Prime Procurement receivable using live intel metrics (pp_balance and ACH facts)?'},{label:'Insurance discount',prompt:'Auto insurance discount follow-up. I completed defensive driving April 26. Next steps?'}],openTab:'finance'},
-  {id:'health',icon:'💪',label:'Health',pri:'amber',desc:'CPAP Jul 20 window ended. SightMD May 15 completed. Pull live intel for current health items.',
-   actions:[{label:'CPAP check',prompt:'CPAP status — the Jul 20, 2026 compliance window ended. Do not treat the old 7/30 snapshot as current. What if anything is still open?'},{label:'Health overview',prompt:'Full health status — upcoming appointments only. SightMD May 15 is completed. Do not invent new medical facts.'}],openTab:'health'},
-  {id:'family',icon:'🏠',label:'Family & Home',pri:'blue',desc:'Malky, kids, home, Shabbos, Jewish calendar.',
-   actions:[{label:'Family check-in',prompt:'Family and home briefing — what is on the calendar this week for family, Shabbos, and home?'},{label:'Jewish calendar',prompt:'What is on the Jewish calendar this week and coming month?'},{label:'Shabbos prep',prompt:'Help me prepare for Shabbos this week. What do I need to do before zman on Friday?'}],openTab:'family'},
-  {id:'projects',icon:'🚀',label:'Personal Projects',pri:'gray',desc:'FashionScan25.3 (blocked), DONALD OS v2 (active).',
-   actions:[{label:'Projects status',prompt:'Personal projects status — FashionScan, DONALD OS, and side builds. What is moving and what is blocked?'},{label:'FashionScan decision',prompt:'FashionScan25.3 — Gradle issues, overlay alignment, unresolved references. Should I continue or pause? Help me decide.'},{label:'Next build step',prompt:'What is the single most valuable personal project I should be working on right now?'}],openTab:'projects'},
-  {id:'growth',icon:'📚',label:'Growth',pri:'gray',desc:'Wispr Flow, DONALD wishlist, AI mastery.',
-   actions:[{label:'Growth check-in',prompt:'Personal growth check-in — what should I be learning and developing right now?'},{label:'DONALD wishlist',prompt:'Prioritize my DONALD improvement wishlist. What gives me the most value fastest?'},{label:'AI mastery',prompt:'What AI tools and skills should I be developing given my role as COO and personal OS builder?'}],openTab:'growth'},
-  {id:'email',icon:'✉',label:'Email',pri:'red',desc:'8 unread. Personal Gmail + family inbox.',
-   badgeFn:function(){return {count:8,cls:'red'};},
-   actions:[{label:'Scan all email',prompt:'Scan personal Gmail and family inbox. Flag anything urgent or needing a reply today.'},{label:'Draft urgent replies',prompt:'Draft replies for my top 3 most urgent personal emails in my voice — direct, warm, no dashes. Show drafts before doing anything.'},{label:'Flag overdue',prompt:'Are there personal emails sitting unread more than 3 days that need a response?'}],openTab:'email'},
-  {id:'work',icon:'💼',label:'Work Overview',pri:'blue',desc:'Prime Source pulse. Full depth in Prime Source OS.',
-   actions:[{label:'Work pulse',prompt:'Work pulse — urgent Outlook emails, meetings today or tomorrow, key Prime Source items.'},{label:'Top work priorities',prompt:'Top 3 work priorities I should push on right now at Prime Source.'},{label:'Open Prime Source OS',url:'https://primesource-os.vercel.app'}],openTab:'work'},
+   actions:[{label:'Finance status',prompt:'Actionable personal finance only — GenMed remaining receivable from live intel, tax receipts/ISG, real balances. Never Chase Ink or credit-card ads. Do not invent a leftover GenMed owed figure.'},{label:'Reconcile GenMed',prompt:'What do I need to do to reconcile the GenMed / Prime Procurement receivable using live intel metrics (pp_balance and ACH facts)?'},{label:'Tax / ISG',prompt:'Israel Steinberg / tax receipt follow-up. What is actually open? Do not invent numbers.'}],openTab:'finance'},
+  {id:'email',icon:'✉',label:'Email',pri:'amber',desc:'Personal threads ranked: Mark docs, Israel/ISG, family. Promo and bot mail filtered.',
+   actions:[{label:'Scan all email',prompt:'Scan personal Gmail and family inbox. Rank Mark docs, Israel Steinberg, and family above cursor bot and Chase ads. Flag anything needing a reply this week.'},{label:'Draft urgent replies',prompt:'Draft replies for my top personal emails this week — Mark docs and Israel/ISG first — in my voice — direct, warm, no dashes. Show drafts before doing anything.'},{label:'Flag overdue',prompt:'Are there personal emails sitting unread more than 3 days that need a response? Ignore promo and bot mail.'}],openTab:'email'},
+  {id:'daily',icon:'☀',label:'Daily Briefing',pri:'blue',desc:'This week\'s personal board: holidays, kids, Adler, GenMed, Mark.',
+   actions:[{label:'Morning briefing',prompt:'Full morning briefing for today — this week\'s personal board first: High Holidays, Avrami, Shalva/Faigy, Mark docs, GenMed, Adler. Not evergreen fossils.'},{label:'Top priority',prompt:'What is the single most important personal thing I should be doing right now this week?'},{label:'Evening wrap',prompt:'End of day wrap-up — what did I accomplish, what is unfinished, what do I carry into tomorrow?'}],openTab:'dashboard'},
+  {id:'health',icon:'💪',label:'Health',pri:'blue',desc:'Open personal medical only. Closed-window CPAP boilerplate is hidden.',
+   actions:[{label:'Health overview',prompt:'Open personal medical items only. Do not surface thin closed-window CPAP habit / Kasa boilerplate unless something is actually actionable. Do not invent new medical facts.'},{label:'CPAP check',prompt:'Only if something is still open with the provider. The Jul 20, 2026 compliance window ended. Do not treat nightly-habit boilerplate as a current task.'}],openTab:'health'},
   {id:'notes',icon:'📝',label:'Capture',pri:'gray',desc:'Quick thoughts, scratchpad, notes.',
    actions:[{label:'Quick capture',prompt:'I want to capture a thought or note. Ask me what I want to remember.'},{label:'Review notes',prompt:'What notes have I captured recently that I should review?'}],openTab:null},
-  {id:'focus',icon:'⏱',label:'Focus & Time',pri:'green',desc:'Priority stack from live intel. Adler hearing Fri Oct 30 9am Courtroom 9. June 8 speech and Jun 11 tax deadline are past.',
-   badgeFn:function(){var op=tasks.filter(function(t){return !t.done&&t.pri==='high'});return op.length>0?{count:op.length,cls:'red'}:null;},
-   actions:[{label:'Structure my day',prompt:'Structure my day today by priority. Pull my calendar, open tasks, and pending items. Tell me exactly what I should work on in order with time estimates.'},{label:'Best use of next 30 min',prompt:'I have 30 minutes right now. What is the single highest-leverage thing I can do?'},{label:'Weekly plan',prompt:'Build me a realistic weekly plan. What are the 3-5 most important things to accomplish this week across personal, financial, health, and work?'}],openTab:'focus'},
+  {id:'work',icon:'💼',label:'Work Overview',pri:'blue',desc:'Real Prime Source signals only. Card ads and canceled intros stay off this board.',
+   actions:[{label:'Work pulse',prompt:'Work pulse — real Prime Source signals only. Ignore Chase Ink ads, DONALD briefings, and canceled Calendly/Toby intros.'},{label:'Top work priorities',prompt:'Top 3 real work priorities at Prime Source. No card marketing.'},{label:'Open Prime Source OS',url:'https://primesource-os.vercel.app'}],openTab:'work'},
+  {id:'projects',icon:'🚀',label:'Personal Projects',pri:'gray',desc:'FashionScan25.3 (blocked), DONALD OS. Docked off default home.',
+   actions:[{label:'Projects status',prompt:'Personal projects status — FashionScan, DONALD OS, and side builds. What is moving and what is blocked?'},{label:'FashionScan decision',prompt:'FashionScan25.3 — Gradle issues, overlay alignment, unresolved references. Should I continue or pause? Help me decide.'},{label:'Next build step',prompt:'What is the single most valuable personal project I should be working on right now?'}],openTab:'projects'},
+  {id:'growth',icon:'📚',label:'Growth',pri:'gray',desc:'DONALD wishlist. Docked off default home.',
+   actions:[{label:'Growth check-in',prompt:'Personal growth check-in — what should I be learning and developing right now?'},{label:'DONALD wishlist',prompt:'Prioritize my DONALD improvement wishlist. What gives me the most value fastest?'},{label:'AI mastery',prompt:'What AI tools and skills should I be developing given my role as COO and personal OS builder?'}],openTab:'growth'},
 ];
 
 var PANEL_INTEL_KEY={daily:'donald_personal_intel_daily',finance:'donald_personal_intel_finance',health:'donald_personal_intel_health',family:'donald_personal_intel_family',projects:'donald_personal_intel_projects',growth:'donald_personal_intel_growth',email:'donald_personal_intel_email',work:'donald_personal_intel_work',notes:'donald_personal_intel_notes',focus:'donald_personal_intel_focus'};
@@ -2326,7 +2759,12 @@ function cBadge(c){return '<span class="badge bx">'+c+'</span>';}
 
 function taskRow(t){return '<div class="tr"><div class="cb'+(t.done?' done':'')+'" onclick="togTask('+t.id+')">'+(t.done?'✓':'')+'</div><div style="flex:1"><div class="tt'+(t.done?' done':'')+'">'+t.text+'</div><div class="tm">'+pBadge(t.pri)+cBadge(t.cat)+'</div></div><button class="xb" onclick="delTask('+t.id+')">×</button></div>';}
 function renderDashTasks(){
-  var op=tasks.filter(function(t){return !t.done}).sort(function(a,b){var o={high:0,med:1,low:2};return o[a.pri]-o[b.pri];});
+  var op=tasks.filter(function(t){return !t.done}).sort(function(a,b){
+    var sa=window.scoreThisWeekPersonal?window.scoreThisWeekPersonal({title:a.text,detail:a.cat},window._liveIntel):0;
+    var sb=window.scoreThisWeekPersonal?window.scoreThisWeekPersonal({title:b.text,detail:b.cat},window._liveIntel):0;
+    if(sb!==sa)return sb-sa;
+    var o={high:0,med:1,low:2};return (o[a.pri]||2)-(o[b.pri]||2);
+  });
   var dn=tasks.filter(function(t){return t.done});
   var all=op.concat(dn);
   var el=document.getElementById('dashTaskList');if(!el)return;
@@ -2373,12 +2811,19 @@ function renderChats(){
 function addChat(){var u=document.getElementById('scUrl').value.trim();if(!u)return;chats.push({id:nid++,label:document.getElementById('scLabel').value.trim()||'Chat',url:u,mod:'other'});S('chats',chats);S('nid',nid);document.getElementById('scUrl').value='';document.getElementById('scLabel').value='';renderChats();}
 function delChat(i){chats.splice(i,1);S('chats',chats);renderChats();}
 
-var _dockedCards=G('dockedCards',[]);
+var _dockedCards=G('dockedCards',['projects','growth']);
+try {
+  if (localStorage.getItem('po2_homeDock_v1') !== '1') {
+    ['projects','growth'].forEach(function(id){ if(_dockedCards.indexOf(id)<0)_dockedCards.push(id); });
+    S('dockedCards', _dockedCards);
+    localStorage.setItem('po2_homeDock_v1', '1');
+  }
+} catch(e) {}
 function ccBadgeHtml(panel){
   var key=PANEL_INTEL_KEY?PANEL_INTEL_KEY[panel.id]:null;
   var liveData=key&&intelCache?intelCache[key]:null;
   var html='';
-  if(liveData&&liveData.html){html=window.sanitizeIntelHtml?window.sanitizeIntelHtml(liveData.html,{ensureAdler:panel.id==='focus'}):liveData.html;}
+  if(liveData&&liveData.html){html=window.sanitizeIntelHtml?window.sanitizeIntelHtml(liveData.html,{ensureAdler:panel.id==='focus',panelId:panel.id}):liveData.html;}
   else{var domEl=document.getElementById('cp-intel-'+panel.id);if(domEl)html=domEl.innerHTML;}
   if(html){
     var red=(html.match(/ii-red/g)||[]).length;var amber=(html.match(/ii-amber/g)||[]).length;
@@ -2435,7 +2880,7 @@ function openCCDrawer(pid){
     title.innerHTML=panel.icon+' '+panel.label+(badgeHtml?'<span style="margin-left:8px;display:inline-flex;gap:3px">'+badgeHtml+'</span>':'');
   }
   var html='';
-  if(liveData&&liveData.html){html=window.sanitizeIntelHtml?window.sanitizeIntelHtml(liveData.html,{ensureAdler:pid==='focus'}):liveData.html;}
+  if(liveData&&liveData.html){html=window.sanitizeIntelHtml?window.sanitizeIntelHtml(liveData.html,{ensureAdler:pid==='focus',panelId:pid}):liveData.html;}
   else if(liveData&&liveData.items&&liveData.items.length){
     if(liveData.updated){var d=new Date(liveData.updated);var ageMin=Math.round((new Date()-d)/60000);html+='<div class="cp-fresh" style="margin-bottom:10px">● Live intel · '+(ageMin<60?ageMin+'m ago':Math.round(ageMin/60)+'h ago')+'</div>';}
     liveData.items.forEach(function(item){var dot=item.type==='red'?'red':item.type==='amber'?'amber':item.type==='green'?'green':item.type==='blue'?'blue':'gray';html+='<div class="ii-wrap"><span class="ii-dot '+dot+'"></span><strong>'+item.title+'</strong>'+(item.detail?' <span class="ii-detail">— '+item.detail+'</span>':'')+'</div>';});
@@ -2456,13 +2901,13 @@ function execDrawerAction(btn){
 function closeCCDrawer(){document.getElementById('ccDrawer').classList.remove('show');document.getElementById('ccOverlay').classList.remove('show');document.body.style.overflow='';}
 
 var INTEL_MAP={
-  daily:function(){var hi=tasks.filter(function(t){return !t.done&&t.pri==='high'});var d=new Date();var days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];var lines=['<div class="ii ii-blue">📅 <strong>'+days[d.getDay()]+', '+d.toLocaleDateString('en-US',{month:'short',day:'numeric'})+'</strong></div>'];if(hi.length){lines.push('<div class="ii-section-label">High priority today</div>');hi.slice(0,3).forEach(function(t){lines.push('<div class="ii ii-red">▸ <strong>'+t.text+'</strong></div>');});}return lines.join('');},
-  finance:function(){var m=window._liveIntel&&window._liveIntel.metrics;var pp=window.ppBalanceFromMetrics?window.ppBalanceFromMetrics(m):null;var line=(pp&&pp.display!=='\u2014')?'<div class="ii ii-amber">\uD83D\uDCB0 <strong>PP Balance '+pp.display+'</strong> \u2014 '+pp.sub+'</div>':'<div class="ii ii-amber">\uD83D\uDCB0 <strong>GenMed receivable</strong> \u2014 remaining unknown \u2014 reconcile Prime Procurement books</div>';return line+'<div class="ii ii-amber">\uD83D\uDCCB <strong>DAF not set up</strong> \u2014 needed for charity routing</div><div class="ii ii-amber">\uD83D\uDE97 <strong>Auto insurance</strong> \u2014 follow up after household completions</div><div class="ii ii-green">\u2713 <strong>Capital One Spark</strong> \u2014 AutoPay enrolled</div>';},
-  health:function(){return '<div class="ii ii-blue">💪 <strong>CPAP window ended Jul 20, 2026</strong> — do not treat old night-count snapshots as current</div><div class="ii ii-blue">📅 <strong>SightMD — May 15, 2026</strong> — completed</div><div class="ii ii-amber">⚡ <strong>Bluetooth on overnight</strong> — required for MyAir tracking if still using the machine</div>';},
-  focus:function(){return '<div class="ii ii-amber"><strong>Adler hearing — Fri Oct 30, 9am</strong> — Courtroom 9, Ocean County Courthouse</div><div class="ii ii-blue"><strong>MileagePlus merge</strong> — 1-800-421-4655, 3 accounts</div>';},
-  family:function(){return '<div class="ii ii-blue">🕯 <strong>Shabbos</strong> — times load from Hebcal / live intel</div><div class="ii ii-amber">👤 <strong>Avrumy</strong> — in Israel, check in this week</div><div class="ii ii-amber">👤 <strong>Leah</strong> — at Shalva, monitor settling in</div>';},
-  email:function(){return '<div class="ii ii-amber">📧 <strong>MileagePlus merge</strong> — 3 accounts to consolidate · call 1-800-421-4655</div><div class="ii ii-blue">📧 <strong>2022 charity receipts</strong> — June 11 deadline passed — confirm receipts/filing</div><div class="ii ii-gray">Pull Now to load live email summary</div>';},
-  work:function(){return '<div class="ii ii-blue">🎤 <strong>June 8 Company Event</strong> — event date passed</div><div class="ii ii-amber">⚡ <strong>Renzo program</strong> — AI outreach/follow-up tool · potential revenue stream</div><div class="ii ii-amber">🏢 <strong>Vendor Catalog VCS</strong> — data accuracy audit in progress with Jane</div><div class="ii ii-blue">💼 <strong>Open Prime Source OS</strong> for full work depth and live intel</div>';}
+  daily:function(){var hi=tasks.filter(function(t){return !t.done&&t.pri==='high'});var d=new Date();var days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];var lines=['<div class="ii ii-blue">📅 <strong>'+days[d.getDay()]+', '+d.toLocaleDateString('en-US',{month:'short',day:'numeric'})+'</strong></div>'];if(hi.length){lines.push('<div class="ii-section-label">This week</div>');hi.slice(0,4).forEach(function(t){lines.push('<div class="ii ii-red">▸ <strong>'+t.text+'</strong></div>');});}return lines.join('');},
+  finance:function(){var m=window._liveIntel&&window._liveIntel.metrics;var pp=window.ppBalanceFromMetrics?window.ppBalanceFromMetrics(m):null;var line=(pp&&pp.display!=='\u2014')?'<div class="ii ii-amber">\uD83D\uDCB0 <strong>PP Balance '+pp.display+'</strong> \u2014 '+pp.sub+'</div>':'<div class="ii ii-amber">\uD83D\uDCB0 <strong>GenMed receivable</strong> \u2014 remaining unknown \u2014 reconcile Prime Procurement books</div>';return line+'<div class="ii ii-amber">\uD83D\uDCCB <strong>Tax receipts / ISG</strong> \u2014 Israel Steinberg documents when open</div><div class="ii ii-green">\u2713 <strong>Capital One Spark</strong> \u2014 AutoPay enrolled</div>';},
+  health:function(){return '<div class="ii ii-blue"><strong>Health</strong> — no open personal medical items this week</div>';},
+  focus:function(){return window.renderIntelItemsHtml?window.renderIntelItemsHtml(window.buildThisWeekFocusItems(window._liveIntel,[])):'<div class="ii ii-red"><strong>Erev Rosh Hashana</strong> — Thu Sep 10</div><div class="ii ii-amber"><strong>Avrami — check in</strong> — in Israel</div><div class="ii ii-amber"><strong>Adler hearing — Fri Oct 30, 9am</strong> — Courtroom 9, Ocean County Courthouse</div>';},
+  family:function(){return '<div class="ii ii-red"><strong>Erev Rosh Hashana</strong> — Thu Sep 10</div><div class="ii ii-red"><strong>Rosh Hashana 5787</strong> — Fri Sep 11</div><div class="ii ii-amber"><strong>Avrami</strong> — in Israel, check in this week</div><div class="ii ii-amber"><strong>Leah / Shalva / Faigy</strong> — monitor settling in</div>';},
+  email:function(){return '<div class="ii ii-amber"><strong>Mark docs follow-up</strong> — Compensation Structure &amp; Agreement Docs</div><div class="ii ii-amber"><strong>Israel Steinberg</strong> — documents for review</div><div class="ii ii-gray">Pull Now to load live email summary</div>';},
+  work:function(){return '<div class="ii ii-blue"><strong>Work</strong> — real Prime Source signals only after Pull Now</div><div class="ii ii-blue"><strong>Open Prime Source OS</strong> for full work depth</div>';}
 };
 function injectAllIntel(){CC_PANELS.forEach(function(p){injectPanelIntel(p.id);});setTimeout(updateAllBadges,200);}
 function injectPanelIntel(id){
@@ -2473,7 +2918,7 @@ function injectPanelIntel(id){
   var d=intelCache[fullKey];
   // Also try short key (from applyLiveIntel / Pull Now)
   if(!d||!d.html) d=intelCache[id];
-  if(d&&d.html){el.innerHTML=window.sanitizeIntelHtml?window.sanitizeIntelHtml(d.html,{ensureAdler:id==='focus'}):d.html;return;}
+  if(d&&d.html){el.innerHTML=window.sanitizeIntelHtml?window.sanitizeIntelHtml(d.html,{ensureAdler:id==='focus',panelId:id}):d.html;return;}
   // Fall back to static INTEL_MAP
   var fn=INTEL_MAP[id];
   if(fn)el.innerHTML=fn();
