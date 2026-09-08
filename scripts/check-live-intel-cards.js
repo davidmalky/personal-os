@@ -48,6 +48,10 @@ ok(!/93K/.test(blank.display + ' ' + blank.sub), 'Missing metrics do not fall ba
 ok(context.isResidualNinetyThreeKText('$93K remaining of $193K total'), '93K GenMed remaining is residual');
 ok(context.isResidualNinetyThreeKText('~$93K'), 'tilde 93K val is residual');
 ok(!context.isResidualNinetyThreeKText('Adler hearing Fri Oct 30'), 'Adler text is not residual 93K');
+ok(!context.isResidualNinetyThreeKText('GenMed $193K contract total'), '193K contract total is not leftover 93K');
+ok(!context.isResidualNinetyThreeKText('$193,000 remaining receivable'), '193,000 is not leftover 93,000');
+ok(context.textsOverlap('Adler hearing — Fri Oct 30 9am', 'Adler proof hearing — 52 days'), 'Adler seed and live titles share a topic');
+ok(context.textsOverlap('Prime Procurement — GenMed', 'GenMed Solutions — $100,000 ACH received'), 'GenMed seed and live titles share a topic');
 
 ok(context.isKnownStaleSeedItem('finance', {
   id: 'f1', text: 'Prime Procurement — GenMed balance', sub: '$93K remaining of $193K total', val: '~$93K'
@@ -98,6 +102,21 @@ var tasks = JSON.parse(store['po2_tasks']);
 ok(tasks.some(function(t){ return /Adler/i.test(t.text) && t.source === 'live'; }), 'Priority tasks pick up live Adler');
 ok(!tasks.some(function(t){ return /Cube ACR/i.test(t.text); }), 'Cube ACR seed task is removed on applyLiveIntel');
 ok(tasks.some(function(t){ return t.text === 'User added keep-me'; }), 'User-added priority task survives');
+ok(tasks.some(function(t){ return /Solo 401k/i.test(t.text); }), 'Pull Now keeps Solo 401k from the task log when Focus omits it');
+ok(tasks.some(function(t){ return /REPS/i.test(t.text); }), 'Pull Now keeps REPS from the task log when Focus omits it');
+ok(tasks.filter(function(t){ return context.itemTopicKey(t.text) === 'adler'; }).length === 1, 'Adler seed and live proof hearing do not both remain');
+ok(pending.filter(function(i){ return context.itemTopicKey(i.text) === 'adler'; }).length === 1, 'Pending has one Adler row after live+task-log merge');
+ok(pending.some(function(i){ return /Solo 401k/i.test(i.text); }), 'Pending keeps Solo 401k from the task log when Focus omits it');
+ok(finance.filter(function(i){ return context.itemTopicKey(i.text + ' ' + i.sub) === 'genmed'; }).length === 1, 'Finance does not keep seed GenMed beside live ACH');
+
+store['po2_store_pending'] = JSON.stringify([
+  {id:'p1', text:'Adler hearing — Fri Oct 30 9am', sub:'Courtroom 9', source:'seed', status:'urgent'}
+]);
+context.mergeLiveStoreItems('pending', [
+  {id:'p_live_0', text:'Adler proof hearing — 52 days', sub:'Fri Oct 30 9:00 AM', status:'urgent', source:'live'}
+]);
+var pending2 = JSON.parse(store['po2_store_pending']);
+ok(pending2.filter(function(i){ return /Adler/i.test(i.text); }).length === 1, 'Seed Adler is replaced by live Adler proof hearing');
 
 if (fails.length) {
   console.error('FAIL\n' + fails.map(function(f){ return ' - ' + f; }).join('\n'));
